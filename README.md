@@ -38,13 +38,13 @@ The APIs provided have been made identical to the System.IO APIs as best I could
 ```
 Then, of course, reference the assembly.
 
-**TBD**
-
 
 Known Issues
 ============
 
-There are no known issues per se.  The only API that does not work as expected is Directory.SetCurrentDirectory as Windows does not support long paths for a current directory.
+There are no known issues per se.  The only API that does not work as expected is `Directory.SetCurrentDirectory` as Windows does not support long paths for a current directory.
+
+A current *known issue* is no nuget package.  I hope to resolve that tout de suite!
 
 Caveats
 =======
@@ -58,4 +58,4 @@ Long paths can be created *accidentally* in Windows making them very hard to pro
 
 One way long paths can get created unintentially is via shares.  You can create a share to a directory (if it's not the root) such that the shared directory becomes the root of a virtual drive which then allows up to 260 characters of path under normal use.  Which means if the shared directory path is 20 chars, the actual path lenghts in the source can now be up to 280 chars--making them *invalid* in many parts of Windows in that source directory
 
-**TBD**
+**to be continued**
