@@ -64,3 +64,5 @@ _UpgradeReport_Files/
 Backup*/
 UpgradeLog*.XML
 UpgradeLog*.htm
+/nuget/lib
+/nuget/*.nupkg
