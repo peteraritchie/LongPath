@@ -1,0 +1,21 @@
+<?xml version="1.0"?>
+<package >
+  <metadata>
+    <id>ProductivityExtensions</id>
+    <version>1.0.18.0</version>
+    <authors>Peter Ritchie</authors>
+    <dependencies>
+        <group targetFramework="sl4-wp">
+            <dependency id="Microsoft.BCL" version="1.1.6" />
+        </group>
+    </dependencies>
+    <owners>Peter Ritchie</owners>
+    <licenseUrl>https://github.com/peteraritchie/ProductivityExtensions/raw/master/LICENSE</licenseUrl>
+    <projectUrl>https://github.com/peteraritchie/LongPath</projectUrl>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <description>Productivity Extensions is a library of extension methods extending over 650 methods in 400 Framework classes.</description>
+    <releaseNotes>Added WebClient extensions and pulled in the BCL portability library</releaseNotes>
+    <copyright>Copyright 2013</copyright>
+    <tags>extension methods</tags>
+  </metadata>
+</package>

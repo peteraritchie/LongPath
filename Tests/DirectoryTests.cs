@@ -5,23 +5,14 @@ using System.Text;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System.Collections.Generic;
 using System.Security.AccessControl;
+using System.IO;
 
 namespace Tests
 {
-	using Directory = Pri.LongPath.Directory;
 	using Path = Pri.LongPath.Path;
-	using FileInfo = Pri.LongPath.FileInfo;
+	using Directory = Pri.LongPath.Directory;
 	using DirectoryInfo = Pri.LongPath.DirectoryInfo;
 	using File = Pri.LongPath.File;
-	using FileMode = System.IO.FileMode;
-	using FileAccess = System.IO.FileAccess;
-	using FileShare = System.IO.FileShare;
-	using BinaryWriter = System.IO.BinaryWriter;
-	using PathTooLongException = System.IO.PathTooLongException;
-	using FileNotFoundException = System.IO.FileNotFoundException;
-	using FileAttributes = System.IO.FileAttributes;
-	using IOException = System.IO.IOException;
-	using SearchOption = System.IO.SearchOption;
 
 	[TestClass]
 	public class DirectoryTests
