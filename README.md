@@ -3,7 +3,7 @@ LongPath
 
 A drop-in library to support long paths in .NET
 
-Supporting files and directories with a long path is fairly easy with Windows.  Unforutnately, other aspects of Windows haven't supported long paths in their entirely.  The file system (NTFS), for example, supports long paths quite well; but other things like Command Prompt and Explorer don't.  This makes it hard to entire support long paths.
+Supporting files and directories with a long path is fairly easy with Windows.  Unforutnately, other aspects of Windows haven't supported long paths in their entirely.  The file system (NTFS), for example, supports long paths quite well; but other things like Command Prompt and Explorer don't.  This makes it hard to entirely support long paths in *any* application, let alone in .NET.
 
 This has been a bit tricky in .NET.  Several attempts like [longpaths.codeplex.com](http://longpaths.codeplex.com/) (which a more up to date version has made its way into .NET in classes like [LongPath](http://referencesource.microsoft.com/#mscorlib/system/io/longpath.cs) [LongPathFile](http://referencesource.microsoft.com/#mscorlib/system/io/longpath.cs#734b3020e7ff04fe#references) and [LongPathDirectory](http://referencesource.microsoft.com/#mscorlib/system/io/longpath.cs#ed4ae27b0c89bf61#references).  But, these libraries do not seem to support the entire original API (`Path`, `File`, `Directory`) and not all file-related APSs (including `FileInfo`, `DirectoryInfo`, `FileSystemInfo`).
 
