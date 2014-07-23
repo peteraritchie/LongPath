@@ -15,12 +15,31 @@ LongPath originally started as a fork of LongPaths on Codeplex; but after initia
 
 LongPaths allows your code to support long paths by providing a drop-in replacement for the following `System.IO` types: `FileInfo`, `DirectoryInfo`, `FileSystemInfo`, `FileInfo`, `DirectoryInfo`, `FileSystemInfo`.  You simply reference the Pri.LongPath types you need and you don't need to change your code.
 
+Obviously to replace only 6 types in a namespaces (`System.IO`) and not the rest is problematic because you're going to need to use some of those other types (`FileNotFoundException`, `FileMode`, etc.)--which means referencing `System.IO` and re-introducing the original 6 types back into your scope.  I feft that not having to modify your code was the greater of the two evils.  Resolving this conflict is easily solved through aliases (see below).
+
+
 Usage
 =====
+The APIs provided have been made identical to the System.IO APIs as best I could (if not, please log an issue; fork and provide a failing unit test; or fork, fix, add passing test).  So, you really only need to force reference to the LongPath types.  Referencing the entire `Pri.LongPath` namespace will cause conflicts with `System.IO` because you almost always need to reference something *else* in `System.IO`.  To force reference to the `Pri.LongPath` types simply create aliases to them with the `using` directive:
+```
+	using Path = Pri.LongPath.Path;
+	using Directory = Pri.LongPath.Directory;
+	using DirectoryInfo = Pri.LongPath.DirectoryInfo;
+	using File = Pri.LongPath.File;
+```
+
+`FileSystemInfo` is abstract so you shouldn't need to alias it, but, if you need it (for a cast, for example) alias it as well:
+```
+	using Path = Pri.LongPath.Path;
+	using Directory = Pri.LongPath.Directory;
+	using DirectoryInfo = Pri.LongPath.DirectoryInfo;
+	using File = Pri.LongPath.File;
+	using FileSystemInfo = Pri.LongPath.FileSystemInfo;
+```
+Then, of course, reference the assembly.
 
 **TBD**
-Obviously to replace only 6 types in a namespaces (`System.IO`) and not the rest is problematic because you're going to need to use some of those other types (`FileNotFoundException`, `FileMode`, etc.)--which means referencing `System.IO` and re-introducing the original 6 types back into your scope.
-I feft that not having to modify your code
+
 
 Known Issues
 ============
