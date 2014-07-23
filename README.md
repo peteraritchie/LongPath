@@ -26,4 +26,6 @@ How long paths can be created
 
 Long paths can be created *accidentally* in Windows making them very hard to process.
 
+One way long paths can get created unintentially is via shares.  You can create a share to a directory (if it's not the root) such that the shared directory becomes the root of a virtual drive which then allows up to 260 characters of path under normal use.  Which means if the shared directory path is 20 chars, the actual path lenghts in the source can now be up to 280 chars--making them *invalid* in many parts of Windows in that source directory
+
 **TBD**
