@@ -16,6 +16,11 @@ Usage
 
 **TBD**
 
+Known Issues
+============
+
+There are no known issues per se.  The only API that does not work as expected is Directory.SetCurrentDirectory as Windows does not support long paths for a current directory.
+
 Caveats
 =======
 
