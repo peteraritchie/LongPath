@@ -38,6 +38,9 @@ The APIs provided have been made identical to the System.IO APIs as best I could
 ```
 Then, of course, reference the assembly.
 
+NuGet
+=====
+[https://www.nuget.org/packages/Pri.LongPath/](https://www.nuget.org/packages/Pri.LongPath/)
 
 Known Issues
 ============
