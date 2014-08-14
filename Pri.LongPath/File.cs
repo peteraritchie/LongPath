@@ -28,19 +28,19 @@ namespace Pri.LongPath
 		public static StreamReader OpenText(string path)
 		{
 			var stream = Open(path, FileMode.Open, FileAccess.Read, FileShare.Read, DefaultBufferSize, FileOptions.SequentialScan);
-			return new StreamReader(stream, Encoding.UTF8, true, 1024, false);
+			return new StreamReader(stream, Encoding.UTF8, true, 1024);
 		}
 
 		private static StreamReader OpenText(string path, Encoding encoding)
 		{
 			var stream = Open(path, FileMode.Open, FileAccess.Read, FileShare.Read, DefaultBufferSize, FileOptions.SequentialScan);
-			return new StreamReader(stream, encoding, true, 1024, false);
+			return new StreamReader(stream, encoding, true, 1024);
 		}
 
 		public static StreamWriter CreateText(String path)
 		{
 			var fileStream = Open(path, FileMode.Create, FileAccess.Write, FileShare.Read, DefaultBufferSize, FileOptions.SequentialScan);
-			return new StreamWriter(fileStream, UTF8NoBOM, DefaultBufferSize, false);
+			return new StreamWriter(fileStream, UTF8NoBOM, DefaultBufferSize);
 		}
 
 		public static StreamWriter AppendText(String path)
@@ -692,7 +692,7 @@ namespace Pri.LongPath
 		public static IEnumerable<string> ReadLines(String path, Encoding encoding)
 		{
 			var stream = Open(path, FileMode.Open, FileAccess.Read, FileShare.Read, DefaultBufferSize, FileOptions.SequentialScan);
-			using (var sr = new StreamReader(stream, encoding, true, 1024, false))
+			using (var sr = new StreamReader(stream, encoding, true, 1024))
 			{
 				while (!sr.EndOfStream)
 				{
@@ -1003,14 +1003,14 @@ namespace Pri.LongPath
 		{
 			var fileMode = (append ? FileMode.Append : FileMode.Create);
 			var fileStream = Open(path, fileMode, FileAccess.Write, FileShare.Read, 4096, FileOptions.SequentialScan);
-			return new StreamWriter(fileStream, UTF8NoBOM, 1024, false);
+			return new StreamWriter(fileStream, UTF8NoBOM, 1024);
 		}
 
 		internal static StreamWriter CreateStreamWriter(string path, bool append, Encoding encoding)
 		{
 			var fileMode = (append ? FileMode.Append : FileMode.Create);
 			var fileStream = Open(path, fileMode, FileAccess.Write, FileShare.Read, 4096, FileOptions.SequentialScan);
-			return new StreamWriter(fileStream, encoding, 1024, false);
+			return new StreamWriter(fileStream, encoding, 1024);
 		}
 
 		internal static StreamWriter CreateText(string path, Encoding encoding)
@@ -1024,7 +1024,7 @@ namespace Pri.LongPath
 		internal static StreamReader CreateStreamReader(string path, Encoding encoding, bool detectEncodingFromByteOrderMarks, int bufferSize)
 		{
 			var fileStream = Open(path, FileMode.Open, FileAccess.Read, FileShare.Read, 4096, FileOptions.SequentialScan);
-			return new StreamReader(fileStream, encoding, detectEncodingFromByteOrderMarks, bufferSize, false);
+			return new StreamReader(fileStream, encoding, detectEncodingFromByteOrderMarks, bufferSize);
 		}
 	}
 }

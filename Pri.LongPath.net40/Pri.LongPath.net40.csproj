@@ -1,0 +1,87 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{0D02A959-5B75-4492-BA65-2005EB5A12CC}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>Pri.LongPath</RootNamespace>
+    <AssemblyName>Pri.LongPath</AssemblyName>
+    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>TRACE;DEBUG;NET_4_0</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE;NET_4_0</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="..\Pri.LongPath\Common.cs">
+      <Link>Common.cs</Link>
+    </Compile>
+    <Compile Include="..\Pri.LongPath\Directory.cs">
+      <Link>Directory.cs</Link>
+    </Compile>
+    <Compile Include="..\Pri.LongPath\DirectoryInfo.cs">
+      <Link>DirectoryInfo.cs</Link>
+    </Compile>
+    <Compile Include="..\Pri.LongPath\File.cs">
+      <Link>File.cs</Link>
+    </Compile>
+    <Compile Include="..\Pri.LongPath\FileInfo.cs">
+      <Link>FileInfo.cs</Link>
+    </Compile>
+    <Compile Include="..\Pri.LongPath\FileSystemInfo.cs">
+      <Link>FileSystemInfo.cs</Link>
+    </Compile>
+    <Compile Include="..\Pri.LongPath\NativeMethods.cs">
+      <Link>NativeMethods.cs</Link>
+    </Compile>
+    <Compile Include="..\Pri.LongPath\Path.cs">
+      <Link>Path.cs</Link>
+    </Compile>
+    <Compile Include="..\Pri.LongPath\Priviledge.cs">
+      <Link>Priviledge.cs</Link>
+    </Compile>
+    <Compile Include="..\Pri.LongPath\SafeFindHandle.cs">
+      <Link>SafeFindHandle.cs</Link>
+    </Compile>
+    <Compile Include="..\Pri.LongPath\SafeTokenHandle.cs">
+      <Link>SafeTokenHandle.cs</Link>
+    </Compile>
+    <Compile Include="Properties\AssemblyInfo.cs" />
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

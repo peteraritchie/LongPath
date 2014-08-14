@@ -2,7 +2,7 @@
 <package >
   <metadata>
     <id>Pri.LongPath</id>
-    <version>1.0.1.0</version>
+    <version>1.1.0.0</version>
     <authors>Peter Ritchie</authors>
     <dependencies/>
     <owners>Peter Ritchie</owners>
@@ -10,7 +10,7 @@
     <projectUrl>https://github.com/peteraritchie/LongPath</projectUrl>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
     <description>Drop-in library to support long paths in .NET</description>
-    <releaseNotes>Initial release</releaseNotes>
+    <releaseNotes>Added support for .NET 4.0</releaseNotes>
     <copyright>Copyright 2014</copyright>
     <tags>long path</tags>
   </metadata>

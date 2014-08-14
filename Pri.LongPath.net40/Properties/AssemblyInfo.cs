@@ -5,8 +5,8 @@ using System.Runtime.InteropServices;
 // General Information about an assembly is controlled through the following 
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
-[assembly: AssemblyTitle("Pri.LongPath for .NET 4.5")]
-[assembly: AssemblyDescription("Pri.LongPath for .NET 4.5")]
+[assembly: AssemblyTitle("Pri.LongPath for .NET 4.0")]
+[assembly: AssemblyDescription("Pri.LongPath for .NET 4.0")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("Peter Ritchie Inc.")]
 [assembly: AssemblyProduct("Pri.LongPath")]
@@ -20,7 +20,7 @@ using System.Runtime.InteropServices;
 [assembly: ComVisible(false)]
 
 // The following GUID is for the ID of the typelib if this project is exposed to COM
-[assembly: Guid("927bffc7-1ff8-4689-8736-0539c2839377")]
+[assembly: Guid("a5130d86-421c-41d8-95e1-a20e0d0a3c74")]
 
 // Version information for an assembly consists of the following four values:
 //
