@@ -2,7 +2,9 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
+#if !NET_2_0
 using System.Linq;
+#endif
 using System.Runtime.InteropServices;
 using System.Security.AccessControl;
 using System.Text;

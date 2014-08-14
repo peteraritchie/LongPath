@@ -1,7 +1,11 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Security.AccessControl;
+#if NET_2_0
+using System.Runtime.CompilerServices;
+#else
+using System.Linq;
+#endif
 
 namespace Pri.LongPath
 {
@@ -146,7 +150,12 @@ namespace Pri.LongPath
 		public void MoveTo(string destDirName)
 		{
 			if (destDirName == null) throw new ArgumentNullException("destDirName");
-			if (string.IsNullOrWhiteSpace(destDirName)) throw new ArgumentException("Empty filename", "destDirName");
+#if NET_2_0
+			if (string.IsNullOrEmpty(destDirName))
+#else
+			if (string.IsNullOrWhiteSpace(destDirName))
+#endif
+				throw new ArgumentException("Empty filename", "destDirName");
 
 			string fullDestDirName = Path.GetFullPath(destDirName);
 			if (!fullDestDirName.EndsWith(Path.DirectorySeparatorChar))
@@ -268,3 +277,11 @@ namespace Pri.LongPath
 		}
 	}
 }
+#if NET_2_0
+namespace System.Runtime.CompilerServices
+{
+	[AttributeUsage(AttributeTargets.Assembly | AttributeTargets.Class
+		 | AttributeTargets.Method)]
+	public sealed class ExtensionAttribute : Attribute { }
+}
+#endif

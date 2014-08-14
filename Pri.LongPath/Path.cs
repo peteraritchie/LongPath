@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Globalization;
-using System.Linq;
 using System.Text;
+#if !NET_2_0
+using System.Linq;
+#endif
 
 namespace Pri.LongPath
 {
@@ -136,7 +138,18 @@ namespace Pri.LongPath
 
 		private static bool HasIllegalCharacters(string path)
 		{
+#if NET_2_0
+			foreach (var e in path)
+			{
+				if (InvalidPathChars.Contains(e))
+				{
+					return true;
+				}
+			}
+			return false;
+#else
 			return path.Any(InvalidPathChars.Contains);
+#endif
 		}
 
 		public static string GetFileName(string path)

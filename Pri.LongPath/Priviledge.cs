@@ -9,7 +9,7 @@ using System.Threading;
 namespace Pri.LongPath
 {
     using Luid=NativeMethods.LUID;
-    using Win32Exception=System.ComponentModel.Win32Exception;
+    using Win32Exception=global::System.ComponentModel.Win32Exception;
     using PrivilegeNotHeldException=System.Security.AccessControl.PrivilegeNotHeldException;
 	using System.Security.Principal;
 

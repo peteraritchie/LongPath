@@ -2,7 +2,9 @@ using System;
 using System.Collections.Generic;
 using System.Runtime.InteropServices;
 using System.Security.AccessControl;
+#if !NET_2_0
 using System.Linq;
+#endif
 
 namespace Pri.LongPath
 {
