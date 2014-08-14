@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Runtime.CompilerServices;
 
 namespace Pri.LongPath
 {
@@ -32,6 +31,7 @@ namespace Pri.LongPath
 				++length;
 			} throw new NotImplementedException();
 		}
+
 		public static bool Contains<T>(this IEnumerable<T> source, T value)
 		{
 			if (source == null) throw new ArgumentNullException("source");
