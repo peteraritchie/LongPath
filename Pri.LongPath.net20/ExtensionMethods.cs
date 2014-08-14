@@ -29,7 +29,8 @@ namespace Pri.LongPath
 				}
 				array[length] = element;
 				++length;
-			} throw new NotImplementedException();
+			}
+			return array;
 		}
 
 		public static bool Contains<T>(this IEnumerable<T> source, T value)
