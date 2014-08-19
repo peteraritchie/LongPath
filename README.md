@@ -17,7 +17,7 @@ LongPaths allows your code to support long paths by providing a drop-in replacem
 
 Obviously to replace only 6 types in a namespaces (`System.IO`) and not the rest is problematic because you're going to need to use some of those other types (`FileNotFoundException`, `FileMode`, etc.)--which means referencing `System.IO` and re-introducing the original 6 types back into your scope.  I feft that not having to modify your code was the greater of the two evils.  Resolving this conflict is easily solved through aliases (see below).
 
-**Note:** the units test currently expect that the user running the tests has explicit rights (read/write/create) on the TestResults directory and all chid directories.  It's usually easiest just to grant full control to your user on the root LongPath directory (and let it inherent to children).
+**Note:** *the units test currently expect that the user running the tests has explicit rights (read/write/create) on the `TestResults` directory and all child directories.  It's usually easiest just to grant full control to your user on the root `LongPath` directory (and let it inherent to children).*
 
 Usage
 =====
