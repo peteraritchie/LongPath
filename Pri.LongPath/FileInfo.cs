@@ -66,7 +66,7 @@ namespace Pri.LongPath
 
 		private string GetDisplayPath(string originalPath)
 		{
-			return Path.GetFileName(originalPath);
+			return /*Path.GetFileName*/(originalPath);
 		}
 
 		private long GetFileLength()

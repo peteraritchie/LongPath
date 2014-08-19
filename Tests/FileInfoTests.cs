@@ -877,6 +877,17 @@ namespace Tests
 			fi.LastAccessTimeUtc = dateTime;
 		}
 
+		[TestMethod]
+		public void TestDisplayPath()
+		{
+			var sfi = new System.IO.FileInfo(@"c:\Windows\notepad.exe");
+			var fi = new FileInfo(@"c:\Windows\notepad.exe");
+
+			Assert.AreEqual(sfi.ToString(), fi.DisplayPath);
+
+		}
+
+
 		[ClassCleanup]
 		public static void ClassCleanup()
 		{
