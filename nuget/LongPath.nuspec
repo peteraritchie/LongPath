@@ -2,7 +2,7 @@
 <package >
   <metadata>
     <id>Pri.LongPath</id>
-    <version>1.2.1.0</version>
+    <version>1.2.2.0</version>
     <authors>Peter Ritchie</authors>
     <dependencies/>
     <owners>Peter Ritchie</owners>
@@ -10,7 +10,7 @@
     <projectUrl>https://github.com/peteraritchie/LongPath</projectUrl>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
     <description>Drop-in library to support long paths in .NET</description>
-    <releaseNotes>Fixed small bug with ToArray in .NET 2.0</releaseNotes>
+    <releaseNotes>Fixed File.GetLastWriteTime and FileInfo.ToString to act more like System.IO</releaseNotes>
     <copyright>Copyright 2014</copyright>
     <tags>long path</tags>
   </metadata>
