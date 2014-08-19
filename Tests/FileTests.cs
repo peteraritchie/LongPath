@@ -1321,6 +1321,12 @@ namespace Tests
 			Assert.IsFalse(File.Exists(tempLongPathFilename));
 		}
 
+		[TestMethod]
+		public void TestGetLastWriteTimeOnMissingFileHasNoException()
+		{
+			var dt = File.GetLastWriteTime("gibberish");
+		}
+
 		[ClassCleanup]
 		public static void ClassCleanup()
 		{

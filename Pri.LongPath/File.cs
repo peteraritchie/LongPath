@@ -563,7 +563,14 @@ namespace Pri.LongPath
 		public static DateTime GetLastWriteTimeUtc(String path)
 		{
 			var fi = new FileInfo(path);
-			return fi.LastWriteTimeUtc;
+			try
+			{
+				return fi.LastWriteTimeUtc;
+			}
+			catch (Exception)
+			{
+				return DateTime.FromFileTimeUtc(0);
+			}
 		}
 
 		public static void SetLastAccessTime(String path, DateTime lastAccessTime)
