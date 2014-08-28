@@ -183,6 +183,8 @@ namespace Pri.LongPath
 		    {
 		        path = path.Substring(basePath.Length + 1);
 		        length = length - basePath.Length - 1;
+                if (length < 0)
+                    length = 0;
 		    }
 		    return path.Substring(0, length);
 		}

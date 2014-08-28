@@ -64,6 +64,15 @@ namespace Tests
             Assert.AreEqual(expected, actual);
         }
 
+        [TestMethod]
+        public void GetDirectoryNameOnRelativePathWithNoParent()
+        {
+            const string input = @"foo";
+            const string expected = @"";
+            string actual = Path.GetDirectoryName(input);
+            Assert.AreEqual(expected, actual);
+        }
+
 		[TestMethod]
 		public void TestGetParentAtRoot()
 		{
