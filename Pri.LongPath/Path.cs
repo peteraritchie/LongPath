@@ -12,10 +12,12 @@ namespace Pri.LongPath
 		public static readonly char[] InvalidPathChars = System.IO.Path.GetInvalidPathChars();
 		private static readonly char[] invalidFileNameChars = System.IO.Path.GetInvalidFileNameChars();
 		internal const string LongPathPrefix = @"\\?\";
+		internal const string LongPathUNCPrefix = @"\\?\UNC\";
 
 		public static readonly char DirectorySeparatorChar = System.IO.Path.DirectorySeparatorChar;
 		public static readonly char AltDirectorySeparatorChar = System.IO.Path.AltDirectorySeparatorChar;
 		public static readonly char VolumeSeparatorChar = ':';
+	    public static readonly string SharePrefix = new string(DirectorySeparatorChar, 2);
 
 		public readonly static char PathSeparator = System.IO.Path.PathSeparator;
 
@@ -83,12 +85,16 @@ namespace Pri.LongPath
 
 		internal static string RemoveLongPathPrefix(string normalizedPath)
 		{
-			return normalizedPath.Substring(LongPathPrefix.Length);
+		    return normalizedPath.StartsWith(LongPathUNCPrefix)
+		        ? SharePrefix + normalizedPath.Substring(LongPathUNCPrefix.Length)
+		        : normalizedPath.Substring(LongPathPrefix.Length);
 		}
 
 		private static string AddLongPathPrefix(string path)
 		{
-			return LongPathPrefix + path;
+			return path.StartsWith(SharePrefix)
+                ? LongPathUNCPrefix + path.Substring(2)
+                : LongPathPrefix + path;
 		}
 
 		public static string Combine(string path1, string path2)

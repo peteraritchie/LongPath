@@ -688,16 +688,15 @@ namespace Pri.LongPath
 
 			List<string> list = new List<string>();
 
-			bool flag;
 			if (length > rootLength)
 			{
 				for (int index = length - 1; index >= rootLength; --index)
 				{
 					string subPath = fullPath.Substring(0, index + 1);
-					if (!Exists(subPath))
-						list.Add(Path.NormalizeLongPath(subPath));
-					else
-						flag = true;
+				    if (!Exists(subPath))
+				        list.Add(Path.NormalizeLongPath(subPath));
+				    else
+				        break;
 					while (index > rootLength && fullPath[index] != System.IO.Path.DirectorySeparatorChar &&
 						   fullPath[index] != System.IO.Path.AltDirectorySeparatorChar)
 						--index;
