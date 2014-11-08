@@ -74,7 +74,7 @@ namespace Pri.LongPath
 			{
 				System.IO.FileAttributes attributes;
 				int errorCode = TryGetFileAttributes(normalizedPath, out attributes);
-				if (errorCode == 0)
+				if (errorCode == 0 && (int)attributes != NativeMethods.INVALID_FILE_ATTRIBUTES)
 				{
 					isDirectory = Directory.IsDirectory(attributes);
 					return true;
