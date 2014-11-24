@@ -19,6 +19,7 @@ namespace Tests
 	{
 		private static string rootTestDir;
 		private static string longPathDirectory;
+		private static string longPathUncDirectory;
 		private static string longPathFilename;
 		private const string Filename = "filename.ext";
 
@@ -29,6 +30,7 @@ namespace Tests
 			longPathDirectory = Util.MakeLongPath(rootTestDir);
 			Directory.CreateDirectory(longPathDirectory);
 			Debug.Assert(Directory.Exists(longPathDirectory));
+			longPathUncDirectory = Util.MakeLongUncPath(PathTests.UncShare);
 			longPathFilename = new StringBuilder(longPathDirectory).Append(@"\").Append(Filename).ToString();
 			using (var writer = File.CreateText(longPathFilename))
 			{
@@ -52,6 +54,13 @@ namespace Tests
 		{
 			var actual = Directory.GetParent(Path.Combine(longPathDirectory, "system32"));
 			Assert.AreEqual(longPathDirectory, actual.FullName);
+		}
+
+		[TestMethod]
+		public void TestGetParentUnc()
+		{
+			var actual = Directory.GetParent(Path.Combine(longPathUncDirectory, "system32"));
+			Assert.AreEqual(longPathUncDirectory, actual.FullName);
 		}
 
 		/// <remarks>

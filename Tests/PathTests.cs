@@ -24,8 +24,11 @@ namespace Tests
 	{
 		private static string rootTestDir;
 		private static string longPathDirectory;
+		private static string longPathUncDirectory;
 		private static string longPathFilename;
+		private static string longPathUncFilename;
 		private const string Filename = "filename.ext";
+		internal const string UncShare = @"\\server\share";
 
 		[ClassInitialize]
 		public static void ClassInitialize(TestContext context)
@@ -40,12 +43,21 @@ namespace Tests
 				writer.WriteLine("test");
 			}
 			Debug.Assert(File.Exists(longPathFilename));
+		    longPathUncDirectory = Util.MakeLongUncPath(UncShare);
+			longPathUncFilename = new StringBuilder(longPathUncDirectory).Append(@"\").Append(Filename).ToString();
 		}
 
 		[TestMethod]
 		public void TestGetDirectoryNameAtRoot()
 		{
 			string path = @"c:\";
+			Assert.IsNull(Path.GetDirectoryName(path));
+		}
+
+		[TestMethod]
+		public void TestGetDirectoryNameAtRootUnc()
+		{
+			string path = UncShare;
 			Assert.IsNull(Path.GetDirectoryName(path));
 		}
 
@@ -67,6 +79,12 @@ namespace Tests
 		public void TestLongPathDirectoryName()
 		{
 			var x = Path.GetDirectoryName(@"C:\Vault Data\w\M\Access Midstream\9305 Hopeton Stabilizer Upgrades\08  COMMUNICATION\8.1  Transmittals\9305-005 Access Midstream Hopeton - Electrical Panel Wiring dwgs\TM-9305-005-Access Midstream-Hopeton Stabilizer Upgrades-Electrical Panel Wiring-IFC Revised.msg");
+		}
+
+		[TestMethod]
+		public void TestLongPathDirectoryNameUnc()
+		{
+			var x = Path.GetDirectoryName( UncShare + @"\Vault Data\w\M\Access Midstream\9305 Hopeton Stabilizer Upgrades\08  COMMUNICATION\8.1  Transmittals\9305-005 Access Midstream Hopeton - Electrical Panel Wiring dwgs\TM-9305-005-Access Midstream-Hopeton Stabilizer Upgrades-Electrical Panel Wiring-IFC Revised.msg");
 		}
 
 		[TestMethod, ExpectedException(typeof(ArgumentException))]
@@ -115,7 +133,7 @@ namespace Tests
 		[TestMethod]
 		public void TestGetRootLengthWithUnc()
 		{
-			Assert.AreEqual(2, Path.GetRootLength(@"\\servername\sharename\dir\filename.exe"));
+			Assert.AreEqual(UncShare.Length, Path.GetRootLength(longPathUncFilename));
 		}
 
 		[TestMethod]
@@ -127,11 +145,27 @@ namespace Tests
 		}
 
 		[TestMethod]
+		public void TestGetExtensionUnc()
+		{
+			var tempLongPathFilename = Path.Combine(longPathUncDirectory, Path.GetRandomFileName());
+			Assert.AreEqual(tempLongPathFilename.Substring(tempLongPathFilename.Length - 4, 4),
+				Path.GetExtension(tempLongPathFilename));
+		}
+
+		[TestMethod]
 		public void TestGetPathRoot()
 		{
 			var root = Path.GetPathRoot(longPathDirectory);
 			Assert.IsNotNull(root);
 			Assert.AreEqual(3, root.Length);
+		}
+
+		[TestMethod]
+		public void TestGetPathRootUnc()
+		{
+			var root = Path.GetPathRoot(longPathUncDirectory);
+			Assert.IsNotNull(root);
+			Assert.AreEqual(UncShare.Length, root.Length);
 		}
 
 		[TestMethod]
@@ -147,6 +181,14 @@ namespace Tests
 			string result = Path.NormalizeLongPath(longPathDirectory);
 			Assert.IsNotNull(result);
 		}
+
+        [TestMethod]
+        public void TestNormalizeLongPathUnc()
+        {
+            string result = Path.NormalizeLongPath(longPathUncDirectory);
+            Assert.IsNotNull(result);
+            Assert.IsTrue(result.StartsWith(@"\\?\UNC\"));
+        }
 
 		[TestMethod, ExpectedException(typeof(ArgumentException))]
 		public void TestNormalizeLongPathWithJustUncPrefix()
@@ -170,12 +212,21 @@ namespace Tests
 		}
 
 		[TestMethod]
-		public void TestTryNormalizeLongPat()
+		public void TestTryNormalizeLongPath()
 		{
 			string path;
 			Assert.IsTrue(Path.TryNormalizeLongPath(longPathDirectory, out path));
 			Assert.IsNotNull(path);
 		}
+
+        [TestMethod]
+        public void TestTryNormalizeLongPathUnc()
+        {
+            string path;
+            Assert.IsTrue(Path.TryNormalizeLongPath(longPathUncDirectory, out path));
+            Assert.IsNotNull(path);
+            Assert.IsTrue(path.StartsWith(@"\\?\UNC\"));
+        }
 
 		[TestMethod]
 		public void TestNormalizeLongPathWithEmptyPath()
@@ -209,6 +260,14 @@ namespace Tests
 		{
 			const string expected = @"c:\Windows\system32";
 			var actual = Path.Combine(@"c:\Windows", "system32");
+			Assert.AreEqual(expected, actual);
+		}
+
+		[TestMethod]
+		public void TestCombineUnc()
+		{
+			const string expected = @"\\server\share\Windows\system32";
+			var actual = Path.Combine(@"\\server\share\Windows", "system32");
 			Assert.AreEqual(expected, actual);
 		}
 

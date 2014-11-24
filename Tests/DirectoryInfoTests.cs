@@ -27,6 +27,7 @@ namespace Tests
 	{
 		private static string rootTestDir;
 		private static string longPathDirectory;
+		private static string longPathUncDirectory;
 		private static string longPathFilename;
 		private const string Filename = "filename.ext";
 
@@ -37,6 +38,7 @@ namespace Tests
 			longPathDirectory = Util.MakeLongPath(rootTestDir);
 			Directory.CreateDirectory(longPathDirectory);
 			Debug.Assert(Directory.Exists(longPathDirectory));
+			longPathUncDirectory = Util.MakeLongUncPath(PathTests.UncShare);
 			longPathFilename = new StringBuilder(longPathDirectory).Append(@"\").Append(Filename).ToString();
 			using (var writer = File.CreateText(longPathFilename))
 			{
@@ -144,9 +146,26 @@ namespace Tests
 		}
 
 		[TestMethod]
+		public void TestParentUnc()
+		{
+			var di = new DirectoryInfo(longPathUncDirectory);
+			var parent = di.Parent;
+			Assert.IsNotNull(parent);
+			Assert.AreEqual(Path.GetDirectoryName(longPathUncDirectory), parent.FullName);
+		}
+
+		[TestMethod]
 		public void TestParentOnRoot()
 		{
 			var di = new DirectoryInfo(@"C:\");
+			var parent = di.Parent;
+			Assert.IsNull(parent);
+		}
+
+		[TestMethod]
+		public void TestParentOnRootUnc()
+		{
+			var di = new DirectoryInfo(PathTests.UncShare);
 			var parent = di.Parent;
 			Assert.IsNull(parent);
 		}
@@ -161,12 +180,30 @@ namespace Tests
 		}
 
 		[TestMethod]
+		public void TestParentPathEndingWithSlashUnc()
+		{
+			var di = new DirectoryInfo(longPathUncDirectory + @"\");
+			var parent = di.Parent;
+			Assert.IsNotNull(parent);
+			Assert.AreEqual(Path.GetDirectoryName(longPathUncDirectory), parent.FullName);
+		}
+
+		[TestMethod]
 		public void TestRoot()
 		{
 			var di = new DirectoryInfo(longPathDirectory);
 			var root = di.Root;
 			Assert.IsNotNull(root);
 			Assert.AreEqual(new System.IO.DirectoryInfo(rootTestDir).Root.FullName, root.FullName);
+		}
+
+		[TestMethod]
+		public void TestRootUnc()
+		{
+			var di = new DirectoryInfo(longPathUncDirectory);
+			var root = di.Root;
+			Assert.IsNotNull(root);
+			Assert.AreEqual(new System.IO.DirectoryInfo(PathTests.UncShare).Root.FullName, root.FullName);
 		}
 
 		[TestMethod]
@@ -654,6 +691,14 @@ namespace Tests
 		public void TestToString()
 		{
 			var fi = new DirectoryInfo(longPathDirectory);
+
+			Assert.AreEqual(fi.DisplayPath, fi.ToString());
+		}
+
+		[TestMethod]
+		public void TestToStringUnc()
+		{
+			var fi = new DirectoryInfo(longPathUncDirectory);
 
 			Assert.AreEqual(fi.DisplayPath, fi.ToString());
 		}

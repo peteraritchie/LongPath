@@ -92,12 +92,17 @@ namespace Pri.LongPath
 
 		private static string AddLongPathPrefix(string path)
 		{
-			return path.StartsWith(SharePrefix)
+			return IsUncPath(path)
                 ? LongPathUNCPrefix + path.Substring(2)
                 : LongPathPrefix + path;
 		}
 
-		public static string Combine(string path1, string path2)
+	    private static bool IsUncPath(string path)
+	    {
+	        return path.StartsWith(SharePrefix);
+	    }
+
+	    public static string Combine(string path1, string path2)
 		{
 			if (path1 == null || path2 == null)
 				throw new ArgumentNullException(path1 == null ? "path1" : "path2");
@@ -174,7 +179,7 @@ namespace Pri.LongPath
 			Path.CheckInvalidPathChars(path);
 			path = Path.RemoveLongPathPrefix(Path.NormalizeLongPath(path));
 
-			var rootLength = GetRootLength(path);
+		    var rootLength = GetRootLength(path);
 
 			if (path.Length <= rootLength) return null;
 			int length = path.Length;
@@ -187,33 +192,66 @@ namespace Pri.LongPath
 
 		internal static int GetRootLength(string path)
 		{
-			path = Path.GetFullPath(path);
-			Path.CheckInvalidPathChars(path);
-			int rootLength = 0;
-			int length = path.Length;
-			if (length >= 1 && IsDirectorySeparator(path[0]))
-			{
-				rootLength = 1;
-				if (length >= 2 && IsDirectorySeparator(path[1]))
-				{
-					rootLength = 2;
-					int num = 2;
-					while (rootLength >= length ||
-						   ((path[rootLength] == System.IO.Path.DirectorySeparatorChar ||
-							 path[rootLength] == System.IO.Path.AltDirectorySeparatorChar) && --num <= 0))
-						++rootLength;
-				}
-			}
-			else if (length >= 2 && path[1] == System.IO.Path.VolumeSeparatorChar)
-			{
-				rootLength = 2;
-				if (length >= 3 && IsDirectorySeparator(path[2]))
-					++rootLength;
-			}
-			return rootLength;
+            return IsUncPath(path) ? GetRootLengthUnc(path) : GetRootLengthLocal(path);
 		}
 
-		internal static bool IsDirectorySeparator(char c)
+	    private static int GetRootLengthLocal(string path)
+	    {
+	        path = Path.GetFullPath(path);
+	        Path.CheckInvalidPathChars(path);
+	        int rootLength = 0;
+	        int length = path.Length;
+	        if (length >= 1 && IsDirectorySeparator(path[0]))
+	        {
+	            rootLength = 1;
+	            if (length >= 2 && IsDirectorySeparator(path[1]))
+	            {
+	                rootLength = 2;
+	                int num = 2;
+	                while (rootLength >= length ||
+	                       ((path[rootLength] == System.IO.Path.DirectorySeparatorChar ||
+	                         path[rootLength] == System.IO.Path.AltDirectorySeparatorChar) && --num <= 0))
+	                    ++rootLength;
+	            }
+	        }
+	        else if (length >= 2 && path[1] == System.IO.Path.VolumeSeparatorChar)
+	        {
+	            rootLength = 2;
+	            if (length >= 3 && IsDirectorySeparator(path[2]))
+	                ++rootLength;
+	        }
+	        return rootLength;
+	    }
+
+	    internal static int GetRootLengthUnc(string path)
+		{
+		    path = Path.GetFullPath(path);
+		    Path.CheckInvalidPathChars(path);
+		    int length = path.Length;
+		    int rootLength = 2;
+
+            // Move through server part of share
+		    while (rootLength < length &&
+                   path[rootLength] != System.IO.Path.DirectorySeparatorChar &&
+                   path[rootLength] != System.IO.Path.AltDirectorySeparatorChar)
+		        ++rootLength;
+
+            // Move past separator(s)
+            while (rootLength < length &&
+                   (path[rootLength] == System.IO.Path.DirectorySeparatorChar ||
+                    path[rootLength] == System.IO.Path.AltDirectorySeparatorChar))
+                ++rootLength;
+
+            // Move through folder part of share
+            while (rootLength < length &&
+                   path[rootLength] != System.IO.Path.DirectorySeparatorChar &&
+                   path[rootLength] != System.IO.Path.AltDirectorySeparatorChar)
+                ++rootLength;
+
+		    return rootLength;
+		}
+
+	    internal static bool IsDirectorySeparator(char c)
 		{
 			return c == DirectorySeparatorChar || c == AltDirectorySeparatorChar;
 		}

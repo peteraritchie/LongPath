@@ -39,6 +39,26 @@ namespace Tests
 			return resultPath;
 		}
 
+		public static string MakeLongUncPath(string path)
+		{
+		    const int maxlen = 261;
+			NativeMethods.FileSystemFeature flags;
+			var componentText = Enumerable.Repeat("0123456789", (int) ((maxlen + 10)/10))
+				.Aggregate((c, n) => c + n)
+				.Substring(0, (int) maxlen);
+			Debug.Assert(componentText.Length == maxlen);
+			var directorySeparatorText = Path.DirectorySeparatorChar.ToString(CultureInfo.InvariantCulture);
+			var endsWith = path.EndsWith(directorySeparatorText);
+			var resultPath = new StringBuilder(path)
+				.Append(endsWith ? String.Empty : directorySeparatorText)
+				.Append(componentText)
+				.Append(Path.DirectorySeparatorChar)
+				.Append(componentText)
+				.ToString();
+			Debug.Assert(resultPath.Length > 260);
+			return resultPath;
+		}
+
 		public static string MakeLongComponent(string path)
 		{
 			var volname = new StringBuilder(261);
