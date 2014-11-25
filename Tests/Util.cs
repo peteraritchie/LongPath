@@ -42,7 +42,6 @@ namespace Tests
 		public static string MakeLongUncPath(string path)
 		{
 		    const int maxlen = 261;
-			NativeMethods.FileSystemFeature flags;
 			var componentText = Enumerable.Repeat("0123456789", (int) ((maxlen + 10)/10))
 				.Aggregate((c, n) => c + n)
 				.Substring(0, (int) maxlen);

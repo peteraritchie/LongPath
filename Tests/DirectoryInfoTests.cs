@@ -56,7 +56,7 @@ namespace Tests
 		[TestMethod]
 		public void TestExistsNonexistentParentDirectory()
 		{
-			var fi = new FileInfo(@"C:\w");
+			var fi = new FileInfo(@"C:\w\y");
 
 			Assert.IsFalse(fi.Directory.Exists);
 		}

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.IO;
 using System.Runtime.InteropServices;
 using System.Runtime.Serialization;
 
@@ -240,6 +241,19 @@ namespace Pri.LongPath
 				fileSizeHigh = findData.nFileSizeHigh;
 				fileSizeLow = findData.nFileSizeLow;
 			}
+
+			internal void From(NativeMethods.WIN32_FILE_ATTRIBUTE_DATA attributeData)
+			{
+				fileAttributes = attributeData.fileAttributes;
+				ftCreationTime.dwHighDateTime = attributeData.ftCreationTimeHigh;
+				ftCreationTime.dwLowDateTime = attributeData.ftCreationTimeLow;
+				ftLastAccessTime.dwHighDateTime = attributeData.ftLastAccessTimeHigh;
+				ftLastAccessTime.dwLowDateTime = attributeData.ftLastAccessTimeLow;
+				ftLastWriteTime.dwHighDateTime = attributeData.ftLastWriteTimeHigh;
+				ftLastWriteTime.dwLowDateTime = attributeData.ftLastWriteTimeLow;
+				fileSizeHigh = attributeData.fileSizeHigh;
+				fileSizeLow = attributeData.fileSizeLow;
+			}
 		}
 
 		public virtual void GetObjectData(SerializationInfo info, StreamingContext context)
@@ -252,6 +266,44 @@ namespace Pri.LongPath
 		public void Refresh()
 		{
 			try
+			{
+				InternalRefresh(false);
+			}
+			catch (DirectoryNotFoundException)
+			{
+				state = State.Error;
+				errorCode = NativeMethods.ERROR_PATH_NOT_FOUND;
+			}
+			catch (Exception)
+			{
+				if (state != State.Error)
+					Common.ThrowIOError(Marshal.GetLastWin32Error(), string.Empty);
+			}
+		}
+
+		private void InternalRefresh(bool isRetry)
+		{
+			if (!isRetry)
+			{
+				var attributes = new NativeMethods.WIN32_FILE_ATTRIBUTE_DATA();
+				if (NativeMethods.GetFileAttributesEx(Path.NormalizeLongPath(FullPath), 0, ref attributes))
+				{
+					data.From(attributes);
+					state = State.Initialized;
+				}
+				else
+				{
+					state = State.Error;
+					errorCode = Marshal.GetLastWin32Error();
+					if (errorCode != NativeMethods.ERROR_FILE_NOT_FOUND &&
+						errorCode != NativeMethods.ERROR_PATH_NOT_FOUND &&
+						errorCode != NativeMethods.ERROR_NOT_READY)
+					{
+						InternalRefresh(true);
+					}
+				}
+			}
+			else
 			{
 				NativeMethods.WIN32_FIND_DATA findData;
 				using (var handle = Directory.BeginFind(Path.NormalizeLongPath(FullPath), out findData))
@@ -267,16 +319,6 @@ namespace Pri.LongPath
 						state = State.Initialized;
 					}
 				}
-			}
-			catch (DirectoryNotFoundException)
-			{
-				state = State.Error;
-				errorCode = NativeMethods.ERROR_PATH_NOT_FOUND;
-			}
-			catch (Exception)
-			{
-				if (state != State.Error)
-					Common.ThrowIOError(Marshal.GetLastWin32Error(), string.Empty);
 			}
 		}
 

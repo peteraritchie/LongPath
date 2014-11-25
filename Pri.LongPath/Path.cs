@@ -17,7 +17,7 @@ namespace Pri.LongPath
 		public static readonly char DirectorySeparatorChar = System.IO.Path.DirectorySeparatorChar;
 		public static readonly char AltDirectorySeparatorChar = System.IO.Path.AltDirectorySeparatorChar;
 		public static readonly char VolumeSeparatorChar = ':';
-	    public static readonly string SharePrefix = new string(DirectorySeparatorChar, 2);
+		internal static readonly string SharePrefix = new string(DirectorySeparatorChar, 2);
 
 		public readonly static char PathSeparator = System.IO.Path.PathSeparator;
 
