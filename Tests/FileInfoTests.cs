@@ -27,7 +27,9 @@ namespace Tests
 	{
 		private static string rootTestDir;
 		private static string longPathDirectory;
+		private static string longPathUncDirectory;
 		private static string longPathFilename;
+		private static string longPathUncFilename;
 		private const string Filename = "filename.ext";
 
 		[ClassInitialize]
@@ -43,6 +45,8 @@ namespace Tests
 				writer.WriteLine("test");
 			}
 			Debug.Assert(File.Exists(longPathFilename));
+			longPathUncDirectory = Util.MakeLongPath(rootTestDir);
+			longPathUncFilename = new StringBuilder(longPathUncDirectory).Append(@"\").Append(Filename).ToString();
 		}
 
 		[TestMethod]
@@ -637,6 +641,14 @@ namespace Tests
 		public void TestToString()
 		{
 			var fi = new FileInfo(longPathFilename);
+
+			Assert.AreEqual(fi.DisplayPath, fi.ToString());
+		}
+
+		[TestMethod]
+		public void TestToStringUnc()
+		{
+			var fi = new FileInfo(longPathUncFilename);
 
 			Assert.AreEqual(fi.DisplayPath, fi.ToString());
 		}

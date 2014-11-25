@@ -69,17 +69,17 @@ namespace Pri.LongPath
 		{
 			internal System.IO.FileAttributes fileAttributes;
 
-			internal uint ftCreationTimeLow;
+			internal int ftCreationTimeLow;
 
-			internal uint ftCreationTimeHigh;
+			internal int ftCreationTimeHigh;
 
-			internal uint ftLastAccessTimeLow;
+			internal int ftLastAccessTimeLow;
 
-			internal uint ftLastAccessTimeHigh;
+			internal int ftLastAccessTimeHigh;
 
-			internal uint ftLastWriteTimeLow;
+			internal int ftLastWriteTimeLow;
 
-			internal uint ftLastWriteTimeHigh;
+			internal int ftLastWriteTimeHigh;
 
 			internal int fileSizeHigh;
 
@@ -87,12 +87,12 @@ namespace Pri.LongPath
 			public void PopulateFrom(NativeMethods.WIN32_FIND_DATA findData)
 			{
 				fileAttributes = findData.dwFileAttributes;
-				ftCreationTimeLow = (uint)findData.ftCreationTime.dwLowDateTime;
-				ftCreationTimeHigh = (uint)findData.ftCreationTime.dwHighDateTime;
-				ftLastAccessTimeLow = (uint)findData.ftLastAccessTime.dwLowDateTime;
-				ftLastAccessTimeHigh = (uint)findData.ftLastAccessTime.dwHighDateTime;
-				ftLastWriteTimeLow = (uint)findData.ftLastWriteTime.dwLowDateTime;
-				ftLastWriteTimeHigh = (uint)findData.ftLastWriteTime.dwHighDateTime;
+				ftCreationTimeLow = findData.ftCreationTime.dwLowDateTime;
+				ftCreationTimeHigh = findData.ftCreationTime.dwHighDateTime;
+				ftLastAccessTimeLow = findData.ftLastAccessTime.dwLowDateTime;
+				ftLastAccessTimeHigh = findData.ftLastAccessTime.dwHighDateTime;
+				ftLastWriteTimeLow = findData.ftLastWriteTime.dwLowDateTime;
+				ftLastWriteTimeHigh = findData.ftLastWriteTime.dwHighDateTime;
 				fileSizeHigh = findData.nFileSizeHigh;
 				fileSizeLow = findData.nFileSizeLow;
 			}
@@ -118,6 +118,11 @@ namespace Pri.LongPath
 		internal static int MakeHRFromErrorCode(int errorCode)
 		{
 			return unchecked((int)0x80070000 | errorCode);
+		}
+
+		internal static int MakeErrorCodeFromHR(int hr)
+		{
+			return unchecked((int)0x80070000 ^ hr);
 		}
 
 		[DllImport("kernel32.dll", SetLastError = true, CharSet = CharSet.Unicode)]
