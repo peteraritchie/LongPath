@@ -575,7 +575,7 @@ namespace Pri.LongPath
 							System.Diagnostics.Debug.Assert(Exists(fullPath));
 							System.Diagnostics.Debug.Assert(Exists(Path.RemoveLongPathPrefix(fullNormalizedPath)));
 							if (IsCurrentOrParentDirectory(findData.cFileName)) continue;
-							//pendingDirectories.Enqueue(fullNormalizedPath);
+
 							if (includeDirectories)
 							{
 								yield return fullPath;
