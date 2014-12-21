@@ -137,7 +137,7 @@ namespace Tests
 		}
 
 		[TestMethod]
-		public void TestRecursiveEnumerateDirectoriesWithSearch()
+		public void TestRecursiveEnumerateDirectoriesWithAllSearch()
 		{
 			var randomFileName = Path.GetRandomFileName();
 			var tempLongPathFilename = Path.Combine(longPathDirectory, randomFileName);
@@ -151,6 +151,47 @@ namespace Tests
 			finally
 			{
 				Directory.Delete(tempLongPathFilename);
+			}
+		}
+
+		[TestMethod]
+		public void TestRecursiveEnumerateDirectoriesWithSingleSubsetSearch()
+		{
+			var randomFileName = "TestRecursiveEnumerateDirectoriesWithSubsetSearch";
+			var tempLongPathFilename = Path.Combine(longPathDirectory, randomFileName);
+			Directory.CreateDirectory(tempLongPathFilename);
+			try
+			{
+				var dirs = Directory.EnumerateDirectories(longPathDirectory, "T*", SearchOption.AllDirectories).ToArray();
+				Assert.AreEqual(1, dirs.Length);
+				Assert.IsTrue(dirs.Contains(tempLongPathFilename));
+			}
+			finally
+			{
+				Directory.Delete(tempLongPathFilename);
+			}
+		}
+
+		[TestMethod]
+		public void TestRecursiveEnumerateDirectoriesWithMultipleSubsetSearch()
+		{
+			var randomFileName = "TestRecursiveEnumerateDirectoriesWithMultipleSubsetSearch";
+			var tempLongPathFilename = Path.Combine(longPathDirectory, randomFileName);
+			Directory.CreateDirectory(tempLongPathFilename);
+			randomFileName = "ATestRecursiveEnumerateDirectoriesWithMultipleSubsetSearch";
+			var tempLongPathFilename2 = Path.Combine(longPathDirectory, randomFileName);
+			Directory.CreateDirectory(tempLongPathFilename2);
+			try
+			{
+				var dirs = Directory.EnumerateDirectories(longPathDirectory, "T*", SearchOption.AllDirectories).ToArray();
+				Assert.AreEqual(1, dirs.Length);
+				Assert.IsTrue(dirs.Contains(tempLongPathFilename));
+				Assert.IsFalse(dirs.Contains(tempLongPathFilename2));
+			}
+			finally
+			{
+				Directory.Delete(tempLongPathFilename);
+				Directory.Delete(tempLongPathFilename2);
 			}
 		}
 
@@ -338,9 +379,57 @@ namespace Tests
 		}
 
 		[TestMethod]
-		public void TestGetDirectoriesWithSearch()
+		public void TestGetDirectoriesWithAnySearch()
 		{
-			Assert.AreEqual(0, Directory.GetDirectories(longPathDirectory, "*").Count());
+			var tempLongPathFilename = Path.Combine(longPathDirectory, "TestGetDirectoriesWithAnySearch");
+			Directory.CreateDirectory(tempLongPathFilename);
+			var tempLongPathFilename2 = Path.Combine(longPathDirectory, "ATestGetDirectoriesWithAnySearch");
+			Directory.CreateDirectory(tempLongPathFilename2);
+			try
+			{
+				Assert.AreEqual(2, Directory.GetDirectories(longPathDirectory, "*").Count());
+			}
+			finally
+			{
+				Directory.Delete(tempLongPathFilename);
+				Directory.Delete(tempLongPathFilename2);
+			}
+		}
+
+		[TestMethod]
+		public void TestGetDirectoriesWithSubsetSearch()
+		{
+			var tempLongPathFilename = Path.Combine(longPathDirectory, "TestGetDirectoriesWithSubsetSearch");
+			Directory.CreateDirectory(tempLongPathFilename);
+			var tempLongPathFilename2 = Path.Combine(longPathDirectory, "ATestGetDirectoriesWithSubsetSearch");
+			Directory.CreateDirectory(tempLongPathFilename2);
+			try
+			{
+				Assert.AreEqual(1, Directory.GetDirectories(longPathDirectory, "A*").Count());
+			}
+			finally
+			{
+				Directory.Delete(tempLongPathFilename);
+				Directory.Delete(tempLongPathFilename2);
+			}
+		}
+
+		[TestMethod]
+		public void TestGetRecursiveDirectoriesWithSubsetSearch()
+		{
+			var tempLongPathFilename = Path.Combine(longPathDirectory, "TestGetRecursiveDirectoriesWithSubsetSearch");
+			Directory.CreateDirectory(tempLongPathFilename);
+			var tempLongPathFilename2 = Path.Combine(tempLongPathFilename, "ATestGetRecursiveDirectoriesWithSubsetSearch");
+			Directory.CreateDirectory(tempLongPathFilename2);
+			try
+			{
+				Assert.AreEqual(1, Directory.GetDirectories(longPathDirectory, "A*", System.IO.SearchOption.AllDirectories).Count());
+			}
+			finally
+			{
+				Directory.Delete(tempLongPathFilename2);
+				Directory.Delete(tempLongPathFilename);
+			}
 		}
 
 		[TestMethod]
