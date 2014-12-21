@@ -62,13 +62,13 @@
     <Compile Include="Util.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Pri.LongPath\Pri.LongPath.csproj">
-      <Project>{DF1F23CA-9DC6-4604-8400-6C4B656E0F5D}</Project>
-      <Name>Pri.LongPath</Name>
-    </ProjectReference>
+    <None Include="tests.runsettings" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="tests.runsettings" />
+    <ProjectReference Include="..\Pri.LongPath.net40\Pri.LongPath.net40.csproj">
+      <Project>{0d02a959-5b75-4492-ba65-2005eb5a12cc}</Project>
+      <Name>Pri.LongPath.net40</Name>
+    </ProjectReference>
   </ItemGroup>
   <Choose>
     <When Condition="'$(VisualStudioVersion)' == '10.0' And '$(IsCodedUITest)' == 'True'">

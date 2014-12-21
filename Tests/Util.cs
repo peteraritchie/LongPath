@@ -76,7 +76,16 @@ namespace Tests
 
 		public static string CreateNewEmptyFile(string longPathDirectory)
 		{
-			var tempLongPathFilename = new StringBuilder(longPathDirectory).Append(@"\").Append(Path.GetRandomFileName()).ToString();
+			var tempLongPathFilename = new StringBuilder(longPathDirectory).Append(Path.DirectorySeparatorChar).Append(Path.GetRandomFileName()).ToString();
+			using (File.Create(tempLongPathFilename))
+			{
+			}
+			return tempLongPathFilename;
+		}
+
+		public static string CreateNewEmptyFile(string longPathDirectory, string filename)
+		{
+			var tempLongPathFilename = new StringBuilder(longPathDirectory).Append(Path.DirectorySeparatorChar).Append(filename).ToString();
 			using (File.Create(tempLongPathFilename))
 			{
 			}

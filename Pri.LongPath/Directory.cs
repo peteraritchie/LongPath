@@ -19,18 +19,14 @@ namespace Pri.LongPath
 	{
 		internal static SafeFileHandle GetDirectoryHandle(string normalizedPath)
 		{
-			SafeFileHandle handle = NativeMethods.CreateFile(normalizedPath,
+			var handle = NativeMethods.CreateFile(normalizedPath,
 				NativeMethods.EFileAccess.GenericWrite,
 				(uint)(FileShare.Write | FileShare.Delete),
 				IntPtr.Zero, (int)FileMode.Open, NativeMethods.FILE_FLAG_BACKUP_SEMANTICS, IntPtr.Zero);
-			if (handle.IsInvalid)
-			{
-				Exception ex = Common.GetExceptionFromLastWin32Error();
-				Console.WriteLine("error {0} with {1}\n{2}", ex.Message, normalizedPath, ex.StackTrace);
-				throw ex;
-			}
-
-			return handle;
+			if (!handle.IsInvalid) return handle;
+			var ex = Common.GetExceptionFromLastWin32Error();
+			Console.WriteLine("error {0} with {1}\n{2}", ex.Message, normalizedPath, ex.StackTrace);
+			throw ex;
 		}
 #if EXTRAS
 		public static void SetAttributes(string path, System.IO.FileAttributes fileAttributes)
@@ -105,12 +101,12 @@ namespace Pri.LongPath
 		///     the drive-defined maximum length. For example, on Windows-based
 		///     platforms, components must not exceed 255 characters.
 		/// </exception>
-		/// <exception cref="PathTooLongException">
+		/// <exception cref="System.IO.PathTooLongException">
 		///     <paramref name="path"/> exceeds the system-defined maximum length.
 		///     For example, on Windows-based platforms, paths must not exceed
 		///     32,000 characters.
 		/// </exception>
-		/// <exception cref="DirectoryNotFoundException">
+		/// <exception cref="System.IO.DirectoryNotFoundException">
 		///     <paramref name="path"/> could not be found.
 		/// </exception>
 		/// <exception cref="UnauthorizedAccessException">
@@ -120,7 +116,7 @@ namespace Pri.LongPath
 		///     </para>
 		///     <paramref name="path"/> refers to a directory that is read-only.
 		/// </exception>
-		/// <exception cref="IOException">
+		/// <exception cref="System.IO.IOException">
 		///     <paramref name="path"/> is a file.
 		///     <para>
 		///         -or-
@@ -137,7 +133,7 @@ namespace Pri.LongPath
 		/// </exception>
 		public static void Delete(string path)
 		{
-			string normalizedPath = Path.NormalizeLongPath(path);
+			var normalizedPath = Path.NormalizeLongPath(path);
 
 			if (!NativeMethods.RemoveDirectory(normalizedPath))
 			{
@@ -165,12 +161,7 @@ namespace Pri.LongPath
 		public static bool Exists(string path)
 		{
 			bool isDirectory;
-			if (Common.Exists(path, out isDirectory))
-			{
-				return isDirectory;
-			}
-
-			return false;
+			return Common.Exists(path, out isDirectory) && isDirectory;
 		}
 
 		/// <summary>
@@ -196,19 +187,19 @@ namespace Pri.LongPath
 		///     the drive-defined maximum length. For example, on Windows-based
 		///     platforms, components must not exceed 255 characters.
 		/// </exception>
-		/// <exception cref="PathTooLongException">
+		/// <exception cref="System.IO.PathTooLongException">
 		///     <paramref name="path"/> exceeds the system-defined maximum length.
 		///     For example, on Windows-based platforms, paths must not exceed
 		///     32,000 characters.
 		/// </exception>
-		/// <exception cref="DirectoryNotFoundException">
+		/// <exception cref="System.IO.DirectoryNotFoundException">
 		///     <paramref name="path"/> contains one or more directories that could not be
 		///     found.
 		/// </exception>
 		/// <exception cref="UnauthorizedAccessException">
 		///     The caller does not have the required access permissions.
 		/// </exception>
-		/// <exception cref="IOException">
+		/// <exception cref="System.IO.IOException">
 		///     <paramref name="path"/> is a file.
 		///     <para>
 		///         -or-
@@ -217,7 +208,7 @@ namespace Pri.LongPath
 		/// </exception>
 		public static IEnumerable<string> EnumerateDirectories(string path)
 		{
-			return EnumerateDirectories(path, (string)null);
+			return EnumerateDirectories(path, null);
 		}
 
 		/// <summary>
@@ -250,19 +241,19 @@ namespace Pri.LongPath
 		///     the drive-defined maximum length. For example, on Windows-based
 		///     platforms, components must not exceed 255 characters.
 		/// </exception>
-		/// <exception cref="PathTooLongException">
+		/// <exception cref="System.IO.PathTooLongException">
 		///     <paramref name="path"/> exceeds the system-defined maximum length.
 		///     For example, on Windows-based platforms, paths must not exceed
 		///     32,000 characters.
 		/// </exception>
-		/// <exception cref="DirectoryNotFoundException">
+		/// <exception cref="System.IO.DirectoryNotFoundException">
 		///     <paramref name="path"/> contains one or more directories that could not be
 		///     found.
 		/// </exception>
 		/// <exception cref="UnauthorizedAccessException">
 		///     The caller does not have the required access permissions.
 		/// </exception>
-		/// <exception cref="IOException">
+		/// <exception cref="System.IO.IOException">
 		///     <paramref name="path"/> is a file.
 		///     <para>
 		///         -or-
@@ -302,19 +293,19 @@ namespace Pri.LongPath
 		///     the drive-defined maximum length. For example, on Windows-based
 		///     platforms, components must not exceed 255 characters.
 		/// </exception>
-		/// <exception cref="PathTooLongException">
+		/// <exception cref="System.IO.PathTooLongException">
 		///     <paramref name="path"/> exceeds the system-defined maximum length.
 		///     For example, on Windows-based platforms, paths must not exceed
 		///     32,000 characters.
 		/// </exception>
-		/// <exception cref="DirectoryNotFoundException">
+		/// <exception cref="System.IO.DirectoryNotFoundException">
 		///     <paramref name="path"/> contains one or more directories that could not be
 		///     found.
 		/// </exception>
 		/// <exception cref="UnauthorizedAccessException">
 		///     The caller does not have the required access permissions.
 		/// </exception>
-		/// <exception cref="IOException">
+		/// <exception cref="System.IO.IOException">
 		///     <paramref name="path"/> is a file.
 		///     <para>
 		///         -or-
@@ -323,7 +314,7 @@ namespace Pri.LongPath
 		/// </exception>
 		public static IEnumerable<string> EnumerateFiles(string path)
 		{
-			return EnumerateFiles(path, (string)null);
+			return EnumerateFiles(path, null);
 		}
 
 		/// <summary>
@@ -356,19 +347,19 @@ namespace Pri.LongPath
 		///     the drive-defined maximum length. For example, on Windows-based
 		///     platforms, components must not exceed 255 characters.
 		/// </exception>
-		/// <exception cref="PathTooLongException">
+		/// <exception cref="System.IO.PathTooLongException">
 		///     <paramref name="path"/> exceeds the system-defined maximum length.
 		///     For example, on Windows-based platforms, paths must not exceed
 		///     32,000 characters.
 		/// </exception>
-		/// <exception cref="DirectoryNotFoundException">
+		/// <exception cref="System.IO.DirectoryNotFoundException">
 		///     <paramref name="path"/> contains one or more directories that could not be
 		///     found.
 		/// </exception>
 		/// <exception cref="UnauthorizedAccessException">
 		///     The caller does not have the required access permissions.
 		/// </exception>
-		/// <exception cref="IOException">
+		/// <exception cref="System.IO.IOException">
 		///     <paramref name="path"/> is a file.
 		///     <para>
 		///         -or-
@@ -409,19 +400,19 @@ namespace Pri.LongPath
 		///     the drive-defined maximum length. For example, on Windows-based
 		///     platforms, components must not exceed 255 characters.
 		/// </exception>
-		/// <exception cref="PathTooLongException">
+		/// <exception cref="System.IO.PathTooLongException">
 		///     <paramref name="path"/> exceeds the system-defined maximum length.
 		///     For example, on Windows-based platforms, paths must not exceed
 		///     32,000 characters.
 		/// </exception>
-		/// <exception cref="DirectoryNotFoundException">
+		/// <exception cref="System.IO.DirectoryNotFoundException">
 		///     <paramref name="path"/> contains one or more directories that could not be
 		///     found.
 		/// </exception>
 		/// <exception cref="UnauthorizedAccessException">
 		///     The caller does not have the required access permissions.
 		/// </exception>
-		/// <exception cref="IOException">
+		/// <exception cref="System.IO.IOException">
 		///     <paramref name="path"/> is a file.
 		///     <para>
 		///         -or-
@@ -430,7 +421,7 @@ namespace Pri.LongPath
 		/// </exception>
 		public static IEnumerable<string> EnumerateFileSystemEntries(string path)
 		{
-			return EnumerateFileSystemEntries(path, (string)null);
+			return EnumerateFileSystemEntries(path, null);
 		}
 
 		/// <summary>
@@ -463,19 +454,19 @@ namespace Pri.LongPath
 		///     the drive-defined maximum length. For example, on Windows-based
 		///     platforms, components must not exceed 255 characters.
 		/// </exception>
-		/// <exception cref="PathTooLongException">
+		/// <exception cref="System.IO.PathTooLongException">
 		///     <paramref name="path"/> exceeds the system-defined maximum length.
 		///     For example, on Windows-based platforms, paths must not exceed
 		///     32,000 characters.
 		/// </exception>
-		/// <exception cref="DirectoryNotFoundException">
+		/// <exception cref="System.IO.DirectoryNotFoundException">
 		///     <paramref name="path"/> contains one or more directories that could not be
 		///     found.
 		/// </exception>
 		/// <exception cref="UnauthorizedAccessException">
 		///     The caller does not have the required access permissions.
 		/// </exception>
-		/// <exception cref="IOException">
+		/// <exception cref="System.IO.IOException">
 		///     <paramref name="path"/> is a file.
 		///     <para>
 		///         -or-
@@ -494,12 +485,18 @@ namespace Pri.LongPath
 
 		private static IEnumerable<string> EnumerateFileSystemEntries(string path, string searchPattern, bool includeDirectories, bool includeFiles, System.IO.SearchOption option)
 		{
-			string normalizedSearchPattern = Common.NormalizeSearchPattern(searchPattern);
-			string normalizedPath = Path.NormalizeLongPath(path);
+			var normalizedSearchPattern = Common.NormalizeSearchPattern(searchPattern);
+			var normalizedPath = Path.NormalizeLongPath(path);
 
+			return EnumerateNormalizedFileSystemEntries(includeDirectories, includeFiles, option, normalizedPath, normalizedSearchPattern);
+		}
+
+		private static IEnumerable<string> EnumerateNormalizedFileSystemEntries(bool includeDirectories, bool includeFiles,
+			SearchOption option, string normalizedPath, string normalizedSearchPattern)
+		{
 			// First check whether the specified path refers to a directory and exists
 			System.IO.FileAttributes attributes;
-			int errorCode = Common.TryGetDirectoryAttributes(normalizedPath, out attributes);
+			var errorCode = Common.TryGetDirectoryAttributes(normalizedPath, out attributes);
 			if (errorCode != 0)
 			{
 				throw Common.GetExceptionFromWin32Error(errorCode);
@@ -516,35 +513,33 @@ namespace Pri.LongPath
 		{
 			// NOTE: Any exceptions thrown from this method are thrown on a call to IEnumerator<string>.MoveNext()
 
-			string path = Path.RemoveLongPathPrefix(normalizedPath);
+			var path = Path.RemoveLongPathPrefix(normalizedPath);
 
 			NativeMethods.WIN32_FIND_DATA findData;
-			using (SafeFindHandle handle = BeginFind(Path.Combine(normalizedPath, normalizedSearchPattern), out findData))
+			using (var handle = BeginFind(Path.Combine(normalizedPath, normalizedSearchPattern), out findData))
 			{
 				if (handle == null)
 					yield break;
 
 				do
 				{
-					string currentFileName = findData.cFileName;
-
 					if (IsDirectory(findData.dwFileAttributes))
 					{
-						if (includeDirectories && !IsCurrentOrParentDirectory(currentFileName))
+						if (includeDirectories && !IsCurrentOrParentDirectory(findData.cFileName))
 						{
-							yield return Path.Combine(path, currentFileName);
+							yield return Path.Combine(path, findData.cFileName);
 						}
 					}
 					else
 					{
 						if (includeFiles)
 						{
-							yield return Path.Combine(path, currentFileName);
+							yield return Path.Combine(path, findData.cFileName);
 						}
 					}
 				} while (NativeMethods.FindNextFile(handle, out findData));
 
-				int errorCode = Marshal.GetLastWin32Error();
+				var errorCode = Marshal.GetLastWin32Error();
 				if (errorCode != NativeMethods.ERROR_NO_MORE_FILES)
 					throw Common.GetExceptionFromWin32Error(errorCode);
 			}
@@ -553,69 +548,66 @@ namespace Pri.LongPath
 		private static IEnumerable<string> EnumerateFileSystemIteratorRecursive(string normalizedPath, string normalizedSearchPattern, bool includeDirectories, bool includeFiles)
 		{
 			// NOTE: Any exceptions thrown from this method are thrown on a call to IEnumerator<string>.MoveNext()
-			var pending = new Queue<string>();
-			pending.Enqueue(normalizedPath);
-			while (pending.Count > 0)
+			var pendingDirectories = new Queue<string>();
+			pendingDirectories.Enqueue(normalizedPath);
+			while (pendingDirectories.Count > 0)
 			{
-				normalizedPath = pending.Dequeue();
-				string path = Path.RemoveLongPathPrefix(normalizedPath);
+				normalizedPath = pendingDirectories.Dequeue();
+				// get all subdirs to recurse in the next iteration
+				foreach (var subdir in EnumerateNormalizedFileSystemEntries(true, false, System.IO.SearchOption.TopDirectoryOnly, normalizedPath, "*"))
+				{
+					pendingDirectories.Enqueue(Path.NormalizeLongPath(subdir));
+				}
 
+				var path = Path.RemoveLongPathPrefix(normalizedPath);
 				NativeMethods.WIN32_FIND_DATA findData;
-				using (SafeFindHandle handle = BeginFind(Path.Combine(normalizedPath, normalizedSearchPattern), out findData))
+				using (var handle = BeginFind(Path.Combine(normalizedPath, normalizedSearchPattern), out findData))
 				{
 					if (handle == null)
-						yield break;
+						continue;
 
 					do
 					{
-						string currentFileName = findData.cFileName;
-
-						var fullPath = Path.Combine(path, currentFileName);
+						var fullPath = Path.Combine(path, findData.cFileName);
 						if (IsDirectory(findData.dwFileAttributes))
 						{
-							var fullNormalizedPath = Path.Combine(normalizedPath, currentFileName);
-							System.Diagnostics.Debug.Assert(Directory.Exists(fullPath));
-							System.Diagnostics.Debug.Assert(Directory.Exists(Path.RemoveLongPathPrefix(fullNormalizedPath)));
-							if (!IsCurrentOrParentDirectory(currentFileName))
-							{
-								pending.Enqueue(fullNormalizedPath);
-								if (includeDirectories)
-								{
-									yield return fullPath;
-								}
-							}
-						}
-						else
-						{
-							if (includeFiles)
+							var fullNormalizedPath = Path.Combine(normalizedPath, findData.cFileName);
+							System.Diagnostics.Debug.Assert(Exists(fullPath));
+							System.Diagnostics.Debug.Assert(Exists(Path.RemoveLongPathPrefix(fullNormalizedPath)));
+							if (IsCurrentOrParentDirectory(findData.cFileName)) continue;
+							//pendingDirectories.Enqueue(fullNormalizedPath);
+							if (includeDirectories)
 							{
 								yield return fullPath;
 							}
 						}
+						else if (includeFiles)
+						{
+							yield return fullPath;
+						}
 					} while (NativeMethods.FindNextFile(handle, out findData));
 
-					int errorCode = Marshal.GetLastWin32Error();
+					var errorCode = Marshal.GetLastWin32Error();
 					if (errorCode != NativeMethods.ERROR_NO_MORE_FILES)
 						throw Common.GetExceptionFromWin32Error(errorCode);
 				}
 			}
 		}
 
-		internal static SafeFindHandle BeginFind(string normalizedPathWithSearchPattern, out NativeMethods.WIN32_FIND_DATA findData)
+		internal static SafeFindHandle BeginFind(string normalizedPathWithSearchPattern,
+			out NativeMethods.WIN32_FIND_DATA findData)
 		{
-			SafeFindHandle handle = NativeMethods.FindFirstFile(normalizedPathWithSearchPattern, out findData);
-			if (handle.IsInvalid)
+			var handle = NativeMethods.FindFirstFile(normalizedPathWithSearchPattern, out findData);
+			if (!handle.IsInvalid) return handle;
+			var errorCode = Marshal.GetLastWin32Error();
+			if (errorCode != NativeMethods.ERROR_FILE_NOT_FOUND &&
+			    errorCode != NativeMethods.ERROR_PATH_NOT_FOUND &&
+			    errorCode != NativeMethods.ERROR_NOT_READY)
 			{
-				int errorCode = Marshal.GetLastWin32Error();
-				if (errorCode != NativeMethods.ERROR_FILE_NOT_FOUND &&
-								errorCode != NativeMethods.ERROR_PATH_NOT_FOUND &&
-								errorCode != NativeMethods.ERROR_NOT_READY)
-					throw Common.GetExceptionFromWin32Error(errorCode);
-
-				return null;
+				throw Common.GetExceptionFromWin32Error(errorCode);
 			}
 
-			return handle;
+			return null;
 		}
 
 		internal static bool IsDirectory(System.IO.FileAttributes attributes)
@@ -653,19 +645,19 @@ namespace Pri.LongPath
 		///     the drive-defined maximum length. For example, on Windows-based
 		///     platforms, components must not exceed 255 characters.
 		/// </exception>
-		/// <exception cref="PathTooLongException">
+		/// <exception cref="System.IO.PathTooLongException">
 		///     <paramref name="path"/> exceeds the system-defined maximum length.
 		///     For example, on Windows-based platforms, paths must not exceed
 		///     32,000 characters.
 		/// </exception>
-		/// <exception cref="DirectoryNotFoundException">
+		/// <exception cref="System.IO.DirectoryNotFoundException">
 		///     <paramref name="path"/> contains one or more directories that could not be
 		///     found.
 		/// </exception>
 		/// <exception cref="UnauthorizedAccessException">
 		///     The caller does not have the required access permissions.
 		/// </exception>
-		/// <exception cref="IOException">
+		/// <exception cref="System.IO.IOException">
 		///     <paramref name="path"/> is a file.
 		///     <para>
 		///         -or-
@@ -678,46 +670,43 @@ namespace Pri.LongPath
 		/// </remarks>
 		public static DirectoryInfo CreateDirectory(string path)
 		{
-			string normalizedPath = Path.NormalizeLongPath(path);
-			string fullPath = Path.RemoveLongPathPrefix(normalizedPath);
+			var normalizedPath = Path.NormalizeLongPath(path);
+			var fullPath = Path.RemoveLongPathPrefix(normalizedPath);
 
-			int length = fullPath.Length;
+			var length = fullPath.Length;
 			if (length >= 2 && Path.IsDirectorySeparator(fullPath[length - 1]))
 				--length;
-			int rootLength = Path.GetRootLength(fullPath);
 
-			List<string> list = new List<string>();
+			var rootLength = Path.GetRootLength(fullPath);
 
-			bool flag;
+			var pathComponents = new List<string>();
+
 			if (length > rootLength)
 			{
-				for (int index = length - 1; index >= rootLength; --index)
+				for (var index = length - 1; index >= rootLength; --index)
 				{
-					string subPath = fullPath.Substring(0, index + 1);
+					var subPath = fullPath.Substring(0, index + 1);
 					if (!Exists(subPath))
-						list.Add(Path.NormalizeLongPath(subPath));
-					else
-						flag = true;
+						pathComponents.Add(Path.NormalizeLongPath(subPath));
 					while (index > rootLength && fullPath[index] != System.IO.Path.DirectorySeparatorChar &&
 						   fullPath[index] != System.IO.Path.AltDirectorySeparatorChar)
 						--index;
 				}
 			}
-			while (list.Count > 0)
+			while (pathComponents.Count > 0)
 			{
-				string str = list[list.Count - 1];
-				list.RemoveAt(list.Count - 1);
+				var str = pathComponents[pathComponents.Count - 1];
+				pathComponents.RemoveAt(pathComponents.Count - 1);
 
-				if (!NativeMethods.CreateDirectory(str, IntPtr.Zero))
-				{
-					// To mimic Directory.CreateDirectory, we don't throw if the directory (not a file) already exists
-					int errorCode = Marshal.GetLastWin32Error();
-					// PR: Not sure this is even possible, we check for existance above.
-					//if (errorCode != NativeMethods.ERROR_ALREADY_EXISTS || !Exists(path))
-					//{
-						throw Common.GetExceptionFromWin32Error(errorCode);
-					//}
-				}
+				if (NativeMethods.CreateDirectory(str, IntPtr.Zero)) continue;
+
+				// To mimic Directory.CreateDirectory, we don't throw if the directory (not a file) already exists
+				var errorCode = Marshal.GetLastWin32Error();
+				// PR: Not sure this is even possible, we check for existance above.
+				//if (errorCode != NativeMethods.ERROR_ALREADY_EXISTS || !Exists(path))
+				//{
+				throw Common.GetExceptionFromWin32Error(errorCode);
+				//}
 			}
 			return new DirectoryInfo(fullPath);
 		}
@@ -736,15 +725,13 @@ namespace Pri.LongPath
 		{
 			var normalizedPath = Path.NormalizeLongPath(Path.GetFullPath(path));
 
-			using (SafeFileHandle handle = GetDirectoryHandle(normalizedPath))
+			using (var handle = GetDirectoryHandle(normalizedPath))
 			{
 				var fileTime = new NativeMethods.FILE_TIME(creationTimeUtc.ToFileTimeUtc());
-				bool r = NativeMethods.SetFileTime(handle, &fileTime, null, null);
-				if (!r)
-				{
-					int errorCode = Marshal.GetLastWin32Error();
-					Common.ThrowIOError(errorCode, path);
-				}
+				var r = NativeMethods.SetFileTime(handle, &fileTime, null, null);
+				if (r) return;
+				var errorCode = Marshal.GetLastWin32Error();
+				Common.ThrowIOError(errorCode, path);
 			}
 		}
 
@@ -755,12 +742,10 @@ namespace Pri.LongPath
 			using (SafeFileHandle handle = GetDirectoryHandle(normalizedPath))
 			{
 				var fileTime = new NativeMethods.FILE_TIME(lastWriteTimeUtc.ToFileTimeUtc());
-				bool r = NativeMethods.SetFileTime(handle, null, null, &fileTime);
-				if (!r)
-				{
-					int errorCode = Marshal.GetLastWin32Error();
-					Common.ThrowIOError(errorCode, path);
-				}
+				var r = NativeMethods.SetFileTime(handle, null, null, &fileTime);
+				if (r) return;
+				var errorCode = Marshal.GetLastWin32Error();
+				Common.ThrowIOError(errorCode, path);
 			}
 		}
 
@@ -768,23 +753,20 @@ namespace Pri.LongPath
 		{
 			var normalizedPath = Path.NormalizeLongPath(Path.GetFullPath(path));
 
-			using (SafeFileHandle handle = GetDirectoryHandle(normalizedPath))
+			using (var handle = GetDirectoryHandle(normalizedPath))
 			{
 				var fileTime = new NativeMethods.FILE_TIME(lastWriteTimeUtc.ToFileTimeUtc());
-				bool r = NativeMethods.SetFileTime(handle, null, &fileTime, null);
-				if (!r)
-				{
-					int errorCode = Marshal.GetLastWin32Error();
-					Common.ThrowIOError(errorCode, path);
-				}
+				var r = NativeMethods.SetFileTime(handle, null, &fileTime, null);
+				if (r) return;
+				var errorCode = Marshal.GetLastWin32Error();
+				Common.ThrowIOError(errorCode, path);
 			}
 		}
 
 		public static DirectoryInfo GetParent(string path)
 		{
-			string directoryName = Path.GetDirectoryName(path);
-			if (directoryName == null) return null;
-			return new DirectoryInfo(directoryName);
+			var directoryName = Path.GetDirectoryName(path);
+			return directoryName == null ? null : new DirectoryInfo(directoryName);
 		}
 
 		public static DirectoryInfo CreateDirectory(String path, DirectorySecurity directorySecurity)
@@ -796,13 +778,13 @@ namespace Pri.LongPath
 
 		public static DirectorySecurity GetAccessControl(String path)
 		{
-			AccessControlSections includeSections = AccessControlSections.Access | AccessControlSections.Owner | AccessControlSections.Group;
+			const AccessControlSections includeSections = AccessControlSections.Access | AccessControlSections.Owner | AccessControlSections.Group;
 			return GetAccessControl(path, includeSections);
 		}
 
-		private static void ThrowIfError(int errorCode, IntPtr ByteArray)
+		private static void ThrowIfError(int errorCode, IntPtr byteArray)
 		{
-			if (errorCode == NativeMethods.ERROR_SUCCESS && IntPtr.Zero.Equals(ByteArray))
+			if (errorCode == NativeMethods.ERROR_SUCCESS && IntPtr.Zero.Equals(byteArray))
 			{
 				//
 				// This means that the object doesn't have a security descriptor. And thus we throw
@@ -810,13 +792,13 @@ namespace Pri.LongPath
 				//
 				throw new InvalidOperationException("Object does not have security descriptor,");
 			}
-			else if (errorCode == NativeMethods.ERROR_NOT_ALL_ASSIGNED ||
-						errorCode == NativeMethods.ERROR_PRIVILEGE_NOT_HELD)
+			if (errorCode == NativeMethods.ERROR_NOT_ALL_ASSIGNED ||
+			    errorCode == NativeMethods.ERROR_PRIVILEGE_NOT_HELD)
 			{
 				throw new PrivilegeNotHeldException("SeSecurityPrivilege");
 			}
-			else if (errorCode == NativeMethods.ERROR_ACCESS_DENIED ||
-				errorCode == NativeMethods.ERROR_CANT_OPEN_ANONYMOUS)
+			if (errorCode == NativeMethods.ERROR_ACCESS_DENIED ||
+			    errorCode == NativeMethods.ERROR_CANT_OPEN_ANONYMOUS)
 			{
 				throw new UnauthorizedAccessException();
 			}
@@ -829,30 +811,29 @@ namespace Pri.LongPath
 		public static DirectorySecurity GetAccessControl(String path, AccessControlSections includeSections)
 		{
 			var normalizedPath = Path.NormalizeLongPath(Path.GetFullPath(path));
-			IntPtr SidOwner, SidGroup, Dacl, Sacl, ByteArray;
-			SecurityInfos SecurityInfos =
-				Common.ToSecurityInfos(includeSections);
+			IntPtr sidOwner, sidGroup, dacl, sacl, byteArray;
+			var securityInfos = Common.ToSecurityInfos(includeSections);
 
-			int errorCode = (int)NativeMethods.GetSecurityInfoByName(normalizedPath,
+			var errorCode = (int)NativeMethods.GetSecurityInfoByName(normalizedPath,
 				(uint)ResourceType.FileObject,
-				(uint)SecurityInfos,
-				out SidOwner,
-				out SidGroup,
-				out Dacl,
-				out Sacl,
-				out ByteArray);
+				(uint)securityInfos,
+				out sidOwner,
+				out sidGroup,
+				out dacl,
+				out sacl,
+				out byteArray);
 
-			ThrowIfError(errorCode, ByteArray);
+			ThrowIfError(errorCode, byteArray);
 
-			uint Length = NativeMethods.GetSecurityDescriptorLength(ByteArray);
+			var length = NativeMethods.GetSecurityDescriptorLength(byteArray);
 
-			byte[] BinaryForm = new byte[Length];
+			var binaryForm = new byte[length];
 
-			Marshal.Copy(ByteArray, BinaryForm, 0, (int)Length);
+			Marshal.Copy(byteArray, binaryForm, 0, (int)length);
 
-			NativeMethods.LocalFree(ByteArray);
+			NativeMethods.LocalFree(byteArray);
 			var ds = new DirectorySecurity();
-			ds.SetSecurityDescriptorBinaryForm(BinaryForm);
+			ds.SetSecurityDescriptorBinaryForm(binaryForm);
 			return ds;
 		}
 
@@ -879,7 +860,7 @@ namespace Pri.LongPath
 
 		public static String GetDirectoryRoot(String path)
 		{
-			string fullPath = Path.GetFullPath(path);
+			var fullPath = Path.GetFullPath(path);
 			return fullPath.Substring(0, Path.GetRootLength(fullPath));
 		}
 
@@ -960,15 +941,13 @@ namespace Pri.LongPath
 			{
 				var normalizedPath = Path.NormalizeLongPath(Path.GetFullPath(path));
 
-				using (SafeFileHandle handle = GetDirectoryHandle(normalizedPath))
+				using (var handle = GetDirectoryHandle(normalizedPath))
 				{
 					var fileTime = new NativeMethods.FILE_TIME(lastWriteTimeUtc.ToFileTimeUtc());
-					bool r = NativeMethods.SetFileTime(handle, null, null, &fileTime);
-					if (!r)
-					{
-						int errorCode = Marshal.GetLastWin32Error();
-						Common.ThrowIOError(errorCode, path);
-					}
+					var r = NativeMethods.SetFileTime(handle, null, null, &fileTime);
+					if (r) return;
+					var errorCode = Marshal.GetLastWin32Error();
+					Common.ThrowIOError(errorCode, path);
 				}
 			}
 		}

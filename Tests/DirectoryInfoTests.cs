@@ -1140,7 +1140,7 @@ namespace Tests
 		}
 
 		[TestMethod]
-		public void TestGetRecursiveFilesWithSearch()
+		public void TestGetRecursiveFilesWithAllSearch()
 		{
 			var tempLongPathFilename = Path.Combine(longPathDirectory, Path.GetRandomFileName());
 			Directory.CreateDirectory(tempLongPathFilename);
@@ -1162,6 +1162,39 @@ namespace Tests
 				finally
 				{
 					File.Delete(newEmptyFile);
+				}
+			}
+			finally
+			{
+				const bool recursive = true;
+				Directory.Delete(tempLongPathFilename, recursive);
+			}
+		}
+
+		[TestMethod]
+		public void TestGetRecursiveFilesWithSubsetSearch()
+		{
+			var tempLongPathFilename = Path.Combine(longPathDirectory, Path.GetRandomFileName());
+			Directory.CreateDirectory(tempLongPathFilename);
+			try
+			{
+				Assert.IsTrue(Directory.Exists(tempLongPathFilename));
+				string newEmptyFile1 = Util.CreateNewEmptyFile(tempLongPathFilename, "A-file");
+				string newEmptyFile2 = Util.CreateNewEmptyFile(tempLongPathFilename, "B-file");
+				try
+				{
+					var randomFileName = Path.GetFileName(newEmptyFile1);
+
+					var di = new DirectoryInfo(longPathDirectory);
+					var files = di.GetFiles("A*", SearchOption.AllDirectories).ToArray();
+					Assert.AreEqual(2, files.Length);
+					Assert.IsTrue(files.Any(f => f.Name == Filename));
+					Assert.IsTrue(files.Any(f => f.Name == randomFileName));
+
+				}
+				finally
+				{
+					File.Delete(newEmptyFile1);
 				}
 			}
 			finally
