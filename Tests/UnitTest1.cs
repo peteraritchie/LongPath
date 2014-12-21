@@ -26,11 +26,13 @@ namespace Tests
 	public class UnitTest1
 	{
 		private static string longPathDirectory;
+		private static string longPathRoot;
 
 		[ClassInitialize]
 		public static void ClassInitialize(TestContext context)
 		{
 			longPathDirectory = Util.MakeLongPath(context.TestDir);
+			longPathRoot = longPathDirectory.Substring(0, context.TestDir.Length + 1 + longPathDirectory.Substring(context.TestDir.Length + 1).IndexOf('\\'));
 			Directory.CreateDirectory(longPathDirectory);
 			Debug.Assert(Directory.Exists(longPathDirectory));
 		}
@@ -194,7 +196,7 @@ namespace Tests
 		[ClassCleanup]
 		public static void ClassCleanup()
 		{
-			Directory.Delete(longPathDirectory, true);
+			Directory.Delete(longPathRoot, true);
 			Debug.Assert(!Directory.Exists(longPathDirectory));
 		}
 	}

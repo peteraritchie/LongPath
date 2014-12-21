@@ -28,6 +28,7 @@ namespace Tests
 		private static string rootTestDir;
 		private static string longPathDirectory;
 		private static string longPathFilename;
+		private static string longPathRoot;
 		private const string Filename = "filename.ext";
 
 		[ClassInitialize]
@@ -35,6 +36,7 @@ namespace Tests
 		{
 			rootTestDir = context.TestDir;
 			longPathDirectory = Util.MakeLongPath(rootTestDir);
+			longPathRoot = longPathDirectory.Substring(0, context.TestDir.Length + 1 + longPathDirectory.Substring(rootTestDir.Length + 1).IndexOf('\\'));
 			Directory.CreateDirectory(longPathDirectory);
 			Debug.Assert(Directory.Exists(longPathDirectory));
 			longPathFilename = new StringBuilder(longPathDirectory).Append(@"\").Append(Filename).ToString();
@@ -1424,7 +1426,7 @@ namespace Tests
 			}
 			finally
 			{
-				Directory.Delete(longPathDirectory, true);
+				Directory.Delete(longPathRoot, true);
 			}
 		}
 	}
