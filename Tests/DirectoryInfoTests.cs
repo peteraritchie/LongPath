@@ -1187,14 +1187,15 @@ namespace Tests
 
 					var di = new DirectoryInfo(longPathDirectory);
 					var files = di.GetFiles("A*", SearchOption.AllDirectories).ToArray();
-					Assert.AreEqual(2, files.Length);
-					Assert.IsTrue(files.Any(f => f.Name == Filename));
-					Assert.IsTrue(files.Any(f => f.Name == randomFileName));
-
+					Assert.AreEqual(1, files.Length);
+					Assert.IsTrue(files.Any(f => f.Name == Path.GetFileName(newEmptyFile1) && f.DirectoryName == Path.GetDirectoryName(newEmptyFile1)));
+					Assert.IsFalse(files.Any(f => f.Name == Path.GetFileName(newEmptyFile2) && f.DirectoryName == Path.GetDirectoryName(newEmptyFile2)));
+					Assert.IsFalse(files.Any(f => f.Name == Path.GetFileName(Filename) && f.DirectoryName == Path.GetDirectoryName(Filename)));
 				}
 				finally
 				{
 					File.Delete(newEmptyFile1);
+					File.Delete(newEmptyFile2);
 				}
 			}
 			finally
