@@ -490,6 +490,67 @@ namespace Tests
 			Directory.Delete(tempLongPathFilename2, recursive);
 		}
 
+		[TestMethod, ExpectedException(typeof(IOException))]
+		public void TestInUseMove()
+		{
+			const bool recursive = true;
+
+#if SHORT_SOURCE
+			var tempPathFilename1 = System.IO.Path.Combine(System.IO.Directory.GetCurrentDirectory(), System.IO.Path.GetRandomFileName());
+			System.IO.Directory.CreateDirectory(tempPathFilename1);
+			Assert.IsTrue(System.IO.Directory.Exists(Path.GetFullPath(tempPathFilename1)));
+			var tempPathFilename2 = System.IO.Path.Combine(System.IO.Directory.GetCurrentDirectory(), System.IO.Path.GetRandomFileName());
+			System.IO.Directory.CreateDirectory(tempPathFilename2);
+			Assert.IsTrue(System.IO.Directory.Exists(System.IO.Path.GetFullPath(tempPathFilename2)));
+			try
+			{
+				using (
+					var writer = System.IO.File.CreateText(System.IO.Path.Combine(tempPathFilename2, "TestInUseMove")))
+				{
+					string destinationPath =
+						System.IO.Path.GetFullPath(System.IO.Path.Combine(tempPathFilename1, System.IO.Path.GetFileName(tempPathFilename2)));
+					System.IO.Directory.Move(tempPathFilename2, destinationPath);
+					Assert.IsTrue(System.IO.Directory.Exists(System.IO.Path.GetFullPath(tempPathFilename1)));
+					Assert.IsFalse(System.IO.Directory.Exists(System.IO.Path.GetFullPath(tempPathFilename2)));
+					Assert.IsTrue(System.IO.Directory.Exists(destinationPath));
+				}
+			}
+			catch (Exception e)
+			{
+				throw;
+			}
+			finally
+			{
+				Directory.Delete(tempPathFilename1, recursive);
+				Directory.Delete(tempPathFilename2, recursive);
+			}
+#endif
+			var tempLongPathFilename1 = Path.Combine(longPathDirectory, Path.GetRandomFileName());
+			Directory.CreateDirectory(tempLongPathFilename1);
+			Assert.IsTrue(Directory.Exists(Path.GetFullPath(tempLongPathFilename1)));
+			var tempLongPathFilename2 = Path.Combine(longPathDirectory, Path.GetRandomFileName());
+			Directory.CreateDirectory(tempLongPathFilename2);
+			Assert.IsTrue(Directory.Exists(Path.GetFullPath(tempLongPathFilename2)));
+			try
+			{
+				using (
+					var writer = File.CreateText(Path.Combine(tempLongPathFilename2, "TestInUseMove")))
+				{
+					string destinationPath =
+						Path.GetFullPath(Path.Combine(tempLongPathFilename1, Path.GetFileName(tempLongPathFilename2)));
+					Directory.Move(tempLongPathFilename2, destinationPath);
+					Assert.IsTrue(Directory.Exists(Path.GetFullPath(tempLongPathFilename1)));
+					Assert.IsFalse(Directory.Exists(Path.GetFullPath(tempLongPathFilename2)));
+					Assert.IsTrue(Directory.Exists(destinationPath));
+				}
+			}
+			finally
+			{
+				Directory.Delete(tempLongPathFilename1, recursive);
+				Directory.Delete(tempLongPathFilename2, recursive);
+			}
+		}
+
 		[TestMethod]
 		public void TestGetAccessControl()
 		{

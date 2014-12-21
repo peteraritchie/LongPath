@@ -622,7 +622,15 @@ namespace Pri.LongPath
 
 		public static void Move(string sourcePath, string destinationPath)
 		{
-			File.Move(sourcePath, destinationPath);
+			string normalizedSourcePath = Path.NormalizeLongPath(sourcePath, "sourcePath");
+			string normalizedDestinationPath = Path.NormalizeLongPath(destinationPath, "destinationPath");
+
+			if (NativeMethods.MoveFile(normalizedSourcePath, normalizedDestinationPath)) return;
+
+			var lastWin32Error = Marshal.GetLastWin32Error();
+			if(lastWin32Error == NativeMethods.ERROR_ACCESS_DENIED)
+				throw new System.IO.IOException(string.Format("Access to the path '{0}'is denied.", sourcePath), NativeMethods.MakeHRFromErrorCode(lastWin32Error));
+			throw Common.GetExceptionFromWin32Error(lastWin32Error, "path");
 		}
 
 		/// <summary>
