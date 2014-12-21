@@ -65,6 +65,13 @@ namespace Tests
 			}
 		}
 
+		[TestMethod]
+		public void WhatHappensWithBclPathGetDiretoryNameAndRelatiePath()
+		{
+			var text = System.IO.Path.GetDirectoryName(@"foo\bar\baz");
+			Assert.AreEqual(@"foo\bar", text);
+		}
+
 		private string MemberToMethodString(MemberInfo member)
 		{
 			var method = member as MethodInfo;

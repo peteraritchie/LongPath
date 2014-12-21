@@ -552,6 +552,13 @@ namespace Tests
 		}
 
 		[TestMethod]
+		public void PathGetDirectoryNameReturnsSameResultAsBclForRelativePath()
+		{
+			var text = System.IO.Path.GetDirectoryName(@"foo\bar\baz");
+			Assert.AreEqual(@"foo\bar", text);
+		}
+
+		[TestMethod]
 		public void TestGetAccessControl()
 		{
 			var tempLongPathFilename = Path.Combine(longPathDirectory, Path.GetRandomFileName());
