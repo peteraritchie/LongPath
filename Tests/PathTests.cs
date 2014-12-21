@@ -55,6 +55,24 @@ namespace Tests
 			Path.GetDirectoryName(null);
 		}
 
+        [TestMethod]
+	    public void GetDirectoryNameOnRelativePath()
+        {
+            const string input = @"foo\bar\baz";
+            const string expected = @"foo\bar";
+            string actual = Path.GetDirectoryName(input);
+            Assert.AreEqual(expected, actual);
+        }
+
+        [TestMethod]
+        public void GetDirectoryNameOnRelativePathWithNoParent()
+        {
+            const string input = @"foo";
+            const string expected = @"";
+            string actual = Path.GetDirectoryName(input);
+            Assert.AreEqual(expected, actual);
+        }
+
 		[TestMethod]
 		public void TestGetParentAtRoot()
 		{
@@ -134,6 +152,14 @@ namespace Tests
 			Assert.AreEqual(3, root.Length);
 		}
 
+        [TestMethod]
+        public void TestGetPathRootWithRelativePath()
+        {
+            var root = Path.GetPathRoot(@"foo\bar\baz");
+            Assert.IsNotNull(root);
+            Assert.AreEqual(0, root.Length);
+        }
+
 		[TestMethod]
 		public void TestGetPathRootWithNullPath()
 		{
@@ -211,6 +237,14 @@ namespace Tests
 			var actual = Path.Combine(@"c:\Windows", "system32");
 			Assert.AreEqual(expected, actual);
 		}
+
+        [TestMethod]
+	    public void TestCombineRelativePaths()
+	    {
+	        const string expected = @"foo\bar\baz\test";
+            string actual = Path.Combine(@"foo\bar", @"baz\test");
+            Assert.AreEqual(expected, actual);
+	    }
 
 		[TestMethod, ExpectedException(typeof(ArgumentNullException))]
 		public void TestCombineWithNull()

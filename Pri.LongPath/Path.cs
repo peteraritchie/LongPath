@@ -166,17 +166,27 @@ namespace Pri.LongPath
 		{
 			if (path == null) throw new ArgumentNullException("path");
 			Path.CheckInvalidPathChars(path);
-			path = Path.RemoveLongPathPrefix(Path.NormalizeLongPath(path));
+		    string basePath = null;
+            if (!IsPathRooted(path))
+                basePath = System.IO.Directory.GetCurrentDirectory();
+		    path = Path.RemoveLongPathPrefix(Path.NormalizeLongPath(path));
 
-			var rootLength = GetRootLength(path);
-
-			if (path.Length <= rootLength) return null;
-			int length = path.Length;
+		    int rootLength = GetRootLength(path);
+		    
+            if (path.Length <= rootLength) return null;
+		    int length = path.Length;
 			do
 			{
 			} while (length > rootLength && path[--length] != System.IO.Path.DirectorySeparatorChar &&
 					 path[length] != System.IO.Path.AltDirectorySeparatorChar);
-			return path.Substring(0, length);
+		    if (basePath != null)
+		    {
+		        path = path.Substring(basePath.Length + 1);
+		        length = length - basePath.Length - 1;
+                if (length < 0)
+                    length = 0;
+		    }
+		    return path.Substring(0, length);
 		}
 
 		internal static int GetRootLength(string path)
@@ -230,8 +240,12 @@ namespace Pri.LongPath
 		public static string GetPathRoot(string path)
 		{
 			if (path == null) return null;
-			path = Path.RemoveLongPathPrefix(Path.NormalizeLongPath(path));
-			return path.Substring(0, GetRootLength(path));
+		    if (Path.IsPathRooted(path))
+		    {
+		        path = Path.RemoveLongPathPrefix(Path.NormalizeLongPath(path));
+		        return path.Substring(0, GetRootLength(path));
+		    }
+		    return string.Empty;
 		}
 
 		public static string GetExtension(string path)
