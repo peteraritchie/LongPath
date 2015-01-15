@@ -2,7 +2,7 @@
 <package >
   <metadata>
     <id>Pri.LongPath</id>
-    <version>1.2.2.0</version>
+    <version>1.3.1.0</version>
     <authors>Peter Ritchie</authors>
     <dependencies/>
     <owners>Peter Ritchie</owners>
@@ -10,7 +10,11 @@
     <projectUrl>https://github.com/peteraritchie/LongPath</projectUrl>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
     <description>Drop-in library to support long paths in .NET</description>
-    <releaseNotes>Fixed File.GetLastWriteTime and FileInfo.ToString to act more like System.IO</releaseNotes>
+    <releaseNotes>Fixed:
+Path.GetDirectoryName now returns values more simlar to the BCL.
+Directory.Move now returns IOException instead of UnauthorizedAccessException.
+Directory.Exists no longer returns true for directories that don't really exist.
+</releaseNotes>
     <copyright>Copyright 2014</copyright>
     <tags>long path</tags>
   </metadata>
