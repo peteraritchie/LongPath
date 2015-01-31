@@ -45,6 +45,12 @@ namespace Tests
 			Assert.IsTrue(Directory.Exists(longPathDirectory));
 		}
 
+		[TestMethod]
+		public void TestExistsOnFile()
+		{
+			Assert.IsFalse(Directory.Exists(new StringBuilder(longPathDirectory).Append(@"\").Append("does-not-exist").ToString()));
+		}
+
 		/// <remarks>
 		/// Tests Directory.GetParent,
 		/// depends on Directory.Combine, DirectoryInfo.FullName
