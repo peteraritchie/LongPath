@@ -1,4 +1,5 @@
 ﻿using System;
+using System.IO;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Security.AccessControl;
@@ -18,43 +19,43 @@ namespace Pri.LongPath
 		private static readonly uint UnprotectedDiscretionaryAcl = 0x20000000;
 		private static readonly uint UnprotectedSystemAcl = 0x10000000;
 
-		internal static void SetAttributes(string path, System.IO.FileAttributes fileAttributes)
+		internal static void SetAttributes(string path, FileAttributes fileAttributes)
 		{
 			string normalizedPath = Path.NormalizeLongPath(path);
 			if (!NativeMethods.SetFileAttributes(normalizedPath, fileAttributes))
 			{
-				throw Common.GetExceptionFromLastWin32Error();
+				throw GetExceptionFromLastWin32Error();
 			}
 		}
 
-		internal static System.IO.FileAttributes GetAttributes(string path)
+		internal static FileAttributes GetAttributes(string path)
 		{
 			string normalizedPath = Path.NormalizeLongPath(path);
-			System.IO.FileAttributes fileAttributes;
+			FileAttributes fileAttributes;
 
-			int errorCode = Common.TryGetDirectoryAttributes(normalizedPath, out fileAttributes);
-			if (errorCode != NativeMethods.ERROR_SUCCESS) throw Common.GetExceptionFromWin32Error(errorCode);
+			int errorCode = TryGetDirectoryAttributes(normalizedPath, out fileAttributes);
+			if (errorCode != NativeMethods.ERROR_SUCCESS) throw GetExceptionFromWin32Error(errorCode);
 
 			return fileAttributes;
 		}
 
-		internal static System.IO.FileAttributes GetAttributes(string path, out int errorCode)
+		internal static FileAttributes GetAttributes(string path, out int errorCode)
 		{
 			string normalizedPath = Path.NormalizeLongPath(path);
-			System.IO.FileAttributes fileAttributes = (System.IO.FileAttributes)(NativeMethods.INVALID_FILE_ATTRIBUTES);
+			FileAttributes fileAttributes = (FileAttributes)(NativeMethods.INVALID_FILE_ATTRIBUTES);
 
-			errorCode = Common.TryGetDirectoryAttributes(normalizedPath, out fileAttributes);
+			errorCode = TryGetDirectoryAttributes(normalizedPath, out fileAttributes);
 
 			return fileAttributes;
 		}
 
-		internal static System.IO.FileAttributes GetFileAttributes(string path)
+		internal static FileAttributes GetFileAttributes(string path)
 		{
 			string normalizedPath = Path.NormalizeLongPath(path);
-			System.IO.FileAttributes fileAttributes;
+			FileAttributes fileAttributes;
 
-			int errorCode = Common.TryGetFileAttributes(normalizedPath, out fileAttributes);
-			if (errorCode != NativeMethods.ERROR_SUCCESS) throw Common.GetExceptionFromWin32Error(errorCode);
+			int errorCode = TryGetFileAttributes(normalizedPath, out fileAttributes);
+			if (errorCode != NativeMethods.ERROR_SUCCESS) throw GetExceptionFromWin32Error(errorCode);
 
 			return fileAttributes;
 		}
@@ -69,10 +70,10 @@ namespace Pri.LongPath
 
 		internal static bool Exists(string path, out bool isDirectory)
 		{
-			string normalizedPath;
-			if (Path.TryNormalizeLongPath(path, out normalizedPath))
+			string normalizedPath = path;
+			if (PathIsUnc(path) || Path.TryNormalizeLongPath(path, out normalizedPath))
 			{
-				System.IO.FileAttributes attributes;
+				FileAttributes attributes;
 				int errorCode = TryGetFileAttributes(normalizedPath, out attributes);
 				if (errorCode == 0 && (int)attributes != NativeMethods.INVALID_FILE_ATTRIBUTES)
 				{
@@ -85,14 +86,14 @@ namespace Pri.LongPath
 			return false;
 		}
 
-		internal static int TryGetDirectoryAttributes(string normalizedPath, out System.IO.FileAttributes attributes)
+		internal static int TryGetDirectoryAttributes(string normalizedPath, out FileAttributes attributes)
 		{
 			int errorCode = TryGetFileAttributes(normalizedPath, out attributes);
 
 			return errorCode;
 		}
 
-		internal static int TryGetFileAttributes(string normalizedPath, out System.IO.FileAttributes attributes)
+		internal static int TryGetFileAttributes(string normalizedPath, out FileAttributes attributes)
 		{
 			NativeMethods.WIN32_FILE_ATTRIBUTE_DATA data = new NativeMethods.WIN32_FILE_ATTRIBUTE_DATA();
 
@@ -110,7 +111,7 @@ namespace Pri.LongPath
 
 			if (!success)
 			{
-				attributes = (System.IO.FileAttributes)NativeMethods.INVALID_FILE_ATTRIBUTES;
+				attributes = (FileAttributes)NativeMethods.INVALID_FILE_ATTRIBUTES;
 				return Marshal.GetLastWin32Error();
 			}
 
@@ -148,19 +149,19 @@ namespace Pri.LongPath
 			switch (errorCode)
 			{
 				case NativeMethods.ERROR_FILE_NOT_FOUND:
-					return new System.IO.FileNotFoundException(message);
+					return new FileNotFoundException(message);
 
 				case NativeMethods.ERROR_PATH_NOT_FOUND:
-					return new System.IO.DirectoryNotFoundException(message);
+					return new DirectoryNotFoundException(message);
 
 				case NativeMethods.ERROR_ACCESS_DENIED:
 					return new UnauthorizedAccessException(message);
 
 				case NativeMethods.ERROR_FILENAME_EXCED_RANGE:
-					return new System.IO.PathTooLongException(message);
+					return new PathTooLongException(message);
 
 				case NativeMethods.ERROR_INVALID_DRIVE:
-					return new System.IO.DriveNotFoundException(message);
+					return new DriveNotFoundException(message);
 
 				case NativeMethods.ERROR_OPERATION_ABORTED:
 					return new OperationCanceledException(message);
@@ -169,7 +170,7 @@ namespace Pri.LongPath
 					return new ArgumentException(message, parameterName);
 
 				default:
-					return new System.IO.IOException(message, NativeMethods.MakeHRFromErrorCode(errorCode));
+					return new IOException(message, NativeMethods.MakeHRFromErrorCode(errorCode));
 
 			}
 		}
@@ -195,52 +196,52 @@ namespace Pri.LongPath
 			{
 				case NativeMethods.ERROR_FILE_NOT_FOUND:
 					if (str.Length == 0)
-						throw new System.IO.FileNotFoundException("Empty filename");
+						throw new FileNotFoundException("Empty filename");
 					else
-						throw new System.IO.FileNotFoundException(string.Format("File {0} not found", str), str);
+						throw new FileNotFoundException(String.Format("File {0} not found", str), str);
 
 				case NativeMethods.ERROR_PATH_NOT_FOUND:
 					if (str.Length == 0)
-						throw new System.IO.DirectoryNotFoundException("Empty directory");
+						throw new DirectoryNotFoundException("Empty directory");
 					else
-						throw new System.IO.DirectoryNotFoundException(string.Format("Directory {0} not found", str));
+						throw new DirectoryNotFoundException(String.Format("Directory {0} not found", str));
 
 				case NativeMethods.ERROR_ACCESS_DENIED:
 					if (str.Length == 0)
 						throw new UnauthorizedAccessException("Empty path");
 					else
-						throw new UnauthorizedAccessException(string.Format("Access denied accessing {0}", str));
+						throw new UnauthorizedAccessException(String.Format("Access denied accessing {0}", str));
 
 				case NativeMethods.ERROR_ALREADY_EXISTS:
 					if (str.Length == 0)
 						goto default;
-					throw new System.IO.IOException(string.Format("File {0}", str), NativeMethods.MakeHRFromErrorCode(errorCode));
+					throw new IOException(String.Format("File {0}", str), NativeMethods.MakeHRFromErrorCode(errorCode));
 
 				case NativeMethods.ERROR_FILENAME_EXCED_RANGE:
-					throw new System.IO.PathTooLongException("Path too long");
+					throw new PathTooLongException("Path too long");
 
 				case NativeMethods.ERROR_INVALID_DRIVE:
-					throw new System.IO.DriveNotFoundException(string.Format("Drive {0} not found", str));
+					throw new DriveNotFoundException(String.Format("Drive {0} not found", str));
 
 				case NativeMethods.ERROR_INVALID_PARAMETER:
-					throw new System.IO.IOException(NativeMethods.GetMessage(errorCode), NativeMethods.MakeHRFromErrorCode(errorCode));
+					throw new IOException(NativeMethods.GetMessage(errorCode), NativeMethods.MakeHRFromErrorCode(errorCode));
 
 				case NativeMethods.ERROR_SHARING_VIOLATION:
 					if (str.Length == 0)
-						throw new System.IO.IOException("Sharing violation with empty filename", NativeMethods.MakeHRFromErrorCode(errorCode));
+						throw new IOException("Sharing violation with empty filename", NativeMethods.MakeHRFromErrorCode(errorCode));
 					else
-						throw new System.IO.IOException(String.Format("Sharing violation: {0}", str), NativeMethods.MakeHRFromErrorCode(errorCode));
+						throw new IOException(String.Format("Sharing violation: {0}", str), NativeMethods.MakeHRFromErrorCode(errorCode));
 
 				case NativeMethods.ERROR_FILE_EXISTS:
 					if (str.Length == 0)
 						goto default;
-					throw new System.IO.IOException(string.Format("File exists {0}", str), NativeMethods.MakeHRFromErrorCode(errorCode));
+					throw new IOException(String.Format("File exists {0}", str), NativeMethods.MakeHRFromErrorCode(errorCode));
 
 				case NativeMethods.ERROR_OPERATION_ABORTED:
 					throw new OperationCanceledException();
 
 				default:
-					throw new System.IO.IOException(NativeMethods.GetMessage(errorCode), NativeMethods.MakeHRFromErrorCode(errorCode));
+					throw new IOException(NativeMethods.GetMessage(errorCode), NativeMethods.MakeHRFromErrorCode(errorCode));
 			}
 		}
 
@@ -293,8 +294,8 @@ namespace Pri.LongPath
 
 			if ((includeSections & AccessControlSections.Group) != AccessControlSections.None)
 			{
-				group = (SecurityIdentifier)security.GetGroup(typeof(SecurityIdentifier));
-				if (group != null)
+				@group = (SecurityIdentifier)security.GetGroup(typeof(SecurityIdentifier));
+				if (@group != null)
 				{
 					securityInfo = securityInfo | SecurityInfos.Group;
 				}
@@ -344,10 +345,10 @@ namespace Pri.LongPath
 			}
 			if (securityInfo == 0) return;
 
-			int errorNum = SetSecurityInfo(ResourceType.FileObject, name, null, securityInfo, owner, group, sacl, dacl);
+			int errorNum = SetSecurityInfo(ResourceType.FileObject, name, null, securityInfo, owner, @group, sacl, dacl);
 			if (errorNum != 0)
 			{
-				Exception exception = Common.GetExceptionFromWin32Error(errorNum, name);
+				Exception exception = GetExceptionFromWin32Error(errorNum, name);
 				if (exception == null)
 				{
 					if (errorNum == NativeMethods.ERROR_ACCESS_DENIED)
@@ -421,11 +422,11 @@ namespace Pri.LongPath
 				owner.GetBinaryForm(OwnerBinary, 0);
 			}
 
-			if (group != null)
+			if (@group != null)
 			{
-				Length = group.BinaryLength;
+				Length = @group.BinaryLength;
 				GroupBinary = new byte[Length];
-				group.GetBinaryForm(GroupBinary, 0);
+				@group.GetBinaryForm(GroupBinary, 0);
 			}
 
 			if (dacl != null)
@@ -532,6 +533,12 @@ namespace Pri.LongPath
 			}
 
 			return errorCode;
+		}
+
+		public static bool PathIsUnc(string path)
+		{
+			var uri = new Uri(path);
+			return uri.IsUnc;
 		}
 	}
 }
