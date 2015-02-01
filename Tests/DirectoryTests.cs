@@ -810,7 +810,7 @@ namespace Tests
 		[TestMethod]
 		public void TestSetCreationTime()
 		{
-			var tempLongPathFilename = Path.Combine(rootTestDir, Path.GetRandomFileName());
+            var tempLongPathFilename = Path.Combine(longPathRoot, Path.GetRandomFileName());
 			Directory.CreateDirectory(tempLongPathFilename);
 			Assert.IsTrue(Directory.Exists(tempLongPathFilename));
 			try
