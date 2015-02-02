@@ -524,6 +524,8 @@ namespace Tests
 					File.Delete(tempLongPathFilename);
 				File.Delete(tempLongPathFilename2);
 				File.Delete(tempBackupLongPathFilename);
+				if(Directory.Exists(tempBackupPathName))
+					Directory.Delete(tempBackupPathName);
 			}
 		}
 
