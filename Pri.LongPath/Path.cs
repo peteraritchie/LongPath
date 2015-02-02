@@ -33,6 +33,7 @@ namespace Pri.LongPath
 			if (path.Length == 0)
 				throw new ArgumentException(String.Format(CultureInfo.CurrentCulture, "'{0}' cannot be an empty string.", parameterName), parameterName);
 
+			if (Common.IsPathUnc(path)) return path;
 			StringBuilder buffer = new StringBuilder(path.Length + 1); // Add 1 for NULL
 			uint length = NativeMethods.GetFullPathName(path, (uint)buffer.Capacity, buffer, IntPtr.Zero);
 			if (length > buffer.Capacity)
@@ -159,7 +160,7 @@ namespace Pri.LongPath
 
 		public static string GetFullPath(string path)
 		{
-			return Path.RemoveLongPathPrefix(Path.NormalizeLongPath(path));
+			return Common.IsPathUnc(path) ? path : Path.RemoveLongPathPrefix(Path.NormalizeLongPath(path));
 		}
 
 		public static string GetDirectoryName(string path)
@@ -169,7 +170,8 @@ namespace Pri.LongPath
 		    string basePath = null;
             if (!IsPathRooted(path))
                 basePath = System.IO.Directory.GetCurrentDirectory();
-		    path = Path.RemoveLongPathPrefix(Path.NormalizeLongPath(path));
+
+		    if(!Common.IsPathUnc(path)) path = Path.RemoveLongPathPrefix(Path.NormalizeLongPath(path));
 
 		    int rootLength = GetRootLength(path);
 		    
@@ -189,9 +191,17 @@ namespace Pri.LongPath
 		    return path.Substring(0, length);
 		}
 
+	    private static int GetUncRootLength(string path)
+        {
+            var components = path.Split(new[] { DirectorySeparatorChar }, StringSplitOptions.RemoveEmptyEntries);
+            var root = string.Format(@"\\{0}\{1}\", components[0], components[1]);
+	        return root.Length;
+        }
+
 		internal static int GetRootLength(string path)
 		{
-			path = Path.GetFullPath(path);
+			if (Common.IsPathUnc(path)) return GetUncRootLength(path);
+			path = Path	.GetFullPath(path);
 			Path.CheckInvalidPathChars(path);
 			int rootLength = 0;
 			int length = path.Length;
@@ -242,7 +252,8 @@ namespace Pri.LongPath
 			if (path == null) return null;
 		    if (Path.IsPathRooted(path))
 		    {
-		        path = Path.RemoveLongPathPrefix(Path.NormalizeLongPath(path));
+				if(!Common.IsPathUnc(path))
+					path = Path.RemoveLongPathPrefix(Path.NormalizeLongPath(path));
 		        return path.Substring(0, GetRootLength(path));
 		    }
 		    return string.Empty;

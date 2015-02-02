@@ -490,7 +490,7 @@ namespace Tests
 				}
 				try
 				{
-					Assert.AreEqual(2, di.EnumerateFileSystemInfos("*", SearchOption.TopDirectoryOnly).Count());
+					Assert.AreEqual(2, di.EnumerateFileSystemInfos("*").Count());
 				}
 				finally
 				{
@@ -517,7 +517,7 @@ namespace Tests
 				}
 				try
 				{
-					Assert.AreEqual(0, di.EnumerateFileSystemInfos("gibberish", SearchOption.TopDirectoryOnly).Count());
+					Assert.AreEqual(0, di.EnumerateFileSystemInfos("gibberish").Count());
 				}
 				finally
 				{

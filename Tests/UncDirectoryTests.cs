@@ -28,11 +28,48 @@ namespace Tests
 		[TestMethod]
 		public void BaselineDirectoryExists()
 		{
-			var fullPath = UncHelper.GetUncFromPath(".");
-			Assert.AreEqual(':', fullPath[1]);
-			var unc = string.Format(@"\\localhost\{0}$\{1}", fullPath[0], fullPath.Substring(3));
-			Assert.IsTrue(System.IO.Directory.Exists(unc));
+            Assert.IsTrue(System.IO.Directory.Exists(UncHelper.GetUncFromPath(".")));
 		}
+
+        [TestMethod]
+        public void BaselineTestCreateDirectory()
+        {
+            var tempPath = System.IO.Path.Combine(uncDirectory, Path.GetRandomFileName());
+            var di = System.IO.Directory.CreateDirectory(tempPath);
+            try
+            {
+                Assert.IsNotNull(di);
+                Assert.IsTrue(System.IO.Directory.Exists(tempPath));
+            }
+            finally
+            {
+                System.IO.Directory.Delete(tempPath);
+            }
+        }
+
+		[TestMethod]
+		public void BaselineGetParent()
+		{
+			var actual = System.IO.Directory.GetParent(System.IO.Path.Combine(uncDirectory, "system32"));
+			Assert.AreEqual(uncDirectory, actual.FullName);
+		}
+
+		[TestMethod]
+        public void BaselineTestCreateMultipleDirectories()
+        {
+	        string tempSubDir = System.IO.Path.Combine(uncDirectory, Path.GetRandomFileName());
+	        var tempSubSubDir = System.IO.Path.Combine(tempSubDir, Path.GetRandomFileName());
+            var di = System.IO.Directory.CreateDirectory(tempSubSubDir);
+            try
+            {
+                Assert.IsNotNull(di);
+                Assert.IsTrue(System.IO.Directory.Exists(tempSubSubDir));
+            }
+            finally
+            {
+                System.IO.Directory.Delete(tempSubDir, true);
+            }
+        }
 
         private static string uncDirectory;
         private static string uncFilePath;
@@ -50,7 +87,7 @@ namespace Tests
                 uncDirectory = UncHelper.GetUncFromPath(directory);
                 filePath = new StringBuilder(directory).Append(@"\").Append(Filename).ToString();
                 uncFilePath = UncHelper.GetUncFromPath(filePath);
-                using (var writer = File.CreateText(uncFilePath))
+                using (var writer = System.IO.File.CreateText(filePath))
                 {
                     writer.WriteLine("test");
                 }
@@ -143,17 +180,17 @@ namespace Tests
         public void TestEnumerateDirectories()
         {
             var randomFileName = Path.GetRandomFileName();
-            var tempLongPathFilename = Path.Combine(uncDirectory, randomFileName);
-            Directory.CreateDirectory(tempLongPathFilename);
+            var tempPath = Path.Combine(uncDirectory, randomFileName);
+            Directory.CreateDirectory(tempPath);
             try
             {
                 var dirs = Directory.EnumerateDirectories(uncDirectory).ToArray();
                 Assert.AreEqual(1, dirs.Length);
-                Assert.IsTrue(dirs.Contains(tempLongPathFilename));
+                Assert.IsTrue(dirs.Contains(tempPath));
             }
             finally
             {
-                Directory.Delete(tempLongPathFilename);
+                Directory.Delete(tempPath);
             }
         }
 
@@ -486,7 +523,7 @@ namespace Tests
         [TestMethod]
         public void TestGetDirectoryRoot()
         {
-            Assert.AreEqual(uncDirectory.Substring(0, 3), Directory.GetDirectoryRoot(uncDirectory));
+			Assert.IsTrue(@"\\localhost\C$\".Equals(Directory.GetDirectoryRoot(uncDirectory), StringComparison.InvariantCultureIgnoreCase));
         }
 
         [TestMethod]

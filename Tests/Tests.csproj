@@ -59,6 +59,7 @@
     <Compile Include="PathTests.cs" />
     <Compile Include="UncHelper.cs" />
     <Compile Include="UncDirectoryTests.cs" />
+    <Compile Include="UncPathTests.cs" />
     <Compile Include="UnitTest1.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Util.cs" />
@@ -67,9 +68,9 @@
     <None Include="tests.runsettings" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Pri.LongPath.net40\Pri.LongPath.net40.csproj">
-      <Project>{0d02a959-5b75-4492-ba65-2005eb5a12cc}</Project>
-      <Name>Pri.LongPath.net40</Name>
+    <ProjectReference Include="..\Pri.LongPath\Pri.LongPath.csproj">
+      <Project>{df1f23ca-9dc6-4604-8400-6c4b656e0f5d}</Project>
+      <Name>Pri.LongPath</Name>
     </ProjectReference>
   </ItemGroup>
   <Choose>

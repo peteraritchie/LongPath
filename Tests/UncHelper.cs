@@ -7,7 +7,7 @@ namespace Tests
         public static string GetUncFromPath(string path)
         {
             var fullPath = Path.GetFullPath(path);
-            return fullPath;
+            return string.Format(@"\\localhost\{0}$\{1}", fullPath[0], fullPath.Substring(3));
         }
     }
 }

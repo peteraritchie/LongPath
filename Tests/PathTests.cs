@@ -135,7 +135,7 @@ namespace Tests
 		[TestMethod]
 		public void TestGetRootLengthWithUnc()
 		{
-			Assert.AreEqual(2, Path.GetRootLength(@"\\servername\sharename\dir\filename.exe"));
+			Assert.AreEqual(23, Path.GetRootLength(@"\\servername\sharename\dir\filename.exe"));
 		}
 
 		[TestMethod]
