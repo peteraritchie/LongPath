@@ -57,6 +57,10 @@
     <Compile Include="FileTests.cs" />
     <Compile Include="NativeMethods.cs" />
     <Compile Include="PathTests.cs" />
+    <Compile Include="UncDirectoryInfoTests.cs" />
+    <Compile Include="UncFileInfoTests.cs" />
+    <Compile Include="UncFileSystemInfoTests.cs" />
+    <Compile Include="UncFileTests.cs" />
     <Compile Include="UncHelper.cs" />
     <Compile Include="UncDirectoryTests.cs" />
     <Compile Include="UncPathTests.cs" />

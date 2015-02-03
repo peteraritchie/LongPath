@@ -50,7 +50,7 @@ namespace Pri.LongPath
 			get
 			{
 				int rootLength = Path.GetRootLength(this.FullPath);
-				string str = this.FullPath.Substring(0, rootLength);
+				string str = this.FullPath.Substring(0, rootLength - (Common.IsPathUnc(FullPath) ? 1 : 0));
 				return new DirectoryInfo(str);
 			}
 		}
