@@ -254,7 +254,11 @@ namespace Pri.LongPath
 			try
 			{
 				NativeMethods.WIN32_FIND_DATA findData;
-				using (var handle = Directory.BeginFind(Path.NormalizeLongPath(FullPath), out findData))
+				// TODO: BeginFind fails on "\\?\c:\"
+
+				string normalizedPathWithSearchPattern = Path.NormalizeLongPath(new DirectoryInfo(FullPath).Parent == null ? Path.Combine(FullPath, "*") : FullPath);
+
+				using (var handle = Directory.BeginFind(normalizedPathWithSearchPattern, out findData))
 				{
 					if (handle == null)
 					{

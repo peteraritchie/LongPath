@@ -751,6 +751,13 @@ namespace Tests
 		}
 
 		[TestMethod]
+		public void TestLastWriteTimeOnRoot()
+		{
+			var di = new DirectoryInfo(@"c:\");
+			var ignore = di.LastWriteTime;
+		}
+
+		[TestMethod]
 		public void TestSetLastWriteTime()
 		{
 			var filename = Util.CreateNewFile(longPathDirectory);
