@@ -24,14 +24,20 @@ namespace Pri.LongPath
 				else if (array.Length == length)
 				{
 					T[] elementArray = new T[checked(length * 2)];
-					Array.Copy((Array)array, 0, (Array)elementArray, 0, length);
+					Array.Copy(array, 0, elementArray, 0, length);
 					array = elementArray;
 				}
 				array[length] = element;
 				++length;
 			}
-			return array;
+			return array ?? EmptyArrayCache<T>.Empty;
 		}
+
+        private static class EmptyArrayCache<T>
+	    {
+            // Used to avoid creating empty array instances unnecessarily
+	        public static readonly T[] Empty = new T[0];
+	    }
 
 		public static bool Contains<T>(this IEnumerable<T> source, T value)
 		{
