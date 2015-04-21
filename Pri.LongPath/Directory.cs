@@ -630,6 +630,7 @@ namespace Pri.LongPath
 		internal static SafeFindHandle BeginFind(string normalizedPathWithSearchPattern,
 			out NativeMethods.WIN32_FIND_DATA findData)
 		{
+			normalizedPathWithSearchPattern = normalizedPathWithSearchPattern.TrimEnd('\\');
 			var handle = NativeMethods.FindFirstFile(normalizedPathWithSearchPattern, out findData);
 			if (!handle.IsInvalid) return handle;
 			var errorCode = Marshal.GetLastWin32Error();

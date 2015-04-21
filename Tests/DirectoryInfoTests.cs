@@ -1419,6 +1419,13 @@ namespace Tests
 			}
 		}
 
+		[TestMethod]
+		public void TestGetLastWriteTimeUtcWithTrailingBackslashDoesNotThrow()
+		{
+			var di = new DirectoryInfo(longPathDirectory + Path.DirectorySeparatorChar);
+			var date = di.LastWriteTimeUtc;
+		}
+
 		[ClassCleanup]
 		public static void ClassCleanup()
 		{
