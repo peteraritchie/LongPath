@@ -12,6 +12,7 @@ namespace Pri.LongPath
 		public static readonly char[] InvalidPathChars = System.IO.Path.GetInvalidPathChars();
 		private static readonly char[] invalidFileNameChars = System.IO.Path.GetInvalidFileNameChars();
 		internal const string LongPathPrefix = @"\\?\";
+        internal const string UNCLongPathPrefix = @"\\?\UNC\";
 
 		public static readonly char DirectorySeparatorChar = System.IO.Path.DirectorySeparatorChar;
 		public static readonly char AltDirectorySeparatorChar = System.IO.Path.AltDirectorySeparatorChar;
@@ -33,7 +34,7 @@ namespace Pri.LongPath
 			if (path.Length == 0)
 				throw new ArgumentException(String.Format(CultureInfo.CurrentCulture, "'{0}' cannot be an empty string.", parameterName), parameterName);
 
-			if (Common.IsPathUnc(path)) return path;
+			if (Common.IsPathUnc(path)) return CheckAddLongPathPrefix(path);
 			StringBuilder buffer = new StringBuilder(path.Length + 1); // Add 1 for NULL
 			uint length = NativeMethods.GetFullPathName(path, (uint)buffer.Capacity, buffer, IntPtr.Zero);
 			if (length > buffer.Capacity)
@@ -82,13 +83,51 @@ namespace Pri.LongPath
 			return false;
 		}
 
+        internal static string CheckAddLongPathPrefix(string path)
+        {
+            if (string.IsNullOrEmpty(path) || path.StartsWith(@"\\?\"))
+            {
+                return path;
+            }
+
+            if (path.Length > NativeMethods.MAX_PATH)
+            {
+                return AddLongPathPrefix(path);
+            }
+
+            return path;
+        }
+
 		internal static string RemoveLongPathPrefix(string normalizedPath)
 		{
-			return normalizedPath.Substring(LongPathPrefix.Length);
+
+            if (string.IsNullOrEmpty(normalizedPath) || !normalizedPath.StartsWith(LongPathPrefix))
+            {
+                return normalizedPath;
+            }
+
+            if (normalizedPath.StartsWith(UNCLongPathPrefix, StringComparison.InvariantCultureIgnoreCase))
+            {
+                return string.Format(@"\\{0}", normalizedPath.Substring(UNCLongPathPrefix.Length));
+            }
+
+            return normalizedPath.Substring(LongPathPrefix.Length);
 		}
 
 		private static string AddLongPathPrefix(string path)
 		{
+            if (string.IsNullOrEmpty(path) || path.StartsWith(LongPathPrefix))
+            {
+                return path;
+            }
+
+            // http://msdn.microsoft.com/en-us/library/aa365247.aspx
+            if (path.StartsWith(@"\\"))
+            {
+                // UNC.
+                return UNCLongPathPrefix + path.Substring(2);
+            }
+
 			return LongPathPrefix + path;
 		}
 
@@ -155,7 +194,7 @@ namespace Pri.LongPath
 
 		public static string GetFileName(string path)
 		{
-			return System.IO.Path.GetFileName(path);
+			return System.IO.Path.GetFileName(Path.NormalizeLongPath(path));
 		}
 
 		public static string GetFullPath(string path)
@@ -171,8 +210,7 @@ namespace Pri.LongPath
             if (!IsPathRooted(path))
                 basePath = System.IO.Directory.GetCurrentDirectory();
 
-		    if(!Common.IsPathUnc(path)) path = Path.RemoveLongPathPrefix(Path.NormalizeLongPath(path));
-
+		    path = Path.RemoveLongPathPrefix(Path.NormalizeLongPath(path));
 		    int rootLength = GetRootLength(path);
 		    
             if (path.Length <= rootLength) return null;
