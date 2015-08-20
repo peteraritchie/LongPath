@@ -47,6 +47,32 @@ namespace Pri.LongPath
 
 		public static void Delete(string path, bool recursive)
 		{
+
+			#region FIX: support for directory reparse point
+
+			/* MSDN: https://msdn.microsoft.com/en-us/library/fxeahc5f.aspx
+			   The behavior of this method differs slightly when deleting a directory that contains a reparse point, 
+			   such as a symbolic link or a mount point. 
+			   (1) If the reparse point is a directory, such as a mount point, it is unmounted and the mount point is deleted. 
+			   This method does not recurse through the reparse point. 
+			   (2) If the reparse point is a symbolic link to a file, the reparse point is deleted and not the target of 
+			   the symbolic link.
+			*/
+
+			try 
+			{
+				var isDirectoryReparsePoint=(Common.GetAttributes(path) & (System.IO.FileAttributes.Directory | System.IO.FileAttributes.ReparsePoint)) != 0;
+				if (isDirectoryReparsePoint) {
+					Delete(path);
+					return;
+				}
+			}
+			catch (System.IO.FileNotFoundException) {
+				// ignore: not there when we try to delete, it doesn't matter
+			}
+
+			#endregion
+
 			try
 			{
 				foreach (var file in EnumerateFileSystemEntries(path, "*", false, true, System.IO.SearchOption.TopDirectoryOnly))
