@@ -73,6 +73,16 @@ namespace Pri.LongPath
 
 			#endregion
 
+			#region FIX: recursive=false
+
+			if (recursive == false) 
+			{
+				Delete(path);
+				return;
+			}
+
+			#endregion
+
 			try
 			{
 				foreach (var file in EnumerateFileSystemEntries(path, "*", false, true, System.IO.SearchOption.TopDirectoryOnly))
