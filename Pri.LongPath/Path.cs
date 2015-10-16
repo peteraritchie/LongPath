@@ -90,7 +90,7 @@ namespace Pri.LongPath
                 return path;
             }
 
-            if (path.Length > NativeMethods.MAX_PATH)
+            if (path.Length >= NativeMethods.MAX_PATH)
             {
                 return AddLongPathPrefix(path);
             }
