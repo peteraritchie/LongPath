@@ -71,7 +71,7 @@ namespace Pri.LongPath
 		internal static bool Exists(string path, out bool isDirectory)
 		{
 			string normalizedPath = path;
-			if (IsPathUnc(path) || Path.TryNormalizeLongPath(path, out normalizedPath))
+			if (Path.TryNormalizeLongPath(path, out normalizedPath) || IsPathUnc(path))
 			{
 				FileAttributes attributes;
 				int errorCode = TryGetFileAttributes(normalizedPath, out attributes);
@@ -538,7 +538,7 @@ namespace Pri.LongPath
 		public static bool IsPathUnc(string path)
 		{
 			Uri uri;
-			return Uri.TryCreate(path, UriKind.Absolute, out uri) && uri.IsUnc;
+			return (!string.IsNullOrEmpty(path) && path.StartsWith(Path.UNCLongPathPrefix, StringComparison.InvariantCultureIgnoreCase)) || (Uri.TryCreate(path, UriKind.Absolute, out uri) && uri.IsUnc);
 		}
 
 		public static bool IsPathDots(string path)

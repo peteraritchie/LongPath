@@ -21,8 +21,9 @@ namespace Tests
 			var fsname = new StringBuilder(261);
 			uint sernum, maxlen;
 			NativeMethods.FileSystemFeature flags;
-			NativeMethods.GetVolumeInformation(System.IO.Path.GetPathRoot(path), volname, volname.Capacity, out sernum, out maxlen, out flags, fsname,
-				fsname.Capacity);
+			if (!NativeMethods.GetVolumeInformation(System.IO.Path.GetPathRoot(path), volname, volname.Capacity, out sernum, out maxlen, out flags, fsname,
+				fsname.Capacity))
+            maxlen = 255;
 			var componentText = Enumerable.Repeat("0123456789", (int) ((maxlen + 10)/10))
 				.Aggregate((c, n) => c + n)
 				.Substring(0, (int) maxlen);
