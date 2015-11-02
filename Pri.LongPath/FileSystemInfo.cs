@@ -140,6 +140,58 @@ namespace Pri.LongPath
 			}
 		}
 
+		private static void ThrowLastWriteTimeUtcIOError(int errorCode, String maybeFullPath)
+		{
+			// This doesn't have to be perfect, but is a perf optimization.
+			bool isInvalidPath = errorCode == NativeMethods.ERROR_INVALID_NAME || errorCode == NativeMethods.ERROR_BAD_PATHNAME;
+			String str = isInvalidPath ? Path.GetFileName(maybeFullPath) : maybeFullPath;
+
+			switch (errorCode)
+			{
+				case NativeMethods.ERROR_FILE_NOT_FOUND:
+					break;
+
+				case NativeMethods.ERROR_PATH_NOT_FOUND:
+					break;
+
+				case NativeMethods.ERROR_ACCESS_DENIED:
+					if (str.Length == 0)
+						throw new UnauthorizedAccessException("Empty path");
+					else
+						throw new UnauthorizedAccessException(String.Format("Access denied accessing {0}", str));
+
+				case NativeMethods.ERROR_ALREADY_EXISTS:
+					if (str.Length == 0)
+						goto default;
+					throw new System.IO.IOException(String.Format("File {0}", str), NativeMethods.MakeHRFromErrorCode(errorCode));
+
+				case NativeMethods.ERROR_FILENAME_EXCED_RANGE:
+					throw new System.IO.PathTooLongException("Path too long");
+
+				case NativeMethods.ERROR_INVALID_DRIVE:
+					throw new System.IO.DriveNotFoundException(String.Format("Drive {0} not found", str));
+
+				case NativeMethods.ERROR_INVALID_PARAMETER:
+					throw new System.IO.IOException(NativeMethods.GetMessage(errorCode), NativeMethods.MakeHRFromErrorCode(errorCode));
+
+				case NativeMethods.ERROR_SHARING_VIOLATION:
+					if (str.Length == 0)
+						throw new System.IO.IOException("Sharing violation with empty filename", NativeMethods.MakeHRFromErrorCode(errorCode));
+					else
+						throw new System.IO.IOException(String.Format("Sharing violation: {0}", str), NativeMethods.MakeHRFromErrorCode(errorCode));
+
+				case NativeMethods.ERROR_FILE_EXISTS:
+					if (str.Length == 0)
+						goto default;
+					throw new System.IO.IOException(String.Format("File exists {0}", str), NativeMethods.MakeHRFromErrorCode(errorCode));
+
+				case NativeMethods.ERROR_OPERATION_ABORTED:
+					throw new OperationCanceledException();
+
+				default:
+					throw new System.IO.IOException(NativeMethods.GetMessage(errorCode), NativeMethods.MakeHRFromErrorCode(errorCode));
+			}
+		}
 		public DateTime LastWriteTimeUtc
 		{
 			get
@@ -149,7 +201,7 @@ namespace Pri.LongPath
 					Refresh();
 				}
 				if (state == State.Error)
-					Common.ThrowIOError(errorCode, FullPath);
+					ThrowLastWriteTimeUtcIOError(errorCode, FullPath);
 
 				long fileTime = ((long)data.ftLastWriteTime.dwHighDateTime << 32) | (data.ftLastWriteTime.dwLowDateTime & 0xffffffff);
 				return DateTime.FromFileTimeUtc(fileTime);
