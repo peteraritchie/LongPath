@@ -2,7 +2,7 @@
 <package >
   <metadata>
     <id>Pri.LongPath</id>
-    <version>2.0.0-beta</version>
+    <version>2.0.2-beta</version>
     <authors>Peter Ritchie</authors>
     <dependencies/>
     <owners>Peter Ritchie</owners>
@@ -10,7 +10,7 @@
     <projectUrl>https://github.com/peteraritchie/LongPath</projectUrl>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
     <description>Drop-in library to support long paths in .NET</description>
-    <releaseNotes>Added support for UNC paths.</releaseNotes>
+    <releaseNotes>Fixed .NET 4.5 Release build configuration, adding DirectoryInfo.Enumerate* methods to .NET 4.5 projects.</releaseNotes>
     <copyright>Copyright 2015</copyright>
     <tags>long path</tags>
   </metadata>
