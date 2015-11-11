@@ -1,6 +1,8 @@
 LongPath
 ========
 
+[![Build status](https://ci.appveyor.com/api/projects/status/w9410p6garuyba2b?svg=true)](https://ci.appveyor.com/project/peteraritchie/longpath)
+
 A drop-in library to support long paths in .NET
 
 Supporting files and directories with a long path is fairly easy with Windows.  Unfortunately, other aspects of Windows haven't supported long paths in their entirely.  The file system (NTFS), for example, supports long paths quite well; but other things like Command Prompt and Explorer don't.  This makes it hard to entirely support long paths in *any* application, let alone in .NET.
