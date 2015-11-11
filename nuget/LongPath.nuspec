@@ -2,7 +2,7 @@
 <package >
   <metadata>
     <id>Pri.LongPath</id>
-    <version>2.0.2-beta</version>
+    <version>$version$</version>
     <authors>Peter Ritchie</authors>
     <dependencies/>
     <owners>Peter Ritchie</owners>

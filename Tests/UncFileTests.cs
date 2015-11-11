@@ -1225,7 +1225,7 @@ namespace Tests
 			}
 		}
 
-		[TestMethod]
+		[TestMethod, Ignore] //("does not work on some server/domain systems.")
 		public void TestGetAccessControl()
 		{
 			var filename = Util.CreateNewFile(uncDirectory);
@@ -1252,7 +1252,7 @@ namespace Tests
 			}
 		}
 
-		[TestMethod]
+		[TestMethod, Ignore] //("does not work on some server/domain systems.")
 		public void TestGetAccessControlSections()
 		{
 			var filename = Util.CreateNewFile(uncDirectory);

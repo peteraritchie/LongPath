@@ -1007,7 +1007,7 @@ namespace Tests
 			}
 		}
 
-		[TestMethod]
+		[TestMethod, Ignore] //("does not work on some server/domain systems.")
 		public void TestGetAccessControl()
 		{
 			var tempLongPathFilename = Path.Combine(uncDirectory, Path.GetRandomFileName());
@@ -1036,7 +1036,7 @@ namespace Tests
 			}
 		}
 
-		[TestMethod]
+		[TestMethod, Ignore] //("does not work on some server/domain systems.")
 		public void TestGetAccessControlSections()
 		{
 			var tempLongPathFilename = Path.Combine(uncDirectory, Path.GetRandomFileName());
