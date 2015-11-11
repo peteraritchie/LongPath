@@ -1,0 +1,42 @@
+version: 2.0.{build}
+configuration: Release
+assembly_info:
+  patch: true
+  file: '**\AssemblyInfo.*'
+  assembly_version: '{version}'
+  assembly_file_version: '{version}'
+  assembly_informational_version: '{version}'
+nuget:
+  project_feed: true
+build:
+  verbosity: minimal
+after_build:
+- cmd: >-
+    if not exist nuget\lib\net40 md nuget\lib\net40
+
+    copy Pri.LongPath.net40\bin\Release\Pri.LongPath.dll nuget\lib\net40
+
+    copy Pri.LongPath.net40\bin\Release\Pri.LongPath.pdb nuget\lib\net40
+
+    if not exist nuget\lib\net20 md nuget\lib\net20
+
+    copy Pri.LongPath.net20\bin\Release\Pri.LongPath.dll nuget\lib\net20
+
+    copy Pri.LongPath.net20\bin\Release\Pri.LongPath.pdb nuget\lib\net20
+
+    if not exist nuget\lib\net45 md nuget\lib\net45
+
+    copy Pri.LongPath\bin\Release\Pri.LongPath.dll nuget\lib\net45
+
+    copy Pri.LongPath\bin\Release\Pri.LongPath.pdb nuget\lib\net45
+
+
+    nuget.exe pack nuget\LongPath.nuspec -Symbols -version %APPVEYOR_BUILD_VERSION%
+artifacts:
+- path: '*.nupkg'
+  name: nuget
+deploy:
+- provider: NuGet
+  api_key:
+    secure: K+dA1tJ3qNFfJ6G484VCFE9igeHb/BGa6tdJVKcaxvHYK6rwPsKrO/c5EahHvxsP
+  artifact: nuget
