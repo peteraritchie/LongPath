@@ -846,49 +846,6 @@ namespace Pri.LongPath
 			return GetAccessControl(path, includeSections);
 		}
 
-		private static void ThrowIfError(int errorCode, IntPtr byteArray)
-		{
-			if (errorCode == NativeMethods.ERROR_SUCCESS && IntPtr.Zero.Equals(byteArray))
-			{
-				//
-				// This means that the object doesn't have a security descriptor. And thus we throw
-				// a specific exception for the caller to catch and handle properly.
-				//
-				throw new InvalidOperationException("Object does not have security descriptor,");
-			}
-
-			if (errorCode != NativeMethods.ERROR_SUCCESS)
-			{
-				if (errorCode == NativeMethods.ERROR_NOT_ALL_ASSIGNED ||
-					errorCode == NativeMethods.ERROR_PRIVILEGE_NOT_HELD)
-				{
-					throw new PrivilegeNotHeldException("SeSecurityPrivilege");
-				}
-				if (errorCode == NativeMethods.ERROR_ACCESS_DENIED ||
-					errorCode == NativeMethods.ERROR_CANT_OPEN_ANONYMOUS ||
-					errorCode == NativeMethods.ERROR_LOGON_FAILURE)
-				{
-					throw new UnauthorizedAccessException();
-				}
-				if (errorCode == NativeMethods.ERROR_NOT_ENOUGH_MEMORY)
-				{
-					throw new OutOfMemoryException();
-				}
-
-				if (errorCode == NativeMethods.ERROR_BAD_NETPATH)
-				{
-					throw new System.IO.IOException("The network path was not found. ");
-				}
-
-				if (errorCode == NativeMethods.ERROR_NETNAME_DELETED)
-				{
-					throw new System.IO.IOException("The specified network name is no longer available.");
-				}
-
-				throw new ApplicationException(string.Format("Unexpected Windows error code: {0}", errorCode));
-			}
-		}
-
 		public static DirectorySecurity GetAccessControl(String path, AccessControlSections includeSections)
 		{
 			var normalizedPath = Path.NormalizeLongPath(Path.GetFullPath(path));
@@ -904,7 +861,7 @@ namespace Pri.LongPath
 				out sacl,
 				out byteArray);
 
-			ThrowIfError(errorCode, byteArray);
+			Common.ThrowIfError(errorCode, byteArray);
 
 			var length = NativeMethods.GetSecurityDescriptorLength(byteArray);
 

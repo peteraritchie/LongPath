@@ -871,32 +871,6 @@ namespace Pri.LongPath
 			Common.SetAccessControlExtracted(fileSecurity, name);
 		}
 
-		private static void ThrowIfError(int errorCode, IntPtr ByteArray)
-		{
-			if (errorCode == NativeMethods.ERROR_SUCCESS && IntPtr.Zero.Equals(ByteArray))
-			{
-				//
-				// This means that the object doesn't have a security descriptor. And thus we throw
-				// a specific exception for the caller to catch and handle properly.
-				//
-				throw new InvalidOperationException("Object does not have security descriptor,");
-			}
-			else if (errorCode == NativeMethods.ERROR_NOT_ALL_ASSIGNED ||
-						errorCode == NativeMethods.ERROR_PRIVILEGE_NOT_HELD)
-			{
-				throw new PrivilegeNotHeldException("SeSecurityPrivilege");
-			}
-			else if (errorCode == NativeMethods.ERROR_ACCESS_DENIED ||
-				errorCode == NativeMethods.ERROR_CANT_OPEN_ANONYMOUS)
-			{
-				throw new UnauthorizedAccessException();
-			}
-			if (errorCode == NativeMethods.ERROR_NOT_ENOUGH_MEMORY)
-			{
-				throw new OutOfMemoryException();
-			}
-		}
-
 		public static FileSecurity GetAccessControl(string path)
 		{
 			AccessControlSections includeSections = AccessControlSections.Access | AccessControlSections.Owner | AccessControlSections.Group;
@@ -920,7 +894,7 @@ namespace Pri.LongPath
 				out Sacl,
 				out ByteArray);
 
-			ThrowIfError(errorCode, ByteArray);
+			Common.ThrowIfError(errorCode, ByteArray);
 
 			uint Length = NativeMethods.GetSecurityDescriptorLength(ByteArray);
 
@@ -949,7 +923,7 @@ namespace Pri.LongPath
 			{
 				Exception ex = Common.GetExceptionFromLastWin32Error();
 				Console.WriteLine("error {0} with {1}\n{2}", ex.Message, normalizedPath, ex.StackTrace);
-				Console.WriteLine("{0} {1} {2} {3}", mode, access, share, options );
+				Console.WriteLine("{0} {1} {2} {3}", mode, access, share, options);
 				throw ex;
 			}
 
