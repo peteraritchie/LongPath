@@ -21,6 +21,8 @@ namespace Pri.LongPath
 		internal const int ERROR_NO_MORE_FILES = 0x12;
 		internal const int ERROR_NOT_READY = 0x15;
 		internal const int ERROR_SHARING_VIOLATION = 0x20;
+		internal const int ERROR_BAD_NETPATH = 0x35;
+		internal const int ERROR_THE_SPECIFIED_NETWORK_NAME_IS_NO_LONGER_AVAILABLE = 0x40;
 		internal const int ERROR_FILE_EXISTS = 0x50;
 		internal const int ERROR_INVALID_PARAMETER = 0x57;
 		internal const int ERROR_INVALID_NAME = 0x7B;
@@ -35,6 +37,7 @@ namespace Pri.LongPath
 		internal const int ERROR_INVALID_PRIMARY_GROUP = 0x51C;
 		internal const int ERROR_NO_SUCH_PRIVILEGE = 0x521;
 		internal const int ERROR_PRIVILEGE_NOT_HELD = 0x522;
+		internal const int ERROR_LOGON_FAILURE = 0x52E;
 		internal const int ERROR_CANT_OPEN_ANONYMOUS = 0x543;
 		internal const int ERROR_NO_SECURITY_ON_OBJECT = 0x546;
 
@@ -46,7 +49,7 @@ namespace Pri.LongPath
 		internal const int REPLACEFILE_IGNORE_MERGE_ERRORS = 0x2;
 
 		internal const int MAX_PATH = 260;
-		// While Windows allows larger paths up to a maxium of 32767 characters, because this is only an approximation and
+		// While Windows allows larger paths up to a maximum of 32767 characters, because this is only an approximation and
 		// can vary across systems and OS versions, we choose a limit well under so that we can give a consistent behavior.
 		internal const int MAX_LONG_PATH = 32000;
 		internal const int MAX_ALTERNATE = 14;
