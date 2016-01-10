@@ -22,7 +22,7 @@ namespace Pri.LongPath
 		internal const int ERROR_NOT_READY = 0x15;
 		internal const int ERROR_SHARING_VIOLATION = 0x20;
 		internal const int ERROR_BAD_NETPATH = 0x35;
-		internal const int ERROR_THE_SPECIFIED_NETWORK_NAME_IS_NO_LONGER_AVAILABLE = 0x40;
+		internal const int ERROR_NETNAME_DELETED = 0x40;
 		internal const int ERROR_FILE_EXISTS = 0x50;
 		internal const int ERROR_INVALID_PARAMETER = 0x57;
 		internal const int ERROR_INVALID_NAME = 0x7B;

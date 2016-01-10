@@ -880,7 +880,7 @@ namespace Pri.LongPath
 					throw new System.IO.IOException("The network path was not found. ");
 				}
 
-				if (errorCode == NativeMethods.ERROR_THE_SPECIFIED_NETWORK_NAME_IS_NO_LONGER_AVAILABLE)
+				if (errorCode == NativeMethods.ERROR_NETNAME_DELETED)
 				{
 					throw new System.IO.IOException("The specified network name is no longer available.");
 				}
