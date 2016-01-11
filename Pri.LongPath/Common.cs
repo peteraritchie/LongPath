@@ -13,7 +13,6 @@ namespace Pri.LongPath
 
 	public class Common
 	{
-
 		private static readonly uint ProtectedDiscretionaryAcl = 0x80000000;
 		private static readonly uint ProtectedSystemAcl = 0x40000000;
 		private static readonly uint UnprotectedDiscretionaryAcl = 0x20000000;
@@ -245,6 +244,40 @@ namespace Pri.LongPath
 			}
 		}
 
+		internal static void ThrowIfError(int errorCode, IntPtr byteArray)
+		{
+			if (errorCode == NativeMethods.ERROR_SUCCESS)
+			{
+				if (IntPtr.Zero.Equals(byteArray))
+				{
+					//
+					// This means that the object doesn't have a security descriptor. And thus we throw
+					// a specific exception for the caller to catch and handle properly.
+					//
+					throw new InvalidOperationException("Object does not have security descriptor,");
+				}
+			}
+			else
+			{
+				switch (errorCode)
+				{
+					case NativeMethods.ERROR_NOT_ALL_ASSIGNED:
+					case NativeMethods.ERROR_PRIVILEGE_NOT_HELD:
+						throw new PrivilegeNotHeldException("SeSecurityPrivilege");
+					case NativeMethods.ERROR_ACCESS_DENIED:
+					case NativeMethods.ERROR_CANT_OPEN_ANONYMOUS:
+					case NativeMethods.ERROR_LOGON_FAILURE:
+						throw new UnauthorizedAccessException();
+					case NativeMethods.ERROR_NOT_ENOUGH_MEMORY:
+						throw new OutOfMemoryException();
+					case NativeMethods.ERROR_BAD_NETPATH:
+					case NativeMethods.ERROR_NETNAME_DELETED:
+					default:
+						throw new IOException(NativeMethods.GetMessage(errorCode), NativeMethods.MakeHRFromErrorCode(errorCode));
+				}
+			}
+		}
+
 		internal static SecurityInfos ToSecurityInfos(AccessControlSections accessControlSections)
 		{
 			SecurityInfos securityInfos = 0;
@@ -388,7 +421,7 @@ namespace Pri.LongPath
 			}
 			//finally
 			//{
-				//security.WriteLUnlck();
+			//security.WriteLUnlck();
 			//}
 		}
 

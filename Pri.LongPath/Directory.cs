@@ -536,7 +536,7 @@ namespace Pri.LongPath
 				{
 					if (IsDirectory(findData.dwFileAttributes))
 					{
-                        if (IsCurrentOrParentDirectory(findData.cFileName)) continue;
+						if (IsCurrentOrParentDirectory(findData.cFileName)) continue;
 
 						if (includeDirectories)
 						{
@@ -585,7 +585,7 @@ namespace Pri.LongPath
 						var fullPath = Path.Combine(path, findData.cFileName);
 						if (IsDirectory(findData.dwFileAttributes))
 						{
-                            if (IsCurrentOrParentDirectory(findData.cFileName)) continue;
+							if (IsCurrentOrParentDirectory(findData.cFileName)) continue;
 							var fullNormalizedPath = Path.Combine(normalizedPath, findData.cFileName);
 							System.Diagnostics.Debug.Assert(Exists(fullPath));
 							System.Diagnostics.Debug.Assert(Exists(Common.IsPathUnc(fullNormalizedPath) ? fullNormalizedPath : Path.RemoveLongPathPrefix(fullNormalizedPath)));
@@ -597,7 +597,7 @@ namespace Pri.LongPath
 						}
 						else if (includeFiles)
 						{
-                            yield return Path.RemoveLongPathPrefix(fullPath);
+							yield return Path.RemoveLongPathPrefix(fullPath);
 						}
 					} while (NativeMethods.FindNextFile(handle, out findData));
 
@@ -616,8 +616,8 @@ namespace Pri.LongPath
 			if (!handle.IsInvalid) return handle;
 			var errorCode = Marshal.GetLastWin32Error();
 			if (errorCode != NativeMethods.ERROR_FILE_NOT_FOUND &&
-			    errorCode != NativeMethods.ERROR_PATH_NOT_FOUND &&
-			    errorCode != NativeMethods.ERROR_NOT_READY)
+				errorCode != NativeMethods.ERROR_PATH_NOT_FOUND &&
+				errorCode != NativeMethods.ERROR_NOT_READY)
 			{
 				throw Common.GetExceptionFromWin32Error(errorCode);
 			}
@@ -643,7 +643,7 @@ namespace Pri.LongPath
 			if (NativeMethods.MoveFile(normalizedSourcePath, normalizedDestinationPath)) return;
 
 			var lastWin32Error = Marshal.GetLastWin32Error();
-			if(lastWin32Error == NativeMethods.ERROR_ACCESS_DENIED)
+			if (lastWin32Error == NativeMethods.ERROR_ACCESS_DENIED)
 				throw new System.IO.IOException(string.Format("Access to the path '{0}'is denied.", sourcePath), NativeMethods.MakeHRFromErrorCode(lastWin32Error));
 			throw Common.GetExceptionFromWin32Error(lastWin32Error, "path");
 		}
@@ -733,7 +733,7 @@ namespace Pri.LongPath
 		/// </remarks>
 		public static DirectoryInfo CreateDirectory(string path)
 		{
-		    if (Common.IsPathUnc(path)) return CreateDirectoryUnc(path);
+			if (Common.IsPathUnc(path)) return CreateDirectoryUnc(path);
 			var normalizedPath = Path.NormalizeLongPath(path);
 			var fullPath = Path.RemoveLongPathPrefix(normalizedPath);
 
@@ -846,32 +846,6 @@ namespace Pri.LongPath
 			return GetAccessControl(path, includeSections);
 		}
 
-		private static void ThrowIfError(int errorCode, IntPtr byteArray)
-		{
-			if (errorCode == NativeMethods.ERROR_SUCCESS && IntPtr.Zero.Equals(byteArray))
-			{
-				//
-				// This means that the object doesn't have a security descriptor. And thus we throw
-				// a specific exception for the caller to catch and handle properly.
-				//
-				throw new InvalidOperationException("Object does not have security descriptor,");
-			}
-			if (errorCode == NativeMethods.ERROR_NOT_ALL_ASSIGNED ||
-			    errorCode == NativeMethods.ERROR_PRIVILEGE_NOT_HELD)
-			{
-				throw new PrivilegeNotHeldException("SeSecurityPrivilege");
-			}
-			if (errorCode == NativeMethods.ERROR_ACCESS_DENIED ||
-			    errorCode == NativeMethods.ERROR_CANT_OPEN_ANONYMOUS)
-			{
-				throw new UnauthorizedAccessException();
-			}
-			if (errorCode == NativeMethods.ERROR_NOT_ENOUGH_MEMORY)
-			{
-				throw new OutOfMemoryException();
-			}
-		}
-
 		public static DirectorySecurity GetAccessControl(String path, AccessControlSections includeSections)
 		{
 			var normalizedPath = Path.NormalizeLongPath(Path.GetFullPath(path));
@@ -887,7 +861,7 @@ namespace Pri.LongPath
 				out sacl,
 				out byteArray);
 
-			ThrowIfError(errorCode, byteArray);
+			Common.ThrowIfError(errorCode, byteArray);
 
 			var length = NativeMethods.GetSecurityDescriptorLength(byteArray);
 
