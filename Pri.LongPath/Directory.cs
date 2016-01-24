@@ -49,7 +49,7 @@ namespace Pri.LongPath
 		{
 			try
 			{
-				foreach (var file in EnumerateFileSystemEntries(path, "*", false, true, System.IO.SearchOption.TopDirectoryOnly))
+				foreach (var file in EnumerateFileSystemEntries(path, "*", false, true, SearchOption.TopDirectoryOnly))
 				{
 					File.Delete(file);
 				}
@@ -61,7 +61,7 @@ namespace Pri.LongPath
 
 			try
 			{
-				foreach (var subPath in EnumerateFileSystemEntries(path, "*", true, false, System.IO.SearchOption.TopDirectoryOnly))
+				foreach (var subPath in EnumerateFileSystemEntries(path, "*", true, false, SearchOption.TopDirectoryOnly))
 				{
 					Delete(subPath, true);
 				}
@@ -85,7 +85,7 @@ namespace Pri.LongPath
 		///     Deletes the specified empty directory.
 		/// </summary>
 		/// <param name="path">
-		///      A <see cref="String"/> containing the path of the directory to delete.
+		///      A <see cref="string"/> containing the path of the directory to delete.
 		/// </param>
 		/// <exception cref="ArgumentNullException">
 		///     <paramref name="path"/> is <see langword="null"/>.
@@ -144,7 +144,7 @@ namespace Pri.LongPath
 		///     Returns a value indicating whether the specified path refers to an existing directory.
 		/// </summary>
 		/// <param name="path">
-		///     A <see cref="String"/> containing the path to check.
+		///     A <see cref="string"/> containing the path to check.
 		/// </param>
 		/// <returns>
 		///     <see langword="true"/> if <paramref name="path"/> refers to an existing directory;
@@ -168,7 +168,7 @@ namespace Pri.LongPath
 		///     Returns a enumerable containing the directory names of the specified directory.
 		/// </summary>
 		/// <param name="path">
-		///     A <see cref="String"/> containing the path of the directory to search.
+		///     A <see cref="string"/> containing the path of the directory to search.
 		/// </param>
 		/// <returns>
 		///     A <see cref="IEnumerable{T}"/> containing the directory names within <paramref name="path"/>.
@@ -208,7 +208,7 @@ namespace Pri.LongPath
 		/// </exception>
 		public static IEnumerable<string> EnumerateDirectories(string path)
 		{
-			return EnumerateFileSystemEntries(path, "*", true, false, System.IO.SearchOption.TopDirectoryOnly);
+			return EnumerateFileSystemEntries(path, "*", true, false, SearchOption.TopDirectoryOnly);
 		}
 #endif
 
@@ -278,7 +278,7 @@ namespace Pri.LongPath
 		///     Returns a enumerable containing the file names of the specified directory.
 		/// </summary>
 		/// <param name="path">
-		///     A <see cref="String"/> containing the path of the directory to search.
+		///     A <see cref="string"/> containing the path of the directory to search.
 		/// </param>
 		/// <returns>
 		///     A <see cref="IEnumerable{T}"/> containing the file names within <paramref name="path"/>.
@@ -318,20 +318,23 @@ namespace Pri.LongPath
 		/// </exception>
 		public static IEnumerable<string> EnumerateFiles(string path)
 		{
-			return EnumerateFileSystemEntries(path, "*", false, true, System.IO.SearchOption.TopDirectoryOnly);
+			return EnumerateFileSystemEntries(path, "*", false, true, SearchOption.TopDirectoryOnly);
 		}
-#endif // NET_4_0 || NET_4_5
 
-#if NET_4_5
+		public static IEnumerable<string> EnumerateFiles(string path, string searchPattern, SearchOption options)
+		{
+			return EnumerateFileSystemEntries(path, searchPattern, false, true, options);
+		}
+
 		/// <summary>
 		///     Returns a enumerable containing the file names of the specified directory that
 		///     match the specified search pattern.
 		/// </summary>
 		/// <param name="path">
-		///     A <see cref="String"/> containing the path of the directory to search.
+		///     A <see cref="string"/> containing the path of the directory to search.
 		/// </param>
 		/// <param name="searchPattern">
-		///     A <see cref="String"/> containing search pattern to match against the names of the
+		///     A <see cref="string"/> containing search pattern to match against the names of the
 		///     files in <paramref name="path"/>, otherwise, <see langword="null"/> or an empty
 		///     string ("") to use the default search pattern, "*".
 		/// </param>
@@ -374,21 +377,14 @@ namespace Pri.LongPath
 		/// </exception>
 		public static IEnumerable<string> EnumerateFiles(string path, string searchPattern)
 		{
-			return EnumerateFileSystemEntries(path, searchPattern, false, true, System.IO.SearchOption.TopDirectoryOnly);
+			return EnumerateFileSystemEntries(path, searchPattern, false, true, SearchOption.TopDirectoryOnly);
 		}
 
-		public static IEnumerable<string> EnumerateFiles(string path, string searchPattern, System.IO.SearchOption options)
-		{
-			return EnumerateFileSystemEntries(path, searchPattern, false, true, options);
-		}
-#endif
-
-#if NET_4_0 || NET_4_5
 		/// <summary>
 		///     Returns a enumerable containing the file and directory names of the specified directory.
 		/// </summary>
 		/// <param name="path">
-		///     A <see cref="String"/> containing the path of the directory to search.
+		///     A <see cref="string"/> containing the path of the directory to search.
 		/// </param>
 		/// <returns>
 		///     A <see cref="IEnumerable{T}"/> containing the file and directory names within
@@ -429,20 +425,18 @@ namespace Pri.LongPath
 		/// </exception>
 		public static IEnumerable<string> EnumerateFileSystemEntries(string path)
 		{
-			return EnumerateFileSystemEntries(path, null, true, true, System.IO.SearchOption.TopDirectoryOnly);
+			return EnumerateFileSystemEntries(path, null, true, true, SearchOption.TopDirectoryOnly);
 		}
-#endif
 
-#if NET_4_5
 		/// <summary>
 		///     Returns a enumerable containing the file and directory names of the specified directory
 		///     that match the specified search pattern.
 		/// </summary>
 		/// <param name="path">
-		///     A <see cref="String"/> containing the path of the directory to search.
+		///     A <see cref="string"/> containing the path of the directory to search.
 		/// </param>
 		/// <param name="searchPattern">
-		///     A <see cref="String"/> containing search pattern to match against the names of the
+		///     A <see cref="string"/> containing search pattern to match against the names of the
 		///     files and directories in <paramref name="path"/>, otherwise, <see langword="null"/>
 		///     or an empty string ("") to use the default search pattern, "*".
 		/// </param>
@@ -485,16 +479,16 @@ namespace Pri.LongPath
 		/// </exception>
 		public static IEnumerable<string> EnumerateFileSystemEntries(string path, string searchPattern)
 		{
-			return EnumerateFileSystemEntries(path, searchPattern, true, true, System.IO.SearchOption.TopDirectoryOnly);
+			return EnumerateFileSystemEntries(path, searchPattern, true, true, SearchOption.TopDirectoryOnly);
 		}
 
-		public static IEnumerable<string> EnumerateFileSystemEntries(string path, string searchPattern, System.IO.SearchOption options)
+		public static IEnumerable<string> EnumerateFileSystemEntries(string path, string searchPattern, SearchOption options)
 		{
 			return EnumerateFileSystemEntries(path, searchPattern, true, true, options);
 		}
-#endif
+#endif // NET_4_0 || NET_4_5
 
-		internal static IEnumerable<string> EnumerateFileSystemEntries(string path, string searchPattern, bool includeDirectories, bool includeFiles, System.IO.SearchOption option)
+		internal static IEnumerable<string> EnumerateFileSystemEntries(string path, string searchPattern, bool includeDirectories, bool includeFiles, SearchOption option)
 		{
 			var normalizedSearchPattern = Common.NormalizeSearchPattern(searchPattern);
 			var normalizedPath = Path.NormalizeLongPath(path);
@@ -513,7 +507,7 @@ namespace Pri.LongPath
 				throw Common.GetExceptionFromWin32Error(errorCode);
 			}
 
-			if (option == System.IO.SearchOption.AllDirectories)
+			if (option == SearchOption.AllDirectories)
 				return EnumerateFileSystemIteratorRecursive(normalizedPath, normalizedSearchPattern, includeDirectories,
 					includeFiles);
 
@@ -567,7 +561,7 @@ namespace Pri.LongPath
 			{
 				normalizedPath = pendingDirectories.Dequeue();
 				// get all subdirs to recurse in the next iteration
-				foreach (var subdir in EnumerateNormalizedFileSystemEntries(true, false, System.IO.SearchOption.TopDirectoryOnly, normalizedPath, "*"))
+				foreach (var subdir in EnumerateNormalizedFileSystemEntries(true, false, SearchOption.TopDirectoryOnly, normalizedPath, "*"))
 				{
 					pendingDirectories.Enqueue(Path.NormalizeLongPath(subdir));
 				}
@@ -692,7 +686,7 @@ namespace Pri.LongPath
 		///     Creates the specified directory.
 		/// </summary>
 		/// <param name="path">
-		///     A <see cref="String"/> containing the path of the directory to create.
+		///     A <see cref="string"/> containing the path of the directory to create.
 		/// </param>
 		/// <exception cref="ArgumentNullException">
 		///     <paramref name="path"/> is <see langword="null"/>.
@@ -775,17 +769,17 @@ namespace Pri.LongPath
 			return new DirectoryInfo(fullPath);
 		}
 
-		public static string[] GetDirectories(string path, string searchPattern, System.IO.SearchOption searchOption)
+		public static string[] GetDirectories(string path, string searchPattern, SearchOption searchOption)
 		{
 			return EnumerateFileSystemEntries(path, searchPattern, true, false, searchOption).ToArray();
 		}
 
 		public static string[] GetFiles(string path)
 		{
-			return EnumerateFileSystemEntries(path, "*", false, true, System.IO.SearchOption.TopDirectoryOnly).ToArray();
+			return EnumerateFileSystemEntries(path, "*", false, true, SearchOption.TopDirectoryOnly).ToArray();
 		}
 
-		public unsafe static void SetCreationTimeUtc(string path, DateTime creationTimeUtc)
+		public static unsafe void SetCreationTimeUtc(string path, DateTime creationTimeUtc)
 		{
 			var normalizedPath = Path.NormalizeLongPath(Path.GetFullPath(path));
 
@@ -799,7 +793,7 @@ namespace Pri.LongPath
 			}
 		}
 
-		public unsafe static void SetLastWriteTimeUtc(string path, DateTime lastWriteTimeUtc)
+		public static unsafe void SetLastWriteTimeUtc(string path, DateTime lastWriteTimeUtc)
 		{
 			var normalizedPath = Path.NormalizeLongPath(Path.GetFullPath(path));
 
@@ -813,7 +807,7 @@ namespace Pri.LongPath
 			}
 		}
 
-		public unsafe static void SetLastAccessTimeUtc(string path, DateTime lastWriteTimeUtc)
+		public static unsafe void SetLastAccessTimeUtc(string path, DateTime lastWriteTimeUtc)
 		{
 			var normalizedPath = Path.NormalizeLongPath(Path.GetFullPath(path));
 
@@ -833,20 +827,20 @@ namespace Pri.LongPath
 			return directoryName == null ? null : new DirectoryInfo(directoryName);
 		}
 
-		public static DirectoryInfo CreateDirectory(String path, DirectorySecurity directorySecurity)
+		public static DirectoryInfo CreateDirectory(string path, DirectorySecurity directorySecurity)
 		{
 			CreateDirectory(path);
 			SetAccessControl(path, directorySecurity);
 			return new DirectoryInfo(path);
 		}
 
-		public static DirectorySecurity GetAccessControl(String path)
+		public static DirectorySecurity GetAccessControl(string path)
 		{
 			const AccessControlSections includeSections = AccessControlSections.Access | AccessControlSections.Owner | AccessControlSections.Group;
 			return GetAccessControl(path, includeSections);
 		}
 
-		public static DirectorySecurity GetAccessControl(String path, AccessControlSections includeSections)
+		public static DirectorySecurity GetAccessControl(string path, AccessControlSections includeSections)
 		{
 			var normalizedPath = Path.NormalizeLongPath(Path.GetFullPath(path));
 			IntPtr sidOwner, sidGroup, dacl, sacl, byteArray;
@@ -875,86 +869,86 @@ namespace Pri.LongPath
 			return ds;
 		}
 
-		public static DateTime GetCreationTime(String path)
+		public static DateTime GetCreationTime(string path)
 		{
 			return GetCreationTimeUtc(path).ToLocalTime();
 		}
 
-		public static DateTime GetCreationTimeUtc(String path)
+		public static DateTime GetCreationTimeUtc(string path)
 		{
 			var di = new DirectoryInfo(path);
 			return di.CreationTimeUtc;
 		}
 
-		public static String[] GetDirectories(String path)
+		public static string[] GetDirectories(string path)
 		{
-			return EnumerateFileSystemEntries(path, "*", true, false, System.IO.SearchOption.TopDirectoryOnly).ToArray();
+			return EnumerateFileSystemEntries(path, "*", true, false, SearchOption.TopDirectoryOnly).ToArray();
 		}
 
-		public static String[] GetDirectories(String path, String searchPattern)
+		public static string[] GetDirectories(string path, string searchPattern)
 		{
-			return EnumerateFileSystemEntries(path, searchPattern, true, false, System.IO.SearchOption.TopDirectoryOnly).ToArray();
+			return EnumerateFileSystemEntries(path, searchPattern, true, false, SearchOption.TopDirectoryOnly).ToArray();
 		}
 
-		public static String GetDirectoryRoot(String path)
+		public static string GetDirectoryRoot(string path)
 		{
 			var fullPath = Path.GetFullPath(path);
 			return fullPath.Substring(0, Path.GetRootLength(fullPath));
 		}
 
-		public static String[] GetFiles(String path, String searchPattern)
+		public static string[] GetFiles(string path, string searchPattern)
 		{
-			return EnumerateFileSystemEntries(path, searchPattern, false, true, System.IO.SearchOption.TopDirectoryOnly).ToArray();
+			return EnumerateFileSystemEntries(path, searchPattern, false, true, SearchOption.TopDirectoryOnly).ToArray();
 		}
 
-		public static String[] GetFiles(String path, String searchPattern, SearchOption options)
+		public static string[] GetFiles(string path, string searchPattern, SearchOption options)
 		{
 			return EnumerateFileSystemEntries(path, searchPattern, false, true, options).ToArray();
 		}
 
-		public static String[] GetFileSystemEntries(String path)
+		public static string[] GetFileSystemEntries(string path)
 		{
-			return EnumerateFileSystemEntries(path, null, true, true, System.IO.SearchOption.TopDirectoryOnly).ToArray();
+			return EnumerateFileSystemEntries(path, null, true, true, SearchOption.TopDirectoryOnly).ToArray();
 		}
 
-		public static String[] GetFileSystemEntries(String path, String searchPattern)
+		public static string[] GetFileSystemEntries(string path, string searchPattern)
 		{
-			return EnumerateFileSystemEntries(path, searchPattern, true, true, System.IO.SearchOption.TopDirectoryOnly).ToArray();
+			return EnumerateFileSystemEntries(path, searchPattern, true, true, SearchOption.TopDirectoryOnly).ToArray();
 		}
 
-		public static String[] GetFileSystemEntries(String path, String searchPattern, SearchOption options)
+		public static string[] GetFileSystemEntries(string path, string searchPattern, SearchOption options)
 		{
 			return EnumerateFileSystemEntries(path, searchPattern, true, true, options).ToArray();
 		}
 
-		public static DateTime GetLastAccessTime(String path)
+		public static DateTime GetLastAccessTime(string path)
 		{
 			return GetLastAccessTimeUtc(path).ToLocalTime();
 		}
 
-		public static DateTime GetLastAccessTimeUtc(String path)
+		public static DateTime GetLastAccessTimeUtc(string path)
 		{
 			var di = new DirectoryInfo(path);
 			return di.LastAccessTimeUtc;
 		}
 
-		public static DateTime GetLastWriteTime(String path)
+		public static DateTime GetLastWriteTime(string path)
 		{
 			return GetLastWriteTimeUtc(path).ToLocalTime();
 		}
 
-		public static DateTime GetLastWriteTimeUtc(String path)
+		public static DateTime GetLastWriteTimeUtc(string path)
 		{
 			var di = new DirectoryInfo(path);
 			return di.LastWriteTimeUtc;
 		}
 
-		public static String[] GetLogicalDrives()
+		public static string[] GetLogicalDrives()
 		{
 			return System.IO.Directory.GetLogicalDrives();
 		}
 
-		public static void SetAccessControl(String path, DirectorySecurity directorySecurity)
+		public static void SetAccessControl(string path, DirectorySecurity directorySecurity)
 		{
 			if (path == null) throw new ArgumentNullException("path");
 			if (directorySecurity == null) throw new ArgumentNullException("directorySecurity");
@@ -963,17 +957,17 @@ namespace Pri.LongPath
 			Common.SetAccessControlExtracted(directorySecurity, name);
 		}
 
-		public static void SetCreationTime(String path, DateTime creationTime)
+		public static void SetCreationTime(string path, DateTime creationTime)
 		{
 			SetCreationTimeUtc(path, creationTime.ToUniversalTime());
 		}
 
-		public static void SetLastAccessTime(String path, DateTime lastAccessTime)
+		public static void SetLastAccessTime(string path, DateTime lastAccessTime)
 		{
 			SetLastAccessTimeUtc(path, lastAccessTime.ToUniversalTime());
 		}
 
-		public static void SetLastWriteTime(String path, DateTime lastWriteTimeUtc)
+		public static void SetLastWriteTime(string path, DateTime lastWriteTimeUtc)
 		{
 			unsafe
 			{
@@ -990,7 +984,7 @@ namespace Pri.LongPath
 			}
 		}
 
-		public static void SetCurrentDirectory(String path)
+		public static void SetCurrentDirectory(string path)
 		{
 #if true
 			throw new NotSupportedException("Windows does not support setting the current directory to a long path");
