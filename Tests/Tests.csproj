@@ -8,7 +8,7 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>Tests</RootNamespace>
     <AssemblyName>Tests</AssemblyName>
-    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <ProjectTypeGuids>{3AC096D0-A1C2-E12C-1390-A8335801FDAB};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>
@@ -16,6 +16,7 @@
     <ReferencePath>$(ProgramFiles)\Common Files\microsoft shared\VSTT\$(VisualStudioVersion)\UITestExtensionPackages</ReferencePath>
     <IsCodedUITest>False</IsCodedUITest>
     <TestProjectType>UnitTest</TestProjectType>
+    <TargetFrameworkProfile />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -72,9 +73,9 @@
     <None Include="tests.runsettings" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Pri.LongPath.net45\Pri.LongPath.net45.csproj">
-      <Project>{df1f23ca-9dc6-4604-8400-6c4b656e0f5d}</Project>
-      <Name>Pri.LongPath.net45</Name>
+    <ProjectReference Include="..\Pri.LongPath.net46\Pri.LongPath.net46.csproj">
+      <Project>{c869ed52-3e36-431e-b7d2-56ab179c9630}</Project>
+      <Name>Pri.LongPath.net46</Name>
     </ProjectReference>
   </ItemGroup>
   <Choose>
