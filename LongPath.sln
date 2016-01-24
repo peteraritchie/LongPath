@@ -1,9 +1,9 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 2013
-VisualStudioVersion = 12.0.40629.0
+# Visual Studio 14
+VisualStudioVersion = 14.0.24720.0
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Pri.LongPath", "Pri.LongPath\Pri.LongPath.csproj", "{DF1F23CA-9DC6-4604-8400-6C4B656E0F5D}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Pri.LongPath.net45", "Pri.LongPath.net45\Pri.LongPath.net45.csproj", "{DF1F23CA-9DC6-4604-8400-6C4B656E0F5D}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tests", "Tests\Tests.csproj", "{4BE35CEA-F520-4EC7-9621-53FE061C8C35}"
 EndProject
