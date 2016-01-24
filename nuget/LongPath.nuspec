@@ -10,7 +10,7 @@
     <projectUrl>https://github.com/peteraritchie/LongPath</projectUrl>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
     <description>Drop-in library to support long paths in .NET</description>
-    <releaseNotes>Added 4.6 project and re-referenced tests.</releaseNotes>
+    <releaseNotes>Added EnumerateFiles and EnumerateFileSystemEntries in 4.0 packages.</releaseNotes>
     <copyright>Copyright 2015</copyright>
     <tags>long path</tags>
   </metadata>
