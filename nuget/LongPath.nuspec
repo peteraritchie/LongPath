@@ -10,7 +10,7 @@
     <projectUrl>https://github.com/peteraritchie/LongPath</projectUrl>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
     <description>Drop-in library to support long paths in .NET</description>
-    <releaseNotes>Fixed .NET 4.5 Release build configuration, adding DirectoryInfo.Enumerate* methods to .NET 4.5 projects.</releaseNotes>
+    <releaseNotes>Added 4.6 project and re-referenced tests.</releaseNotes>
     <copyright>Copyright 2015</copyright>
     <tags>long path</tags>
   </metadata>
