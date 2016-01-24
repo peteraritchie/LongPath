@@ -1,4 +1,7 @@
 version: 2.0.{build}
+branches:
+  only:
+  - master
 configuration: Release
 assembly_info:
   patch: true
@@ -26,9 +29,9 @@ after_build:
 
     if not exist nuget\lib\net45 md nuget\lib\net45
 
-    copy Pri.LongPath\bin\Release\Pri.LongPath.dll nuget\lib\net45
+    copy Pri.LongPath.net45\bin\Release\Pri.LongPath.dll nuget\lib\net45
 
-    copy Pri.LongPath\bin\Release\Pri.LongPath.pdb nuget\lib\net45
+    copy Pri.LongPath.net45\bin\Release\Pri.LongPath.pdb nuget\lib\net45
 
 
     nuget.exe pack nuget\LongPath.nuspec -Symbols -version %APPVEYOR_BUILD_VERSION%
