@@ -45,6 +45,12 @@ namespace Tests
 		}
 
 		[TestMethod]
+		public void GetFileNameReturnsNullWithNullParameter()
+		{
+			Assert.IsNull(Path.GetFileName(null));
+		}
+
+		[TestMethod]
 		public void TestGetDirectoryNameAtRoot()
 		{
 			string path = @"c:\";

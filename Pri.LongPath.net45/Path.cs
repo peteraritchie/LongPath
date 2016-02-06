@@ -194,6 +194,7 @@ namespace Pri.LongPath
 
 		public static string GetFileName(string path)
 		{
+			if (path == null) return null;
 			return System.IO.Path.GetFileName(Path.NormalizeLongPath(path));
 		}
 
