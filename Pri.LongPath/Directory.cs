@@ -61,7 +61,9 @@ namespace Pri.LongPath
 
 			try 
 			{
-				var isDirectoryReparsePoint=(Common.GetAttributes(path) & (System.IO.FileAttributes.Directory | System.IO.FileAttributes.ReparsePoint)) != 0;
+				var reparseFlags = (System.IO.FileAttributes.Directory | System.IO.FileAttributes.ReparsePoint);
+				var isDirectoryReparsePoint = (Common.GetAttributes(path) & reparseFlags) == reparseFlags;
+
 				if (isDirectoryReparsePoint) {
 					Delete(path);
 					return;
