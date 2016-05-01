@@ -60,6 +60,9 @@
     <Compile Include="..\Pri.LongPath\FileSystemInfo.cs">
       <Link>FileSystemInfo.cs</Link>
     </Compile>
+    <Compile Include="..\Pri.LongPath\JunctionPoint.cs">
+      <Link>JunctionPoint.cs</Link>
+    </Compile>
     <Compile Include="..\Pri.LongPath\NativeMethods.cs">
       <Link>NativeMethods.cs</Link>
     </Compile>

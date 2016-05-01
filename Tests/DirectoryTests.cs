@@ -6,6 +6,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System.Collections.Generic;
 using System.Security.AccessControl;
 using System.IO;
+using Pri.LongPath;
 
 namespace Tests
 {
@@ -473,6 +474,36 @@ namespace Tests
 			Assert.IsTrue(Directory.Exists(Path.GetFullPath(tempLongPathFilename)));
 			Directory.Delete(tempLongPathFilename);
 			Assert.IsFalse(Directory.Exists(Path.GetFullPath(tempLongPathFilename)));
+		}
+
+				/// <summary> Tests the Directory.Delete where 'path' is a junction point.
+		/// </summary>
+		[TestMethod]
+		public void TestDeleteDirectory_JunctionPoint()
+        {
+			#region Prepare
+
+			string targetFolder = Path.Combine(rootTestDir, "ADirectory");
+            string junctionPoint = Path.Combine(rootTestDir, "SymLink");
+
+            Directory.CreateDirectory(targetFolder);
+            File.Create(Path.Combine(targetFolder, "AFile")).Close();
+
+            JunctionPoint.Create(junctionPoint, targetFolder, false /*don't overwrite*/);
+			Assert.IsTrue(File.Exists(Path.Combine(targetFolder, "AFile")), "File should be accessible.");
+			Assert.IsTrue(File.Exists(Path.Combine(junctionPoint, "AFile")), "File should be accessible via the junction point.");
+
+			#endregion
+
+			// Test
+
+			Directory.Delete(junctionPoint,false);
+
+			// Verify
+
+			Assert.IsTrue(File.Exists(Path.Combine(targetFolder, "AFile")), "File should be accessible.");
+			Assert.IsFalse(JunctionPoint.Exists(junctionPoint), "Junction point should not exist now.");
+			Assert.IsTrue(!File.Exists(Path.Combine(junctionPoint, "AFile")), "File should not be accessible via the junction point.");
 		}
 
 		[TestMethod]

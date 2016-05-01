@@ -55,6 +55,7 @@
     <Compile Include="FileInfoTests.cs" />
     <Compile Include="FileSystemInfoTests.cs" />
     <Compile Include="FileTests.cs" />
+    <Compile Include="JunctionPointTests.cs" />
     <Compile Include="NativeMethods.cs" />
     <Compile Include="PathTests.cs" />
     <Compile Include="UncDirectoryInfoTests.cs" />
