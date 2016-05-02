@@ -2,7 +2,7 @@ using System;
 using System.Diagnostics;
 using System.Linq;
 using System.Text;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+using NUnit.Framework;
 using Directory = Pri.LongPath.Directory;
 using Path = Pri.LongPath.Path;
 using FileInfo = Pri.LongPath.FileInfo;
@@ -19,7 +19,7 @@ using SearchOption = System.IO.SearchOption;
 
 namespace Tests
 {
-	[TestClass]
+	[TestFixture]
 	public class PathTests
 	{
 		private static string rootTestDir;
@@ -28,12 +28,12 @@ namespace Tests
 		private static string longPathRoot;
 		private const string Filename = "filename.ext";
 
-		[ClassInitialize]
-		public static void ClassInitialize(TestContext context)
+		[SetUp]
+		public void SetUp()
 		{
-			rootTestDir = context.TestDir;
+			rootTestDir = TestContext.CurrentContext.TestDirectory;
 			longPathDirectory = Util.MakeLongPath(rootTestDir);
-			longPathRoot = longPathDirectory.Substring(0, context.TestDir.Length + 1 + longPathDirectory.Substring(rootTestDir.Length + 1).IndexOf('\\'));
+			longPathRoot = longPathDirectory.Substring(0, TestContext.CurrentContext.TestDirectory.Length + 1 + longPathDirectory.Substring(rootTestDir.Length + 1).IndexOf('\\'));
 			Directory.CreateDirectory(longPathDirectory);
 			Debug.Assert(Directory.Exists(longPathDirectory));
 			longPathFilename = new StringBuilder(longPathDirectory).Append(@"\").Append(Filename).ToString();
@@ -44,26 +44,26 @@ namespace Tests
 			Debug.Assert(File.Exists(longPathFilename));
 		}
 
-		[TestMethod]
+		[Test]
 		public void GetFileNameReturnsNullWithNullParameter()
 		{
 			Assert.IsNull(Path.GetFileName(null));
 		}
 
-		[TestMethod]
+		[Test]
 		public void TestGetDirectoryNameAtRoot()
 		{
 			string path = @"c:\";
 			Assert.IsNull(Path.GetDirectoryName(path));
 		}
 
-		[TestMethod, ExpectedException(typeof(ArgumentNullException))]
+		[Test]
 		public void TestGetDirectoryNameWithNullPath()
 		{
-			Path.GetDirectoryName(null);
+			Assert.Throws<ArgumentNullException>(() => Path.GetDirectoryName(null));
 		}
 
-        [TestMethod]
+        [Test]
 	    public void GetDirectoryNameOnRelativePath()
         {
             const string input = @"foo\bar\baz";
@@ -72,7 +72,7 @@ namespace Tests
             Assert.AreEqual(expected, actual);
         }
 
-        [TestMethod]
+        [Test]
         public void GetDirectoryNameOnRelativePathWithNoParent()
         {
             const string input = @"foo";
@@ -81,7 +81,7 @@ namespace Tests
             Assert.AreEqual(expected, actual);
         }
 
-		[TestMethod]
+		[Test]
 		public void TestGetParentAtRoot()
 		{
 			string path = "c:\\";
@@ -89,62 +89,62 @@ namespace Tests
 			Assert.IsNull(parent);
 		}
 
-		[TestMethod]
+		[Test]
 		public void TestLongPathDirectoryName()
 		{
 			var x = Path.GetDirectoryName(@"C:\Vault Data\w\M\Access Midstream\9305 Hopeton Stabilizer Upgrades\08  COMMUNICATION\8.1  Transmittals\9305-005 Access Midstream Hopeton - Electrical Panel Wiring dwgs\TM-9305-005-Access Midstream-Hopeton Stabilizer Upgrades-Electrical Panel Wiring-IFC Revised.msg");
 		}
 
-		[TestMethod, ExpectedException(typeof(ArgumentException))]
+		[Test]
 		public void TestLongPathDirectoryNameWithInvalidChars()
 		{
-			Path.GetDirectoryName(longPathDirectory + '<');
+			Assert.Throws<ArgumentException>(() => Path.GetDirectoryName(longPathDirectory + '<'));
 		}
 
-		[TestMethod]
+		[Test]
 		public void TestGetInvalidFileNameChars()
 		{
 			Assert.IsTrue(Path.GetInvalidFileNameChars().SequenceEqual(System.IO.Path.GetInvalidFileNameChars()));
 		}
 
-		[TestMethod]
+		[Test]
 		public void TestGetInvalidPathChars()
 		{
 			Assert.IsTrue(Path.GetInvalidPathChars().SequenceEqual(System.IO.Path.GetInvalidPathChars()));
 		}
 
-		[TestMethod]
+		[Test]
 		public void TestAltDirectorySeparatorChar()
 		{
 			Assert.AreEqual(System.IO.Path.AltDirectorySeparatorChar, Path.AltDirectorySeparatorChar);
 		}
 
-		[TestMethod]
+		[Test]
 		public void TestDirectorySeparatorChar()
 		{
 			Assert.AreEqual(System.IO.Path.DirectorySeparatorChar, Path.DirectorySeparatorChar);
 		}
 
-		[TestMethod]
+		[Test]
 		public void TestIsDirectorySeparator()
 		{
 			Assert.IsTrue(Path.IsDirectorySeparator(System.IO.Path.DirectorySeparatorChar));
 			Assert.IsTrue(Path.IsDirectorySeparator(System.IO.Path.AltDirectorySeparatorChar));
 		}
 
-		[TestMethod]
+		[Test]
 		public void TestGetRootLength()
 		{
 			Assert.AreEqual(3, Path.GetRootLength(longPathFilename));
 		}
 
-		[TestMethod]
+		[Test]
 		public void TestGetRootLengthWithUnc()
 		{
 			Assert.AreEqual(23, Path.GetRootLength(@"\\servername\sharename\dir\filename.exe"));
 		}
 
-		[TestMethod]
+		[Test]
 		public void TestGetExtension()
 		{
 			var tempLongPathFilename = Path.Combine(longPathDirectory, Path.GetRandomFileName());
@@ -152,7 +152,7 @@ namespace Tests
 				Path.GetExtension(tempLongPathFilename));
 		}
 
-		[TestMethod]
+		[Test]
 		public void TestGetPathRoot()
 		{
 			var root = Path.GetPathRoot(longPathDirectory);
@@ -160,7 +160,7 @@ namespace Tests
 			Assert.AreEqual(3, root.Length);
 		}
 
-        [TestMethod]
+        [Test]
         public void TestGetPathRootWithRelativePath()
         {
             var root = Path.GetPathRoot(@"foo\bar\baz");
@@ -168,27 +168,27 @@ namespace Tests
             Assert.AreEqual(0, root.Length);
         }
 
-		[TestMethod]
+		[Test]
 		public void TestGetPathRootWithNullPath()
 		{
 			var root = Path.GetPathRoot(null);
 			Assert.IsNull(root);
 		}
 
-		[TestMethod]
+		[Test]
 		public void TestNormalizeLongPath()
 		{
 			string result = Path.NormalizeLongPath(longPathDirectory);
 			Assert.IsNotNull(result);
 		}
 
-		[TestMethod, ExpectedException(typeof(ArgumentException))]
+		[Test]
 		public void TestNormalizeLongPathWithJustUncPrefix()
 		{
-			Path.NormalizeLongPath(@"\\");
+			Assert.Throws<ArgumentException>(() => Path.NormalizeLongPath(@"\\"));
 		}
 
-		[TestMethod]
+		[Test]
 		public void TestNormalizeLongPathWith()
 		{
 			string result = Path.NormalizeLongPath(longPathDirectory);
@@ -196,14 +196,14 @@ namespace Tests
 		}
 
 
-		[TestMethod]
+		[Test]
 		public void TestTryNormalizeLongPathWithJustUncPrefix()
 		{
 			string path;
 			Assert.IsFalse(Path.TryNormalizeLongPath(@"\\", out path));
 		}
 
-		[TestMethod]
+		[Test]
 		public void TestTryNormalizeLongPat()
 		{
 			string path;
@@ -211,21 +211,21 @@ namespace Tests
 			Assert.IsNotNull(path);
 		}
 
-		[TestMethod]
+		[Test]
 		public void TestNormalizeLongPathWithEmptyPath()
 		{
 			string path;
 			Assert.IsFalse(Path.TryNormalizeLongPath(String.Empty, out path));
 		}
 
-		[TestMethod]
+		[Test]
 		public void TestTryNormalizeLongPathWithNullPath()
 		{
 			string path;
 			Assert.IsFalse(Path.TryNormalizeLongPath(null, out path));
 		}
 
-		[TestMethod, ExpectedException(typeof(PathTooLongException))]
+		[Test]
 		public void TestNormalizeLongPathWithHugePath()
 		{
 			var path = @"c:\";
@@ -235,10 +235,10 @@ namespace Tests
 			{
 				path = Path.Combine(path, component);
 			}
-			Path.NormalizeLongPath(path);
+			Assert.Throws<PathTooLongException>(() => Path.NormalizeLongPath(path));
 		}
 
-		[TestMethod]
+		[Test]
 		public void TestCombine()
 		{
 			const string expected = @"c:\Windows\system32";
@@ -246,7 +246,7 @@ namespace Tests
 			Assert.AreEqual(expected, actual);
 		}
 
-        [TestMethod]
+        [Test]
 	    public void TestCombineRelativePaths()
 	    {
 	        const string expected = @"foo\bar\baz\test";
@@ -254,43 +254,43 @@ namespace Tests
             Assert.AreEqual(expected, actual);
 	    }
 
-		[TestMethod, ExpectedException(typeof(ArgumentNullException))]
+		[Test]
 		public void TestCombineWithNull()
 		{
-			Path.Combine(null, null);
+			Assert.Throws<ArgumentNullException>(() => Path.Combine(null, null));
 		}
 
-		[TestMethod]
+		[Test]
 		public void TestCombineWithEmpthPath1()
 		{
 			Assert.AreEqual("test", Path.Combine("test", string.Empty));
 		}
 
-		[TestMethod]
+		[Test]
 		public void TestCombineWithEmpthPath2()
 		{
 			Assert.AreEqual(@"C:\test", Path.Combine(string.Empty, @"C:\test"));
 		}
 
-		[TestMethod]
+		[Test]
 		public void TestCombineWithEmpthPath1EndingInSeparator()
 		{
 			Assert.AreEqual(@"C:\test\test2", Path.Combine(@"C:\test\", "test2"));
 		}
 
-		[TestMethod]
+		[Test]
 		public void TestHasExtensionWithExtension()
 		{
 			Assert.IsTrue(Path.HasExtension(longPathFilename));
 		}
 
-		[TestMethod]
+		[Test]
 		public void TestHasExtensionWithoutExtension()
 		{
 			Assert.IsFalse(Path.HasExtension(longPathDirectory));
 		}
 
-		[TestMethod]
+		[Test]
 		public void TestGetTempPath()
 		{
 			string path = Path.GetTempPath();
@@ -298,7 +298,7 @@ namespace Tests
 			Assert.IsTrue(path.Length > 0);
 		}
 
-		[TestMethod]
+		[Test]
 		public void TestGetTempFilename()
 		{
 			string filename = Path.GetTempFileName();
@@ -306,7 +306,7 @@ namespace Tests
 			Assert.IsTrue(filename.Length > 0);
 		}
 
-		[TestMethod]
+		[Test]
 		public void TestGetFileNameWithoutExtension()
 		{
 			var filename = Path.Combine(longPathDirectory, "filename.ext");
@@ -314,7 +314,7 @@ namespace Tests
 			Assert.AreEqual("filename", Path.GetFileNameWithoutExtension(filename));
 		}
 
-		[TestMethod]
+		[Test]
 		public void TestChangeExtension()
 		{
 			var filename = Path.Combine(longPathDirectory, "filename.ext");
@@ -323,97 +323,97 @@ namespace Tests
 			Assert.AreEqual(expectedFilenameWithNewExtension, Path.ChangeExtension(filename, ".txt"));
 		}
 
-		[TestMethod]
+		[Test]
 		public void TestCombineArray()
 		{
 			var strings = new[] { longPathDirectory, "subdir1", "subdir2", "filename.ext" };
 			Assert.AreEqual(Path.Combine(Path.Combine(Path.Combine(longPathDirectory, "subdir1"), "subdir2"), "filename.ext"), Path.Combine(strings));
 		}
 
-		[TestMethod]
+		[Test]
 		public void TestCombineArrayOnePath()
 		{
 			var strings = new[] { longPathDirectory };
 			Assert.AreEqual(longPathDirectory, Path.Combine(strings));
 		}
 
-		[TestMethod]
+		[Test]
 		public void TestCombineArrayTwoPaths()
 		{
 			var strings = new[] { longPathDirectory, "filename.ext" };
 			Assert.AreEqual(Path.Combine(longPathDirectory, "filename.ext"), Path.Combine(strings));
 		}
 
-		[TestMethod, ExpectedException(typeof(ArgumentNullException))]
+		[Test]
 		public void TestCombineArrayNullPath()
 		{
-			Path.Combine((string[])null);
+			Assert.Throws<ArgumentNullException>(() => Path.Combine((string[])null));
 		}
 
-		[TestMethod]
+		[Test]
 		public void TestCombineThreePaths()
 		{
 			Assert.AreEqual(Path.Combine(Path.Combine(longPathDirectory, "subdir1"), "filename.ext"),
 				Path.Combine(longPathDirectory, "subdir1", "filename.ext"));
 		}
 
-		[TestMethod]
+		[Test]
 		public void TestCombineFourPaths()
 		{
 			Assert.AreEqual(Path.Combine(Path.Combine(Path.Combine(longPathDirectory, "subdir1"), "subdir2"), "filename.ext"),
 				Path.Combine(longPathDirectory, "subdir1", "subdir2", "filename.ext"));
 		}
 
-		[TestMethod, ExpectedException(typeof(ArgumentNullException))]
+		[Test]
 		public void TestCombineTwoPathsOneNull()
 		{
-			Path.Combine(longPathDirectory, null);
+			Assert.Throws<ArgumentNullException>(() => Path.Combine(longPathDirectory, null));
 		}
 
-		[TestMethod, ExpectedException(typeof(ArgumentNullException))]
+		[Test]
 		public void TestCombineThreePathsOneNull()
 		{
-			Path.Combine(longPathDirectory, "subdir1", null);
+			Assert.Throws<ArgumentNullException>(() => Path.Combine(longPathDirectory, "subdir1", null));
 		}
 
-		[TestMethod, ExpectedException(typeof(ArgumentNullException))]
+		[Test]
 		public void TestCombineThreePathsTwoNulls()
 		{
-			Path.Combine(longPathDirectory, null, null);
+			Assert.Throws<ArgumentNullException>(() => Path.Combine(longPathDirectory, null, null));
 		}
 
-		[TestMethod, ExpectedException(typeof(ArgumentNullException))]
+		[Test]
 		public void TestCombineThreePathsThreeNulls()
 		{
-			Path.Combine(null, null, null);
+			Assert.Throws<ArgumentNullException>(() => Path.Combine(null, null, null));
 		}
 
-		[TestMethod, ExpectedException(typeof(ArgumentNullException))]
+		[Test]
 		public void TestCombineFourPathsOneNull()
 		{
-			Path.Combine(longPathDirectory, "subdir1", "subdir2", null);
+			Assert.Throws<ArgumentNullException>(() => Path.Combine(longPathDirectory, "subdir1", "subdir2", null));
 		}
 
-		[TestMethod, ExpectedException(typeof(ArgumentNullException))]
+		[Test]
 		public void TestCombineFourPathsTwoNull()
 		{
-			Path.Combine(longPathDirectory, "subdir1", null, null);
+			Assert.Throws<ArgumentNullException>(() => Path.Combine(longPathDirectory, "subdir1", null, null));
 		}
 
-		[TestMethod, ExpectedException(typeof(ArgumentNullException))]
+		[Test]
 		public void TestCombineFourPathsThreeNulls()
 		{
-			Path.Combine(longPathDirectory, null, null, null);
+			Assert.Throws<ArgumentNullException>(() => Path.Combine(longPathDirectory, null, null, null));
 		}
 
-		[TestMethod, ExpectedException(typeof(ArgumentNullException))]
+		[Test]
 		public void TestCombineFourPathsFourNulls()
 		{
-			Path.Combine(null, null, null, null);
+			Assert.Throws<ArgumentNullException>(() => Path.Combine(null, null, null, null));
 		}
 
-		[ClassCleanup]
-		public static void ClassCleanup()
+		[TearDown]
+		public void TearDown()
 		{
 			try
 			{

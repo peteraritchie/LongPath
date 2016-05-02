@@ -2,7 +2,7 @@ using System;
 using System.Diagnostics;
 using System.Linq;
 using System.Text;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+using NUnit.Framework;
 using Directory = Pri.LongPath.Directory;
 using Path = Pri.LongPath.Path;
 using FileInfo = Pri.LongPath.FileInfo;
@@ -19,7 +19,7 @@ using SearchOption = System.IO.SearchOption;
 
 namespace Tests
 {
-	[TestClass]
+	[TestFixture]
 	public class FileSystemInfoTests
 	{
 		private static string rootTestDir;
@@ -28,12 +28,12 @@ namespace Tests
 		private static string longPathRoot;
 		private const string Filename = "filename.ext";
 
-		[ClassInitialize]
-		public static void ClassInitialize(TestContext context)
+		[SetUp]
+		public void SetUp()
 		{
-			rootTestDir = context.TestDir;
+			rootTestDir = TestContext.CurrentContext.TestDirectory;
 			longPathDirectory = Util.MakeLongPath(rootTestDir);
-			longPathRoot = longPathDirectory.Substring(0, context.TestDir.Length + 1 + longPathDirectory.Substring(rootTestDir.Length + 1).IndexOf('\\'));
+			longPathRoot = longPathDirectory.Substring(0, TestContext.CurrentContext.TestDirectory.Length + 1 + longPathDirectory.Substring(rootTestDir.Length + 1).IndexOf('\\'));
 			Directory.CreateDirectory(longPathDirectory);
 			Debug.Assert(Directory.Exists(longPathDirectory));
 			longPathFilename = new StringBuilder(longPathDirectory).Append(@"\").Append(Filename).ToString();
@@ -44,15 +44,15 @@ namespace Tests
 			Debug.Assert(File.Exists(longPathFilename));
 		}
 
-		[TestMethod]
+		[Test]
 		public void TestExtension()
 		{
 			var fi = new FileInfo(longPathFilename);
 			Assert.AreEqual(".ext", fi.Extension);
 		}
 
-		[ClassCleanup]
-		public static void ClassCleanup()
+		[TearDown]
+		public void TearDown()
 		{
 			try
 			{

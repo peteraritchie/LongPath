@@ -2,7 +2,7 @@ using System;
 using System.Diagnostics;
 using System.Linq;
 using System.Text;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+using NUnit.Framework;
 using Directory = Pri.LongPath.Directory;
 using Path = Pri.LongPath.Path;
 using FileInfo = Pri.LongPath.FileInfo;
@@ -19,7 +19,7 @@ using SearchOption = System.IO.SearchOption;
 
 namespace Tests
 {
-	[TestClass]
+	[TestFixture]
 	public class UncFileSystemInfoTests
 	{
 		private static string uncDirectory;
@@ -28,10 +28,10 @@ namespace Tests
 		private static string filePath;
 		private const string Filename = "filename.ext";
 
-		[ClassInitialize]
-		public static void ClassInitialize(TestContext context)
+		[SetUp]
+		public void SetUp()
 		{
-			directory = Path.Combine(context.TestDir, "subdir");
+			directory = Path.Combine(TestContext.CurrentContext.TestDirectory, "subdir");
 			System.IO.Directory.CreateDirectory(directory);
 			try
 			{
@@ -52,15 +52,15 @@ namespace Tests
 			}
 		}
 
-		[TestMethod]
+		[Test]
 		public void TestExtension()
 		{
 			var fi = new FileInfo(filePath);
 			Assert.AreEqual(".ext", fi.Extension);
 		}
 
-		[ClassCleanup]
-		public static void ClassCleanup()
+		[TearDown]
+		public void TearDown()
 		{
 			try
 			{

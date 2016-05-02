@@ -2,7 +2,7 @@ using System;
 using System.Diagnostics;
 using System.Linq;
 using System.Text;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+using NUnit.Framework;
 using Directory = Pri.LongPath.Directory;
 using Path = Pri.LongPath.Path;
 using FileInfo = Pri.LongPath.FileInfo;
@@ -22,7 +22,7 @@ namespace Tests
 {
 	using FileNotFoundException = System.IO.FileNotFoundException;
 
-	[TestClass]
+	[TestFixture]
 	public class FileInfoTests
 	{
 		private static string rootTestDir;
@@ -31,12 +31,12 @@ namespace Tests
 		private static string longPathRoot;
 		private const string Filename = "filename.ext";
 
-		[ClassInitialize]
-		public static void ClassInitialize(TestContext context)
+		[SetUp]
+		public void SetUp()
 		{
-			rootTestDir = context.TestDir;
+			rootTestDir = TestContext.CurrentContext.TestDirectory;
 			longPathDirectory = Util.MakeLongPath(rootTestDir);
-			longPathRoot = longPathDirectory.Substring(0, context.TestDir.Length + 1 + longPathDirectory.Substring(rootTestDir.Length + 1).IndexOf('\\'));
+			longPathRoot = longPathDirectory.Substring(0, TestContext.CurrentContext.TestDirectory.Length + 1 + longPathDirectory.Substring(rootTestDir.Length + 1).IndexOf('\\'));
 			Directory.CreateDirectory(longPathDirectory);
 			Debug.Assert(Directory.Exists(longPathDirectory));
 			longPathFilename = new StringBuilder(longPathDirectory).Append(@"\").Append(Filename).ToString();
@@ -47,7 +47,7 @@ namespace Tests
 			Debug.Assert(File.Exists(longPathFilename));
 		}
 
-		[TestMethod]
+		[Test]
 		public void CanCreateFileInfoWithLongPathFile()
 		{
 			string tempLongPathFilename;
@@ -73,7 +73,7 @@ namespace Tests
 			}
 		}
 
-		[TestMethod]
+		[Test]
 		public void FileInfoReturnsCorrectDirectoryNameForLongPathFile()
 		{
 			Assert.IsTrue(Directory.Exists(longPathDirectory));
@@ -100,26 +100,22 @@ namespace Tests
 			}
 		}
 
-		[TestMethod, ExpectedException(typeof(FileNotFoundException))]
+		[Test]
 		public void TestLengthWithBadPath()
 		{
 			var filename = Util.CreateNewFile(longPathDirectory);
-			Pri.LongPath.FileInfo fi;
+			Pri.LongPath.FileInfo fi = null;
 			try
 			{
-				fi = new FileInfo(filename);
+				Assert.Throws<FileNotFoundException>(() => fi = new FileInfo(filename));
 			}
 			catch
 			{
 				File.Delete(filename);
-				throw;
 			}
-			fi.Delete();
-			fi.Refresh();
-			var l = fi.Length;
 		}
 
-		[TestMethod]
+		[Test]
 		public void TestCreateTextAndWrite()
 		{
 			Assert.IsTrue(Directory.Exists(longPathDirectory));
@@ -147,19 +143,19 @@ namespace Tests
 			}
 		}
 
-		[TestMethod]
+		[Test]
 		public void TestExistsNonExistent()
 		{
 			Assert.IsFalse(new FileInfo("giberish").Exists);
 		}
 
-		[TestMethod]
+		[Test]
 		public void TestExists()
 		{
 			Assert.IsTrue(new FileInfo(longPathFilename).Exists);
 		}
 
-		[TestMethod]
+		[Test]
 		public void TestAppendText()
 		{
 			var filename = new StringBuilder(longPathDirectory).Append(@"\").Append("file16.ext").ToString();
@@ -188,7 +184,7 @@ namespace Tests
 			}
 		}
 
-		[TestMethod]
+		[Test]
 		public void TestCopyToWithoutOverwrite()
 		{
 			var fi = new FileInfo(longPathFilename);
@@ -208,7 +204,7 @@ namespace Tests
 			}
 		}
 
-		[TestMethod, ExpectedException(typeof(IOException))]
+		[Test]
 		public void TestCopyToWithoutOverwriteAndExistingFile()
 		{
 			var fi = new FileInfo(longPathFilename);
@@ -219,7 +215,7 @@ namespace Tests
 			try
 			{
 				Assert.IsTrue(File.Exists(destLongPathFilename));
-				fi.CopyTo(destLongPathFilename);
+				Assert.Throws<IOException>(() => fi.CopyTo(destLongPathFilename));
 			}
 			finally
 			{
@@ -227,7 +223,7 @@ namespace Tests
 			}
 		}
 
-		[TestMethod]
+		[Test]
 		public void TestCopyToWithOverwrite()
 		{
 			var fi = new FileInfo(longPathFilename);
@@ -247,7 +243,7 @@ namespace Tests
 			}
 		}
 
-		[TestMethod]
+		[Test]
 		public void TestCreate()
 		{
 			var tempLongPathFilename = new StringBuilder(longPathDirectory).Append(@"\").Append("file19.ext").ToString();
@@ -268,7 +264,7 @@ namespace Tests
 			}
 		}
 
-		[TestMethod]
+		[Test]
 		public void TestCreateText()
 		{
 			var tempLongPathFilename = new StringBuilder(longPathDirectory).Append(@"\").Append("file20.ext").ToString();
@@ -289,7 +285,7 @@ namespace Tests
 			}
 		}
 
-		[TestMethod]
+		[Test]
 		public void TestMoveTo()
 		{
 			var tempLongPathFilename = new StringBuilder(longPathDirectory).Append(@"\").Append("file21.ext").ToString();
@@ -320,7 +316,7 @@ namespace Tests
 			}
 		}
 
-		[TestMethod]
+		[Test]
 		public void TestOpenOpen()
 		{
 			var fi = new FileInfo(longPathFilename);
@@ -330,17 +326,20 @@ namespace Tests
 			}
 		}
 
-		[TestMethod, ExpectedException(typeof(IOException))]
+		[Test]
 		public void TestOpenCreateNew()
 		{
 			var fi = new FileInfo(longPathFilename);
-			using (var fileStream = fi.Open(FileMode.CreateNew))
+			Assert.Throws<IOException>(() =>
 			{
-				Assert.IsNotNull(fileStream);
-			}
+				using (var fileStream = fi.Open(FileMode.CreateNew))
+				{
+					Assert.IsNotNull(fileStream);
+				}
+			});
 		}
 
-		[TestMethod, ExpectedException(typeof(UnauthorizedAccessException))]
+		[Test]
 		public void TestOpenHidden()
 		{
 			var tempLongPathFilename = new StringBuilder(longPathDirectory).Append(@"\").Append("file25.ext").ToString();
@@ -351,12 +350,15 @@ namespace Tests
 			}
 			try
 			{
-				File.SetAttributes(fi.FullName, File.GetAttributes(fi.FullName) | FileAttributes.Hidden);
-
-				using (var fileStream = fi.Open(FileMode.Create))
+				Assert.Throws<UnauthorizedAccessException>(() =>
 				{
-					Assert.IsNotNull(fileStream);
-				}
+					File.SetAttributes(fi.FullName, File.GetAttributes(fi.FullName) | FileAttributes.Hidden);
+
+					using (var fileStream = fi.Open(FileMode.Create))
+					{
+						Assert.IsNotNull(fileStream);
+					}
+				});
 
 			}
 			finally
@@ -365,17 +367,20 @@ namespace Tests
 			}
 		}
 
-		[TestMethod, ExpectedException(typeof(NotSupportedException))]
+		[Test]
 		public void TestOpenReadWithWrite()
 		{
 			var tempLongPathFilename = new StringBuilder(longPathDirectory).Append(@"\").Append("file31.ext").ToString();
 			var fi = new FileInfo(tempLongPathFilename);
 			try
 			{
-				using (var fileStream = fi.Open(FileMode.Append, FileAccess.Read))
+				Assert.Throws<NotSupportedException>(() =>
 				{
-					fileStream.WriteByte(43);
-				}
+					using (var fileStream = fi.Open(FileMode.Append, FileAccess.Read))
+					{
+						fileStream.WriteByte(43);
+					}
+				});
 			}
 			finally
 			{
@@ -383,7 +388,7 @@ namespace Tests
 			}
 		}
 
-		[TestMethod]
+		[Test]
 		public void TestOpenCreatesEmpty()
 		{
 			var tempLongPathFilename = Path.Combine(longPathDirectory, Path.GetRandomFileName());
@@ -407,7 +412,7 @@ namespace Tests
 			}
 		}
 
-		[TestMethod]
+		[Test]
 		public void TestOpenReadReadsExistingData()
 		{
 			var fi = new FileInfo(longPathFilename);
@@ -417,7 +422,7 @@ namespace Tests
 			}
 		}
 
-		[TestMethod]
+		[Test]
 		public void TestOpenTextReadsExistingData()
 		{
 			var fi = new FileInfo(longPathFilename);
@@ -427,7 +432,7 @@ namespace Tests
 			}
 		}
 
-		[TestMethod]
+		[Test]
 		public void TestOpenWriteWritesCorrectly()
 		{
 			var tempLongPathFilename = new StringBuilder(longPathDirectory).Append(@"\").Append("file31a.ext").ToString();
@@ -449,7 +454,7 @@ namespace Tests
 			}
 		}
 
-		[TestMethod]
+		[Test]
 		public void TestLastWriteTime()
 		{
 			var filename = Util.CreateNewFile(longPathDirectory);
@@ -468,7 +473,7 @@ namespace Tests
 			}
 		}
 
-		[TestMethod]
+		[Test]
 		public void TestDecrypt()
 		{
 			var tempLongPathFilename = new StringBuilder(longPathDirectory).Append(@"\").Append("filename.ext").ToString();
@@ -497,7 +502,7 @@ namespace Tests
 			}
 		}
 
-		[TestMethod]
+		[Test]
 		public void TestGetIsReadOnly()
 		{
 			var filename = Util.CreateNewFile(longPathDirectory);
@@ -513,7 +518,7 @@ namespace Tests
 			}
 		}
 
-		[TestMethod]
+		[Test]
 		public void TestSetIsReadOnly()
 		{
 			var filename = Util.CreateNewFile(longPathDirectory);
@@ -530,7 +535,7 @@ namespace Tests
 			}
 		}
 
-		[TestMethod]
+		[Test]
 		public void TestReplace()
 		{
 			var tempLongPathFilename = new StringBuilder(longPathDirectory).Append(@"\").Append("filename.ext").ToString();
@@ -584,7 +589,7 @@ namespace Tests
 		/// <remarks>
 		/// TODO: create a scenario where ignoreMetadataErrors actually makes a difference
 		/// </remarks>
-		[TestMethod]
+		[Test]
 		public void TestReplaceIgnoreMerge()
 		{
 			var tempLongPathFilename = new StringBuilder(longPathDirectory).Append(@"\").Append("filename.ext").ToString();
@@ -635,7 +640,7 @@ namespace Tests
 			}
 		}
 
-		[TestMethod]
+		[Test]
 		public void TestToString()
 		{
 			var fi = new FileInfo(longPathFilename);
@@ -643,13 +648,13 @@ namespace Tests
 			Assert.AreEqual(fi.DisplayPath, fi.ToString());
 		}
 
-		[TestMethod, ExpectedException(typeof(ArgumentNullException))]
+		[Test]
 		public void TestConstructorWithNullPath()
 		{
-			new FileInfo(null);
+			Assert.Throws<ArgumentNullException>(() => new FileInfo(null));
 		}
 
-		[TestMethod, Ignore] //("does not work on some server/domain systems.")
+		[Test, Ignore("does not work on some server/domain systems.")]
 		public void TestGetAccessControl()
 		{
 			var filename = Util.CreateNewFile(longPathDirectory);
@@ -677,7 +682,7 @@ namespace Tests
 			}
 		}
 
-		[TestMethod, Ignore] //("does not work on some server/domain systems.")
+		[Test, Ignore("does not work on some server/domain systems.")]
 		public void TestGetAccessControlSections()
 		{
 			var filename = Util.CreateNewFile(longPathDirectory);
@@ -707,7 +712,7 @@ namespace Tests
 			}
 		}
 
-		[TestMethod]
+		[Test]
 		public void TestSetAccessControl()
 		{
 			var filename = Util.CreateNewFile(longPathDirectory);
@@ -723,7 +728,7 @@ namespace Tests
 			}
 		}
 
-		[TestMethod]
+		[Test]
 		public void TestSetCreationTime()
 		{
 			var filename = Util.CreateNewFile(longPathDirectory);
@@ -740,7 +745,7 @@ namespace Tests
 			}
 		}
 
-		[TestMethod]
+		[Test]
 		public void TestSetCreationTimeUtc()
 		{
 			var filename = Util.CreateNewFile(longPathDirectory);
@@ -757,7 +762,7 @@ namespace Tests
 			}
 		}
 
-		[TestMethod]
+		[Test]
 		public void TestSetLastWriteTime()
 		{
 			var filename = Util.CreateNewFile(longPathDirectory);
@@ -774,7 +779,7 @@ namespace Tests
 			}
 		}
 
-		[TestMethod]
+		[Test]
 		public void TestSetLastWriteTimeUtc()
 		{
 			var filename = Util.CreateNewFile(longPathDirectory);
@@ -791,7 +796,7 @@ namespace Tests
 			}
 		}
 
-		[TestMethod]
+		[Test]
 		public void TestSetLastAccessTime()
 		{
 			var filename = Util.CreateNewFile(longPathDirectory);
@@ -808,7 +813,7 @@ namespace Tests
 			}
 		}
 
-		[TestMethod]
+		[Test]
 		public void TestSetLastAccessTimeUtc()
 		{
 			var filename = Util.CreateNewFile(longPathDirectory);
@@ -825,61 +830,61 @@ namespace Tests
 			}
 		}
 
-		[TestMethod, ExpectedException(typeof(FileNotFoundException))]
+		[Test]
 		public void TestSetCreationTimeMissingFile()
 		{
 			var filename = Path.Combine(longPathDirectory, "gibberish.ext");
 			DateTime dateTime = DateTime.Now.AddDays(1);
 			var fi = new FileInfo(filename);
-			fi.CreationTime = dateTime;
+			Assert.Throws<FileNotFoundException>(() => fi.CreationTime = dateTime);
 		}
 
-		[TestMethod, ExpectedException(typeof(FileNotFoundException))]
+		[Test]
 		public void TestSetCreationTimeUtcMissingFile()
 		{
 			var filename = Path.Combine(longPathDirectory, "gibberish.ext");
 			DateTime dateTime = DateTime.UtcNow.AddDays(1);
 			var fi = new FileInfo(filename);
-			fi.CreationTimeUtc = dateTime;
+			Assert.Throws<FileNotFoundException>(() => fi.CreationTimeUtc = dateTime);
 		}
 
-		[TestMethod, ExpectedException(typeof(FileNotFoundException))]
+		[Test]
 		public void TestSetLastWriteTimeMissingFile()
 		{
 			var filename = Path.Combine(longPathDirectory, "gibberish.ext");
 			DateTime dateTime = DateTime.Now.AddDays(1);
 			var fi = new FileInfo(filename);
-			fi.LastWriteTime = dateTime;
+			Assert.Throws<FileNotFoundException>(() => fi.LastWriteTime = dateTime);
 		}
 
-		[TestMethod, ExpectedException(typeof(FileNotFoundException))]
+		[Test]
 		public void TestSetLastWriteTimeUtcMissingFile()
 		{
 			var filename = Path.Combine(longPathDirectory, "gibberish.ext");
 			DateTime dateTime = DateTime.UtcNow.AddDays(1);
 			var fi = new FileInfo(filename);
-			fi.LastWriteTimeUtc = dateTime;
+			Assert.Throws<FileNotFoundException>(() => fi.LastWriteTimeUtc = dateTime);
 		}
 
-		[TestMethod, ExpectedException(typeof(FileNotFoundException))]
+		[Test]
 		public void TestSetLastAccessTimeMissingFile()
 		{
 			var filename = Path.Combine(longPathDirectory, "gibberish.ext");
 			DateTime dateTime = DateTime.Now.AddDays(1);
 			var fi = new FileInfo(filename);
-			fi.LastAccessTime = dateTime;
+			Assert.Throws<FileNotFoundException>(() => fi.LastAccessTime = dateTime);
 		}
 
-		[TestMethod, ExpectedException(typeof(FileNotFoundException))]
+		[Test]
 		public void TestSetLastAccessTimeUtcMissingFile()
 		{
 			var filename = Path.Combine(longPathDirectory, "gibberish.ext");
 			DateTime dateTime = DateTime.UtcNow.AddDays(1);
 			var fi = new FileInfo(filename);
-			fi.LastAccessTimeUtc = dateTime;
+			Assert.Throws<FileNotFoundException>(() => fi.LastAccessTimeUtc = dateTime);
 		}
 
-		[TestMethod]
+		[Test]
 		public void TestDisplayPath()
 		{
 			var sfi = new System.IO.FileInfo(@"c:\Windows\notepad.exe");
@@ -890,8 +895,8 @@ namespace Tests
 		}
 
 
-		[ClassCleanup]
-		public static void ClassCleanup()
+		[TearDown]
+		public void TearDown()
 		{
 			try
 			{

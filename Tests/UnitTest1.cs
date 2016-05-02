@@ -2,7 +2,7 @@
 using System.Diagnostics;
 using System.Linq;
 using System.Text;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+using NUnit.Framework;
 using Directory = Pri.LongPath.Directory;
 using Path = Pri.LongPath.Path;
 using FileInfo = Pri.LongPath.FileInfo;
@@ -22,17 +22,17 @@ using System.Collections.Generic;
 
 namespace Tests
 {
-	[TestClass]
+	[TestFixture]
 	public class UnitTest1
 	{
 		private static string longPathDirectory;
 		private static string longPathRoot;
 
-		[ClassInitialize]
-		public static void ClassInitialize(TestContext context)
+		[SetUp]
+		public void SetUp()
 		{
-			longPathDirectory = Util.MakeLongPath(context.TestDir);
-			longPathRoot = longPathDirectory.Substring(0, context.TestDir.Length + 1 + longPathDirectory.Substring(context.TestDir.Length + 1).IndexOf('\\'));
+			longPathDirectory = Util.MakeLongPath(TestContext.CurrentContext.TestDirectory);
+			longPathRoot = longPathDirectory.Substring(0, TestContext.CurrentContext.TestDirectory.Length + 1 + longPathDirectory.Substring(TestContext.CurrentContext.TestDirectory.Length + 1).IndexOf('\\'));
 			Directory.CreateDirectory(longPathDirectory);
 			Debug.Assert(Directory.Exists(longPathDirectory));
 		}
@@ -40,32 +40,35 @@ namespace Tests
 		/// <remarks>
 		/// Why are we here?
 		/// </remarks>
-		[TestMethod, ExpectedException(typeof(PathTooLongException))]
+		[Test]
 		public void TestProblemWithSystemIoExists()
 		{
-			var filename = new StringBuilder(longPathDirectory).Append(@"\").Append("file4.ext").ToString();
-			using (var writer = File.CreateText(filename))
+			Assert.Throws<PathTooLongException>(() =>
 			{
-				writer.WriteLine("test");
-			}
-			Assert.IsTrue(File.Exists(filename));
-
-			try
-			{
-				using (var fileStream = new System.IO.FileStream(filename, FileMode.Append, FileAccess.Write, FileShare.None))
-				using (var bw = new BinaryWriter(fileStream))
+				var filename = new StringBuilder(longPathDirectory).Append(@"\").Append("file4.ext").ToString();
+				using (var writer = File.CreateText(filename))
 				{
-					bw.Write(10u);
+					writer.WriteLine("test");
 				}
+				Assert.IsTrue(File.Exists(filename));
 
-			}
-			finally
-			{
-				File.Delete(filename);
-			}
+				try
+				{
+					using (var fileStream = new System.IO.FileStream(filename, FileMode.Append, FileAccess.Write, FileShare.None))
+					using (var bw = new BinaryWriter(fileStream))
+					{
+						bw.Write(10u);
+					}
+
+				}
+				finally
+				{
+					File.Delete(filename);
+				}
+			});
 		}
 
-		[TestMethod]
+		[Test]
 		public void WhatHappensWithBclPathGetDiretoryNameAndRelatiePath()
 		{
 			var text = System.IO.Path.GetDirectoryName(@"foo\bar\baz");
@@ -80,7 +83,7 @@ namespace Tests
 			return string.Format("{0} {1}({2})", method.ReturnType.Name, method.Name, parameters.Count() == 0 ? "" : (parameters.Select(e => e.ParameterType.Name).Aggregate((c, n) => c + ", " + n)));
 		}
 
-		[TestMethod]
+		[Test]
 		public void FileClassIsComplete()
 		{
 			MemberInfo[] systemIoFileMembers = typeof(System.IO.File).GetMembers(BindingFlags.DeclaredOnly | BindingFlags.Public | BindingFlags.Instance | BindingFlags.Static);
@@ -100,7 +103,7 @@ namespace Tests
 			Assert.AreEqual(systemIoFileMembers.Length, fileMembers.Length, missing);
 		}
 
-		[TestMethod]
+		[Test]
 		public void DirectoryClassIsComplete()
 		{
 			MemberInfo[] systemIoDirectoryMembers = typeof(System.IO.Directory).GetMembers(BindingFlags.DeclaredOnly | BindingFlags.Public | BindingFlags.Instance | BindingFlags.Static);
@@ -120,7 +123,7 @@ namespace Tests
 			Assert.AreEqual(systemIoDirectoryMembers.Length, directoryMembers.Length, missing);
 		}
 
-		[TestMethod]
+		[Test]
 		public void FileInfoClassIsComplete()
 		{
 			MemberInfo[] systemIoFileInfoMembers = typeof(System.IO.FileInfo).GetMembers(BindingFlags.DeclaredOnly | BindingFlags.Public | BindingFlags.Instance | BindingFlags.Static);
@@ -140,7 +143,7 @@ namespace Tests
 			Assert.AreEqual(systemIoFileInfoMembers.Length, FileInfoMembers.Length, missing);
 		}
 
-		[TestMethod]
+		[Test]
 		public void DirectoryInfoClassIsComplete()
 		{
 			MemberInfo[] systemIoDirectoryInfoMembers = typeof(System.IO.DirectoryInfo).GetMembers(BindingFlags.DeclaredOnly | BindingFlags.Public | BindingFlags.Instance | BindingFlags.Static);
@@ -160,7 +163,7 @@ namespace Tests
 			Assert.AreEqual(systemIoDirectoryInfoMembers.Length, DirectoryInfoMembers.Length, missing);
 		}
 
-		[TestMethod]
+		[Test]
 		public void PathClassIsComplete()
 		{
 			MemberInfo[] systemIoPathMembers = typeof(System.IO.Path).GetMembers(BindingFlags.DeclaredOnly | BindingFlags.Public | BindingFlags.Instance | BindingFlags.Static);
@@ -180,7 +183,7 @@ namespace Tests
 			Assert.AreEqual(systemIoPathMembers.Length, PathMembers.Length, missing);
 		}
 
-		[TestMethod]
+		[Test]
 		public void FileSystemInfoClassIsComplete()
 		{
 			MemberInfo[] systemIoFileSystemInfoMembers = typeof(System.IO.FileSystemInfo).GetMembers(BindingFlags.DeclaredOnly | BindingFlags.Public | BindingFlags.Instance | BindingFlags.Static);
@@ -200,8 +203,8 @@ namespace Tests
 			Assert.AreEqual(systemIoFileSystemInfoMembers.Length, FileSystemInfoMembers.Length, missing);
 		}
 
-		[ClassCleanup]
-		public static void ClassCleanup()
+		[TearDown]
+		public void TearDown()
 		{
 			Directory.Delete(longPathRoot, true);
 			Debug.Assert(!Directory.Exists(longPathDirectory));

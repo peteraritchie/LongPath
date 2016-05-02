@@ -2,11 +2,11 @@ using System;
 using System.Diagnostics;
 using System.Linq;
 using System.Text;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System.Collections.Generic;
 using System.Security.AccessControl;
 using System.IO;
 using Pri.LongPath;
+using NUnit.Framework;
 
 namespace Tests
 {
@@ -15,7 +15,7 @@ namespace Tests
 	using DirectoryInfo = Pri.LongPath.DirectoryInfo;
 	using File = Pri.LongPath.File;
 
-	[TestClass]
+	[TestFixture]
 	public class DirectoryTests
 	{
 		private static string rootTestDir;
@@ -24,12 +24,12 @@ namespace Tests
 		private static string longPathRoot;
 		private const string Filename = "filename.ext";
 
-		[ClassInitialize]
-		public static void ClassInitialize(TestContext context)
+		[SetUp]
+		public void SetUp()
 		{
-			rootTestDir = context.TestDir;
+			rootTestDir = TestContext.CurrentContext.TestDirectory;
 			longPathDirectory = Util.MakeLongPath(rootTestDir);
-			longPathRoot = longPathDirectory.Substring(0, context.TestDir.Length + 1 + longPathDirectory.Substring(rootTestDir.Length + 1).IndexOf('\\'));
+			longPathRoot = longPathDirectory.Substring(0, TestContext.CurrentContext.TestDirectory.Length + 1 + longPathDirectory.Substring(rootTestDir.Length + 1).IndexOf('\\'));
 			Directory.CreateDirectory(longPathDirectory);
 			Debug.Assert(Directory.Exists(longPathDirectory));
 			longPathFilename = new StringBuilder(longPathDirectory).Append(@"\").Append(Filename).ToString();
@@ -40,13 +40,13 @@ namespace Tests
 			Debug.Assert(File.Exists(longPathFilename));
 		}
 
-		[TestMethod]
+		[Test]
 		public void TestExists()
 		{
 			Assert.IsTrue(Directory.Exists(longPathDirectory));
 		}
 
-		[TestMethod]
+		[Test]
 		public void TestExistsOnFile()
 		{
 			Assert.IsFalse(Directory.Exists(new StringBuilder(longPathDirectory).Append(@"\").Append("does-not-exist").ToString()));
@@ -56,7 +56,7 @@ namespace Tests
 		/// Tests Directory.GetParent,
 		/// depends on Directory.Combine, DirectoryInfo.FullName
 		/// </remarks>
-		[TestMethod]
+		[Test]
 		public void TestGetParent()
 		{
 			var actual = Directory.GetParent(Path.Combine(longPathDirectory, "system32"));
@@ -66,7 +66,7 @@ namespace Tests
 		/// <remarks>
 		/// TODO: test some error conditions.
 		/// </remarks>
-		[TestMethod]
+		[Test]
 		public void TestCreateDirectory()
 		{
 			var tempLongPathFilename = Path.Combine(longPathDirectory, Path.GetRandomFileName());
@@ -82,7 +82,7 @@ namespace Tests
 			}
 		}
 
-		[TestMethod]
+		[Test]
 		public void TestCreateDirectoryThatEndsWithSlash()
 		{
 			var tempLongPathFilename = Path.Combine(longPathDirectory, Path.GetRandomFileName() + @"\");
@@ -98,7 +98,7 @@ namespace Tests
 			}
 		}
 
-		[TestMethod]
+		[Test]
 		public void TestCreateDirectoryThatAlreadyExists()
 		{
 			var di = Directory.CreateDirectory(longPathDirectory);
@@ -109,7 +109,7 @@ namespace Tests
 		/// <remarks>
 		/// Tests <see cref="Directory.EnumerateDirectories(string)"/>, depends on <see cref="Directory.CreateDirectory"/>
 		/// </remarks>
-		[TestMethod]
+		[Test]
 		public void TestEnumerateDirectories()
 		{
 			var randomFileName = Path.GetRandomFileName();
@@ -127,7 +127,7 @@ namespace Tests
 			}
 		}
 
-		[TestMethod]
+		[Test]
 		public void TestEnumerateDirectoriesWithSearch()
 		{
 			var randomFileName = Path.GetRandomFileName();
@@ -145,7 +145,7 @@ namespace Tests
 			}
 		}
 
-		[TestMethod]
+		[Test]
 		public void TestRecursiveEnumerateDirectoriesWithAllSearch()
 		{
 			var randomFileName = Path.GetRandomFileName();
@@ -163,7 +163,7 @@ namespace Tests
 			}
 		}
 
-		[TestMethod]
+		[Test]
 		public void TestRecursiveEnumerateDirectoriesWithSingleSubsetSearch()
 		{
 			var randomFileName = "TestRecursiveEnumerateDirectoriesWithSubsetSearch";
@@ -181,7 +181,7 @@ namespace Tests
 			}
 		}
 
-		[TestMethod]
+		[Test]
 		public void TestRecursiveEnumerateDirectoriesWithMultipleSubsetSearch()
 		{
 			var randomFileName = "TestRecursiveEnumerateDirectoriesWithMultipleSubsetSearch";
@@ -204,7 +204,7 @@ namespace Tests
 			}
 		}
 
-		[TestMethod]
+		[Test]
 		public void TestRecursiveEnumerateDirectoriesWithSearchNoResults()
 		{
 			var randomFileName = Path.GetRandomFileName();
@@ -222,7 +222,7 @@ namespace Tests
 			}
 		}
 
-		[TestMethod]
+		[Test]
 		public void TestEnumerateDirectoriesWithSearchWithNoResults()
 		{
 			var randomFileName = Path.GetRandomFileName();
@@ -243,7 +243,7 @@ namespace Tests
 		/// <remarks>
 		/// Tests <see cref="Directory.EnumerateDirectories(string)"/>, depends on <see cref="Directory.CreateDirectory"/>
 		/// </remarks>
-		[TestMethod]
+		[Test]
 		public void TestEnumerateFiles()
 		{
 			var files = Directory.EnumerateFiles(longPathDirectory).ToArray();
@@ -251,7 +251,7 @@ namespace Tests
 			Assert.IsTrue(files.Contains(longPathFilename));
 		}
 
-		[TestMethod]
+		[Test]
 		public void TestEnumerateFilesWithSearch()
 		{
 			var files = Directory.EnumerateFiles(longPathDirectory, "*").ToArray();
@@ -259,7 +259,7 @@ namespace Tests
 			Assert.IsTrue(files.Contains(longPathFilename));
 		}
 
-		[TestMethod]
+		[Test]
 		public void TestEnumerateFilesWithSearchWithNoResults()
 		{
 			var files = Directory.EnumerateFiles(longPathDirectory, "giberish").ToArray();
@@ -267,7 +267,7 @@ namespace Tests
 			Assert.IsFalse(files.Contains(longPathFilename));
 		}
 
-		[TestMethod]
+		[Test]
 		public void TestEnumerateRecursiveFilesWithSearch()
 		{
 			var tempLongPathFilename = Path.Combine(longPathDirectory, Path.GetRandomFileName());
@@ -289,7 +289,7 @@ namespace Tests
 			}
 		}
 
-		[TestMethod]
+		[Test]
 		public void TestEnumerateFilesRecursiveWithSearchWithNoResults()
 		{
 			var tempLongPathFilename = Path.Combine(longPathDirectory, Path.GetRandomFileName());
@@ -311,7 +311,7 @@ namespace Tests
 			}
 		}
 
-		[TestMethod]
+		[Test]
 		public void TestEnumerateFileSystemEntries()
 		{
 			var entries = Directory.EnumerateFileSystemEntries(longPathDirectory).ToArray();
@@ -319,7 +319,7 @@ namespace Tests
 			Assert.IsTrue(entries.Contains(longPathFilename));
 		}
 
-		[TestMethod]
+		[Test]
 		public void TestEnumerateFileSystemEntriesWithSearch()
 		{
 			var entries = Directory.EnumerateFileSystemEntries(longPathDirectory, "*").ToArray();
@@ -327,7 +327,7 @@ namespace Tests
 			Assert.IsTrue(entries.Contains(longPathFilename));
 		}
 
-		[TestMethod]
+		[Test]
 		public void TestEnumerateFileSystemEntriesWithSearchWithNoResults()
 		{
 			var entries = Directory.EnumerateFileSystemEntries(longPathDirectory, "giberish").ToArray();
@@ -335,7 +335,7 @@ namespace Tests
 			Assert.IsFalse(entries.Contains(longPathFilename));
 		}
 
-		[TestMethod]
+		[Test]
 		public void TestEnumerateRecursiveFileSystemEntriesWithSearch()
 		{
 			var tempLongPathFilename = Path.Combine(longPathDirectory, Path.GetRandomFileName());
@@ -357,7 +357,7 @@ namespace Tests
 			}
 		}
 
-		[TestMethod]
+		[Test]
 		public void TestEnumerateFileSystemEntriesRecursiveWithSearchWithNoResults()
 		{
 			var tempLongPathFilename = Path.Combine(longPathDirectory, Path.GetRandomFileName());
@@ -379,7 +379,7 @@ namespace Tests
 			}
 		}
 
-		[TestMethod]
+		[Test]
 		public void TestGetFiles()
 		{
 			Assert.AreNotEqual(0, Directory.GetFiles(longPathDirectory).Count());
@@ -387,7 +387,7 @@ namespace Tests
 			Assert.IsTrue(Directory.GetFiles(longPathDirectory).Contains(longPathFilename));
 		}
 
-		[TestMethod]
+		[Test]
 		public void TestGetDirectoriesWithAnySearch()
 		{
 			var tempLongPathFilename = Path.Combine(longPathDirectory, "TestGetDirectoriesWithAnySearch");
@@ -405,7 +405,7 @@ namespace Tests
 			}
 		}
 
-		[TestMethod]
+		[Test]
 		public void TestGetDirectoriesWithSubsetSearch()
 		{
 			var tempLongPathFilename = Path.Combine(longPathDirectory, "TestGetDirectoriesWithSubsetSearch");
@@ -423,7 +423,7 @@ namespace Tests
 			}
 		}
 
-		[TestMethod]
+		[Test]
 		public void TestGetRecursiveDirectoriesWithSubsetSearch()
 		{
 			var tempLongPathFilename = Path.Combine(longPathDirectory, "TestGetRecursiveDirectoriesWithSubsetSearch");
@@ -441,32 +441,32 @@ namespace Tests
 			}
 		}
 
-		[TestMethod]
+		[Test]
 		public void TestGetDirectories()
 		{
 			Assert.AreEqual(0, Directory.GetDirectories(longPathDirectory).Count());
 		}
 
-		[TestMethod]
+		[Test]
 		public void TestGetRecursiveDirectoriesWithSearch()
 		{
 			Assert.AreEqual(0, Directory.GetDirectories(longPathDirectory, "*", SearchOption.AllDirectories).Count());
 		}
 
-		[TestMethod]
+		[Test]
 		public void TestGetDirectoryRoot()
 		{
 			Assert.AreEqual(longPathDirectory.Substring(0, 3), Directory.GetDirectoryRoot(longPathDirectory));
 		}
 
-		[TestMethod]
+		[Test]
 		public void TestCurrentDirectory()
 		{
 			var di = new DirectoryInfo(".");
 			Assert.AreEqual(di.FullName, Directory.GetCurrentDirectory());
 		}
 
-		[TestMethod]
+		[Test]
 		public void TestDeleteDirectory()
 		{
 			var tempLongPathFilename = Path.Combine(longPathDirectory, Path.GetRandomFileName());
@@ -476,37 +476,53 @@ namespace Tests
 			Assert.IsFalse(Directory.Exists(Path.GetFullPath(tempLongPathFilename)));
 		}
 
-				/// <summary> Tests the Directory.Delete where 'path' is a junction point.
+		/// <summary> Tests the Directory.Delete where 'path' is a junction point.
 		/// </summary>
-		[TestMethod]
+		[Test]
 		public void TestDeleteDirectory_JunctionPoint()
-        {
+		{
 			#region Prepare
 
 			string targetFolder = Path.Combine(rootTestDir, "ADirectory");
-            string junctionPoint = Path.Combine(rootTestDir, "SymLink");
+			string junctionPoint = Path.Combine(rootTestDir, "SymLink");
 
-            Directory.CreateDirectory(targetFolder);
-            File.Create(Path.Combine(targetFolder, "AFile")).Close();
+			Directory.CreateDirectory(targetFolder);
+			try
+			{
 
-            JunctionPoint.Create(junctionPoint, targetFolder, false /*don't overwrite*/);
-			Assert.IsTrue(File.Exists(Path.Combine(targetFolder, "AFile")), "File should be accessible.");
-			Assert.IsTrue(File.Exists(Path.Combine(junctionPoint, "AFile")), "File should be accessible via the junction point.");
+				var targetFile = Path.Combine(targetFolder, "AFile");
 
-			#endregion
+				File.Create(targetFile).Close();
+				try
+				{
+					JunctionPoint.Create(junctionPoint, targetFolder, false /*don't overwrite*/);
+					Assert.IsTrue(File.Exists(Path.Combine(targetFolder, "AFile")), "File should be accessible.");
+					Assert.IsTrue(File.Exists(Path.Combine(junctionPoint, "AFile")), "File should be accessible via the junction point.");
 
-			// Test
+					#endregion
 
-			Directory.Delete(junctionPoint,false);
+					// Test
 
-			// Verify
+					Directory.Delete(junctionPoint, false);
 
-			Assert.IsTrue(File.Exists(Path.Combine(targetFolder, "AFile")), "File should be accessible.");
-			Assert.IsFalse(JunctionPoint.Exists(junctionPoint), "Junction point should not exist now.");
-			Assert.IsTrue(!File.Exists(Path.Combine(junctionPoint, "AFile")), "File should not be accessible via the junction point.");
+					// Verify
+
+					Assert.IsTrue(File.Exists(Path.Combine(targetFolder, "AFile")), "File should be accessible.");
+					Assert.IsFalse(JunctionPoint.Exists(junctionPoint), "Junction point should not exist now.");
+					Assert.IsTrue(!File.Exists(Path.Combine(junctionPoint, "AFile")), "File should not be accessible via the junction point.");
+				}
+				finally
+				{
+					File.Delete(targetFile);
+				}
+			}
+			finally
+			{
+				Directory.Delete(targetFolder);
+			}
 		}
 
-		[TestMethod]
+		[Test]
 		public void TestMove()
 		{
 			var tempLongPathFilename1 = Path.Combine(longPathDirectory, Path.GetRandomFileName());
@@ -527,7 +543,7 @@ namespace Tests
 			Directory.Delete(tempLongPathFilename2, recursive);
 		}
 
-		[TestMethod, ExpectedException(typeof(IOException))]
+		[Test]
 		public void TestInUseMove()
 		{
 			const bool recursive = true;
@@ -575,10 +591,7 @@ namespace Tests
 				{
 					string destinationPath =
 						Path.GetFullPath(Path.Combine(tempLongPathFilename1, Path.GetFileName(tempLongPathFilename2)));
-					Directory.Move(tempLongPathFilename2, destinationPath);
-					Assert.IsTrue(Directory.Exists(Path.GetFullPath(tempLongPathFilename1)));
-					Assert.IsFalse(Directory.Exists(Path.GetFullPath(tempLongPathFilename2)));
-					Assert.IsTrue(Directory.Exists(destinationPath));
+					Assert.Throws<IOException>(() => Directory.Move(tempLongPathFilename2, destinationPath));
 				}
 			}
 			finally
@@ -588,14 +601,14 @@ namespace Tests
 			}
 		}
 
-		[TestMethod]
+		[Test]
 		public void PathGetDirectoryNameReturnsSameResultAsBclForRelativePath()
 		{
 			var text = System.IO.Path.GetDirectoryName(@"foo\bar\baz");
 			Assert.AreEqual(@"foo\bar", text);
 		}
 
-		[TestMethod, Ignore] //("does not work on some server/domain systems.")
+		[Test, Ignore("does not work on some server/domain systems.")]
 		public void TestGetAccessControl()
 		{
 			var tempLongPathFilename = Path.Combine(longPathDirectory, Path.GetRandomFileName());
@@ -623,7 +636,7 @@ namespace Tests
 			}
 		}
 
-		[TestMethod, Ignore] //("does not work on some server/domain systems.")
+		[Test, Ignore("does not work on some server/domain systems.")]
 		public void TestGetAccessControlSections()
 		{
 			var tempLongPathFilename = Path.Combine(longPathDirectory, Path.GetRandomFileName());
@@ -653,7 +666,7 @@ namespace Tests
 			}
 		}
 
-		[TestMethod]
+		[Test]
 		public void TestGetDirectoriesWithSearchWithNoResults()
 		{
 			var randomFileName = Path.GetRandomFileName();
@@ -671,7 +684,7 @@ namespace Tests
 			}
 		}
 
-		[TestMethod]
+		[Test]
 		public void TestGetFilesWithSearch()
 		{
 			var files = Directory.GetFiles(longPathDirectory, "*").ToArray();
@@ -679,7 +692,7 @@ namespace Tests
 			Assert.IsTrue(files.Contains(longPathFilename));
 		}
 
-		[TestMethod]
+		[Test]
 		public void TestGetFilesWithSearchWithNoResults()
 		{
 			var files = Directory.GetFiles(longPathDirectory, "giberish").ToArray();
@@ -687,7 +700,7 @@ namespace Tests
 			Assert.IsFalse(files.Contains(longPathFilename));
 		}
 
-		[TestMethod]
+		[Test]
 		public void TestGetRecursiveFilesWithAnySearch()
 		{
 			var tempLongPathFilename = Path.Combine(longPathDirectory, Path.GetRandomFileName());
@@ -709,7 +722,7 @@ namespace Tests
 			}
 		}
 
-		[TestMethod]
+		[Test]
 		public void TestGetRecursiveFilesWithSubsetSearch()
 		{
 			var tempLongPathFilename = Path.Combine(longPathDirectory, Path.GetRandomFileName());
@@ -733,7 +746,7 @@ namespace Tests
 			}
 		}
 
-		[TestMethod]
+		[Test]
 		public void TestGetFilesRecursiveWithSearchWithNoResults()
 		{
 			var tempLongPathFilename = Path.Combine(longPathDirectory, Path.GetRandomFileName());
@@ -755,7 +768,7 @@ namespace Tests
 			}
 		}
 
-		[TestMethod]
+		[Test]
 		public void TestGetFileSystemEntries()
 		{
 			var entries = Directory.GetFileSystemEntries(longPathDirectory).ToArray();
@@ -763,7 +776,7 @@ namespace Tests
 			Assert.IsTrue(entries.Contains(longPathFilename));
 		}
 
-		[TestMethod]
+		[Test]
 		public void TestGetFileSystemEntriesWithSearch()
 		{
 			var entries = Directory.GetFileSystemEntries(longPathDirectory, "*").ToArray();
@@ -771,7 +784,7 @@ namespace Tests
 			Assert.IsTrue(entries.Contains(longPathFilename));
 		}
 
-		[TestMethod]
+		[Test]
 		public void TestGetFileSystemEntriesWithSearchWithNoResults()
 		{
 			var entries = Directory.GetFileSystemEntries(longPathDirectory, "giberish").ToArray();
@@ -779,7 +792,7 @@ namespace Tests
 			Assert.IsFalse(entries.Contains(longPathFilename));
 		}
 
-		[TestMethod]
+		[Test]
 		public void TestGetRecursiveFileSystemEntriesWithSearch()
 		{
 			var tempLongPathFilename = Path.Combine(longPathDirectory, Path.GetRandomFileName());
@@ -801,7 +814,7 @@ namespace Tests
 			}
 		}
 
-		[TestMethod]
+		[Test]
 		public void TestGetFileSystemEntriesRecursiveWithSearchWithNoResults()
 		{
 			var tempLongPathFilename = Path.Combine(longPathDirectory, Path.GetRandomFileName());
@@ -823,22 +836,21 @@ namespace Tests
 			}
 		}
 
-		[TestMethod, ExpectedException(typeof(NotSupportedException))]
+		[Test]
 		public void TestSetCurrentDirectory()
 		{
 			string originalDir = Directory.GetCurrentDirectory();
 			try
 			{
-				Directory.SetCurrentDirectory(longPathDirectory);
-				Assert.AreEqual(longPathDirectory, Directory.GetCurrentDirectory());
+				Assert.Throws<NotSupportedException>(() => Directory.SetCurrentDirectory(longPathDirectory));
 			}
 			finally
 			{
-				Directory.SetCurrentDirectory(originalDir);
+				Assert.Throws<NotSupportedException>(() => Directory.SetCurrentDirectory(originalDir));
 			}
 		}
 
-		[TestMethod]
+		[Test]
 		public void TestSetCreationTime()
 		{
             var tempLongPathFilename = Path.Combine(longPathRoot, Path.GetRandomFileName());
@@ -861,7 +873,7 @@ namespace Tests
 		/// <remarks>
 		/// TODO: test some error conditions.
 		/// </remarks>
-		[TestMethod]
+		[Test]
 		public void TestSetCreationTimeUtc()
 		{
 			var tempLongPathFilename = Path.Combine(longPathDirectory, Path.GetRandomFileName());
@@ -880,15 +892,15 @@ namespace Tests
 			}
 		}
 
-		[TestMethod, ExpectedException(typeof(FileNotFoundException))]
+		[Test]
 		public void TestSetCreationTimeUtcNonExistentDir()
 		{
 			var tempLongPathFilename = Path.Combine(longPathDirectory, Path.GetRandomFileName());
 			DateTime dateTime = DateTime.UtcNow.AddDays(1);
-			Directory.SetCreationTimeUtc(tempLongPathFilename, dateTime);
+			Assert.Throws<FileNotFoundException>(() => Directory.SetCreationTimeUtc(tempLongPathFilename, dateTime));
 		}
 
-		[TestMethod]
+		[Test]
 		public void TestGetCreationTime()
 		{
 			var tempLongPathFilename = Path.Combine(longPathDirectory, Path.GetRandomFileName());
@@ -908,7 +920,7 @@ namespace Tests
 		/// <remarks>
 		/// TODO: test some error conditions.
 		/// </remarks>
-		[TestMethod]
+		[Test]
 		public void TestGetCreationTimeUTc()
 		{
 			var tempLongPathFilename = Path.Combine(longPathDirectory, Path.GetRandomFileName());
@@ -925,7 +937,7 @@ namespace Tests
 			}
 		}
 
-		[TestMethod]
+		[Test]
 		public void TestSetLastWriteTime()
 		{
 			var tempLongPathFilename = Path.Combine(longPathDirectory, Path.GetRandomFileName());
@@ -947,7 +959,7 @@ namespace Tests
 		/// <remarks>
 		/// TODO: test some error conditions.
 		/// </remarks>
-		[TestMethod]
+		[Test]
 		public void TestSetLastWriteTimeUtc()
 		{
 			var tempLongPathFilename = Path.Combine(longPathDirectory, Path.GetRandomFileName());
@@ -966,15 +978,15 @@ namespace Tests
 			}
 		}
 
-		[TestMethod, ExpectedException(typeof(FileNotFoundException))]
+		[Test]
 		public void TestSetLastWriteTimeUtcNonExistentDir()
 		{
 			var tempLongPathFilename = Path.Combine(longPathDirectory, Path.GetRandomFileName());
 			DateTime dateTime = DateTime.UtcNow.AddDays(1);
-			Directory.SetLastWriteTimeUtc(tempLongPathFilename, dateTime);
+			Assert.Throws<FileNotFoundException>(() => Directory.SetLastWriteTimeUtc(tempLongPathFilename, dateTime));
 		}
 
-		[TestMethod]
+		[Test]
 		public void TestGetLastWriteTime()
 		{
 			var tempLongPathFilename = Path.Combine(longPathDirectory, Path.GetRandomFileName());
@@ -991,7 +1003,7 @@ namespace Tests
 			}
 		}
 
-		[TestMethod]
+		[Test]
 		public void TestGetLastWriteTimeUtc()
 		{
 			var tempLongPathFilename = Path.Combine(longPathDirectory, Path.GetRandomFileName());
@@ -1008,7 +1020,7 @@ namespace Tests
 			}
 		}
 
-		[TestMethod]
+		[Test]
 		public void TestSetLastAccessTime()
 		{
 			var tempLongPathFilename = Path.Combine(longPathDirectory, Path.GetRandomFileName());
@@ -1027,7 +1039,7 @@ namespace Tests
 			}
 		}
 
-		[TestMethod]
+		[Test]
 		public void TestSetLastAccessTimeUtc()
 		{
 			var tempLongPathFilename = Path.Combine(longPathDirectory, Path.GetRandomFileName());
@@ -1046,15 +1058,15 @@ namespace Tests
 			}
 		}
 
-		[TestMethod, ExpectedException(typeof(FileNotFoundException))]
+		[Test]
 		public void TestSetLastAccessTimeUtcNonExistentDir()
 		{
 			var tempLongPathFilename = Path.Combine(longPathDirectory, Path.GetRandomFileName());
 			DateTime dateTime = DateTime.UtcNow.AddDays(1);
-			Directory.SetLastAccessTimeUtc(tempLongPathFilename, dateTime);
+			Assert.Throws<FileNotFoundException>(() => Directory.SetLastAccessTimeUtc(tempLongPathFilename, dateTime));
 		}
 
-		[TestMethod]
+		[Test]
 		public void TestGetLastAccessTime()
 		{
 			var tempLongPathFilename = Path.Combine(longPathDirectory, Path.GetRandomFileName());
@@ -1071,7 +1083,7 @@ namespace Tests
 			}
 		}
 
-		[TestMethod]
+		[Test]
 		public void TestGetLastAccessTimeUtc()
 		{
 			var tempLongPathFilename = Path.Combine(longPathDirectory, Path.GetRandomFileName());
@@ -1088,7 +1100,7 @@ namespace Tests
 			}
 		}
 
-		[TestMethod]
+		[Test]
 		public void TestGetLogicalDrives()
 		{
 			string[] directoryGetLogicalDrives = Directory.GetLogicalDrives();
@@ -1099,7 +1111,7 @@ namespace Tests
 		/// <remarks>
 		/// TODO: more realistic DirectorySecurity scenarios
 		/// </remarks>
-		[TestMethod]
+		[Test]
 		public void TestCreateWithFileSecurity()
 		{
 			var tempLongPathFilename = Path.Combine(longPathDirectory, Path.GetRandomFileName());
@@ -1114,8 +1126,8 @@ namespace Tests
 			}
 		}
 
-		[ClassCleanup]
-		public static void ClassCleanup()
+		[TearDown]
+		public void TearDown()
 		{
 			try
 			{
