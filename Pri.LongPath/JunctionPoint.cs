@@ -60,16 +60,18 @@ namespace Pri.LongPath {
             {
                 byte[] targetDirBytes = Encoding.Unicode.GetBytes(NonInterpretedPathPrefix + Path.GetFullPath(targetDir));
 
-                REPARSE_DATA_BUFFER reparseDataBuffer = new REPARSE_DATA_BUFFER();
+	            var reparseDataBuffer = new REPARSE_DATA_BUFFER
+	            {
+		            ReparseTag = IO_REPARSE_TAG_MOUNT_POINT,
+		            ReparseDataLength = (ushort) (targetDirBytes.Length + 12),
+		            SubstituteNameOffset = 0,
+		            SubstituteNameLength = (ushort) targetDirBytes.Length,
+		            PrintNameOffset = (ushort) (targetDirBytes.Length + 2),
+		            PrintNameLength = 0,
+		            PathBuffer = new byte[0x3ff0]
+	            };
 
-                reparseDataBuffer.ReparseTag           = IO_REPARSE_TAG_MOUNT_POINT;
-                reparseDataBuffer.ReparseDataLength    = (ushort)(targetDirBytes.Length + 12);
-                reparseDataBuffer.SubstituteNameOffset = 0;
-                reparseDataBuffer.SubstituteNameLength = (ushort)targetDirBytes.Length;
-                reparseDataBuffer.PrintNameOffset      = (ushort)(targetDirBytes.Length + 2);
-                reparseDataBuffer.PrintNameLength      = 0;
-                reparseDataBuffer.PathBuffer           = new byte[0x3ff0];
-                Array.Copy(targetDirBytes, reparseDataBuffer.PathBuffer, targetDirBytes.Length);
+	            Array.Copy(targetDirBytes, reparseDataBuffer.PathBuffer, targetDirBytes.Length);
 
                 int inBufferSize = Marshal.SizeOf(reparseDataBuffer);
                 IntPtr inBuffer = Marshal.AllocHGlobal(inBufferSize);
@@ -112,13 +114,15 @@ namespace Pri.LongPath {
 
             using (SafeFileHandle handle = OpenReparsePoint(junctionPoint, EFileAccess.GenericWrite))
             {
-                REPARSE_DATA_BUFFER reparseDataBuffer = new REPARSE_DATA_BUFFER();
+	            var reparseDataBuffer = new REPARSE_DATA_BUFFER
+	            {
+		            ReparseTag = IO_REPARSE_TAG_MOUNT_POINT,
+		            ReparseDataLength = 0,
+		            PathBuffer = new byte[0x3ff0]
+	            };
 
-                reparseDataBuffer.ReparseTag = IO_REPARSE_TAG_MOUNT_POINT;
-                reparseDataBuffer.ReparseDataLength = 0;
-                reparseDataBuffer.PathBuffer = new byte[0x3ff0];
 
-                int inBufferSize = Marshal.SizeOf(reparseDataBuffer);
+	            int inBufferSize = Marshal.SizeOf(reparseDataBuffer);
                 IntPtr inBuffer = Marshal.AllocHGlobal(inBufferSize);
                 try
                 {
@@ -356,6 +360,8 @@ namespace Pri.LongPath {
             /// <summary>
             /// Reserved; do not use. 
             /// </summary>
+            // ReSharper disable once MemberCanBePrivate.Local
+            // ReSharper disable once FieldCanBeMadeReadOnly.Local
             public ushort Reserved;
 
             /// <summary>

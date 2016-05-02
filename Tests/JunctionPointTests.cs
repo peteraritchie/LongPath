@@ -1,17 +1,12 @@
 ﻿// 
 // Source: http://www.codeproject.com/Articles/15633/Manipulating-NTFS-Junction-Points-in-NET
-// rewritten for MSTest (by github.com/SchreinerK)
 
-using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Pri.LongPath;
 using NUnit.Framework;
 
-namespace Tests {
+namespace Tests
+{
 
 	using Path = Pri.LongPath.Path;
 	using Directory = Pri.LongPath.Directory;
@@ -19,7 +14,7 @@ namespace Tests {
 	using File = Pri.LongPath.File;
 	using FileSystemInfo = Pri.LongPath.FileSystemInfo;
 
-    [TestFixture]
+	[TestFixture]
     public class JunctionPointTest
     {
         private string tempFolder;
@@ -80,7 +75,7 @@ namespace Tests {
 					Assert.IsFalse(JunctionPoint.Exists(junctionPoint), "Junction point not created yet.");
 
 					// Create junction point and confirm its properties.
-					JunctionPoint.Create(junctionPoint, targetFolder, false /*don't overwrite*/);
+					JunctionPoint.Create(junctionPoint, targetFolder, overwrite: false);
 
 					Assert.IsTrue(JunctionPoint.Exists(junctionPoint), "Junction point exists now.");
 

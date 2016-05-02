@@ -20,18 +20,19 @@ namespace Pri.LongPath
 	/// </summary>
     public sealed class Privilege
     {
-        private static LocalDataStoreSlot tlsSlot = Thread.AllocateDataSlot();
-        private static HybridDictionary privileges = new HybridDictionary();
-        private static HybridDictionary luids = new HybridDictionary();
-        private static ReaderWriterLock privilegeLock = new ReaderWriterLock();
+        private static readonly LocalDataStoreSlot tlsSlot = Thread.AllocateDataSlot();
+        private static readonly HybridDictionary privileges = new HybridDictionary();
+        private static readonly HybridDictionary luids = new HybridDictionary();
+        private static readonly ReaderWriterLock privilegeLock = new ReaderWriterLock();
 
-        private bool needToRevert = false;
-        private bool initialState = false;
-        private bool stateWasChanged = false;
-        private Luid luid;
+        private bool needToRevert;
+        private bool initialState;
+        private bool stateWasChanged;
+        private readonly Luid luid;
         private readonly Thread currentThread = Thread.CurrentThread;
-        private TlsContents tlsContents = null;
+        private TlsContents tlsContents;
 
+		// ReSharper disable UnusedMember.Global
         public const string CreateToken                     = "SeCreateTokenPrivilege";
         public const string AssignPrimaryToken              = "SeAssignPrimaryTokenPrivilege";
         public const string LockMemory                      = "SeLockMemoryPrivilege";
@@ -64,6 +65,7 @@ namespace Pri.LongPath
         public const string CreateGlobal                    = "SeCreateGlobalPrivilege";
         public const string TrustedCredentialManagerAccess  = "SeTrustedCredManAccessPrivilege";
         public const string ReserveProcessor                = "SeReserveProcessorPrivilege";
+		// ReSharper restore UnusedMember.Global
 
 
         //
@@ -420,12 +422,18 @@ namespace Pri.LongPath
                         ( this.tlsContents.ReferenceCountValue > 1 ||
                         !this.tlsContents.IsImpersonating ))
                     {
-                        NativeMethods.TOKEN_PRIVILEGE newState = new NativeMethods.TOKEN_PRIVILEGE();
-                        newState.PrivilegeCount = 1;
-                        newState.Privilege.Luid = this.luid;
-                        newState.Privilege.Attributes = ( this.initialState ? NativeMethods.SE_PRIVILEGE_ENABLED : NativeMethods.SE_PRIVILEGE_DISABLED );
+	                    var newState = new NativeMethods.TOKEN_PRIVILEGE
+	                    {
+		                    PrivilegeCount = 1,
+		                    Privilege =
+		                    {
+			                    Luid = this.luid,
+			                    Attributes =
+				                    (this.initialState ? NativeMethods.SE_PRIVILEGE_ENABLED : NativeMethods.SE_PRIVILEGE_DISABLED)
+		                    }
+	                    };
 
-                        NativeMethods.TOKEN_PRIVILEGE previousState = new NativeMethods.TOKEN_PRIVILEGE();
+	                    NativeMethods.TOKEN_PRIVILEGE previousState = new NativeMethods.TOKEN_PRIVILEGE();
                         uint previousSize = 0;
 
                         if ( false == NativeMethods.AdjustTokenPrivileges(
@@ -563,12 +571,17 @@ namespace Pri.LongPath
                         this.tlsContents.IncrementReferenceCount();
                     }
 
-                    NativeMethods.TOKEN_PRIVILEGE newState = new NativeMethods.TOKEN_PRIVILEGE();
-                    newState.PrivilegeCount = 1;
-                    newState.Privilege.Luid = this.luid;
-                    newState.Privilege.Attributes = enable ? NativeMethods.SE_PRIVILEGE_ENABLED : NativeMethods.SE_PRIVILEGE_DISABLED;
+	                var newState = new NativeMethods.TOKEN_PRIVILEGE
+	                {
+		                PrivilegeCount = 1,
+		                Privilege =
+		                {
+			                Luid = this.luid,
+			                Attributes = enable ? NativeMethods.SE_PRIVILEGE_ENABLED : NativeMethods.SE_PRIVILEGE_DISABLED
+		                }
+	                };
 
-                    NativeMethods.TOKEN_PRIVILEGE previousState = new NativeMethods.TOKEN_PRIVILEGE();
+	                NativeMethods.TOKEN_PRIVILEGE previousState = new NativeMethods.TOKEN_PRIVILEGE();
                     uint previousSize = 0;
 
                     //

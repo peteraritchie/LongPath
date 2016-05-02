@@ -1,7 +1,7 @@
 LongPath
 ========
 
-[![Build status](https://ci.appveyor.com/api/projects/status/w9410p6garuyba2b?svg=true)](https://ci.appveyor.com/project/peteraritchie/longpath)
+[![Build status](https://ci.appveyor.com/api/projects/status/w9410p6garuyba2b?svg=true)](https://ci.appveyor.com/project/peteraritchie/longpath) [![NuGet Badge](https://buildstats.info/nuget/pri.longpath)](https://www.nuget.org/packages/PRI.LongPath/)
 
 A drop-in library to support long paths in .NET
 

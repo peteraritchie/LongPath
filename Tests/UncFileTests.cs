@@ -468,24 +468,24 @@ namespace Tests
 			}
 		}
 
-		[Test] //x
+		[Test]
 		public void TestReplaceIgnoreMergeWithReadonlyBackupPath()
 		{
 			var tempLongPathFilename = new StringBuilder(uncDirectory).Append(@"\").Append("filename.ext").ToString();
 			var tempBackupPathName = new StringBuilder(uncDirectory).Append(@"\readonly").ToString();
 			var di = new DirectoryInfo(tempBackupPathName);
-			di.Create();//x
+			di.Create();
 
 			var attr = di.Attributes;
 			di.Attributes = attr | FileAttributes.ReadOnly;
 			var tempBackupLongPathFilename = new StringBuilder(tempBackupPathName).Append(@"\").Append("backup").ToString();
-			using (var fileStream = File.Create(tempLongPathFilename))//x
+			using (var fileStream = File.Create(tempLongPathFilename))
 			{
 				fileStream.WriteByte(42);
 			}
 			var tempLongPathFilename2 = new StringBuilder(uncDirectory).Append(@"\").Append("filename2.ext").ToString();
 
-			using (var fileStream = File.Create(tempLongPathFilename2))//x
+			using (var fileStream = File.Create(tempLongPathFilename2))
 			{
 				fileStream.WriteByte(52);
 			}
@@ -1295,8 +1295,6 @@ namespace Tests
 				File.Delete(filename);
 			}
 		}
-
-		private static string longPathRoot;
 
 		/// <remarks>
 		/// TODO: more realistic FileSecurity scenarios

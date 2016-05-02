@@ -570,7 +570,7 @@ namespace Tests
 			try
 			{
 				var fi2 = fi.Replace(tempLongPathFilename2, null);
-				Assert.IsNotNull(fi2);;
+				Assert.IsNotNull(fi2);
 				Assert.AreEqual(tempLongPathFilename2, fi2.FullName);
 				using (var fileStream = File.OpenRead(tempLongPathFilename2))
 				{

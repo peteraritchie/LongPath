@@ -37,9 +37,6 @@ namespace Tests
 			Debug.Assert(Directory.Exists(longPathDirectory));
 		}
 
-		/// <remarks>
-		/// Why are we here?
-		/// </remarks>
 		[Test]
 		public void TestProblemWithSystemIoExists()
 		{
@@ -80,7 +77,7 @@ namespace Tests
 			var method = member as MethodInfo;
 			if (method == null) return member.Name;
 			ParameterInfo[] parameters = method.GetParameters();
-			return string.Format("{0} {1}({2})", method.ReturnType.Name, method.Name, parameters.Count() == 0 ? "" : (parameters.Select(e => e.ParameterType.Name).Aggregate((c, n) => c + ", " + n)));
+			return string.Format("{0} {1}({2})", method.ReturnType.Name, method.Name, !parameters.Any() ? "" : (parameters.Select(e => e.ParameterType.Name).Aggregate((c, n) => c + ", " + n)));
 		}
 
 		[Test]
@@ -97,8 +94,8 @@ namespace Tests
 				missing = fileMemberNames.Aggregate((c, n) => c + ", " + n);
 				IEnumerable<string> missingCollection = fileMemberNames.Except(systemIoFileMemberNames);
 				IEnumerable<string> missingCollection2 = systemIoFileMemberNames.Except(fileMemberNames);
-				missing = (missingCollection2.Count() == 0 ? "" : ("missing: " + missingCollection2.Aggregate((c, n) => c + ", " + n) + Environment.NewLine)) +
-					(missingCollection.Count() == 0 ? "" : ("extra: " + missingCollection.Aggregate((c, n) => c + ", " + n)));
+				missing = (!missingCollection2.Any() ? "" : ("missing: " + missingCollection2.Aggregate((c, n) => c + ", " + n) + Environment.NewLine)) +
+					(!missingCollection.Any() ? "" : ("extra: " + missingCollection.Aggregate((c, n) => c + ", " + n)));
 			}
 			Assert.AreEqual(systemIoFileMembers.Length, fileMembers.Length, missing);
 		}
@@ -117,8 +114,8 @@ namespace Tests
 				IEnumerable<string> directoryMemberNames = directoryMembersOrdered.Select(e => MemberToMethodString(e));
 				IEnumerable<string> missingCollection = directoryMemberNames.Except(systemIoDirectoryMemberNames);
 				IEnumerable<string> missingCollection2 = systemIoDirectoryMemberNames.Except(directoryMemberNames);
-				missing = (missingCollection2.Count() == 0 ? "" : ("missing: " + missingCollection2.Aggregate((c, n) => c + ", " + n) + Environment.NewLine)) +
-					(missingCollection.Count() == 0 ? "" : ("extra: " + missingCollection.Aggregate((c, n) => c + ", " + n)));
+				missing = (!missingCollection2.Any() ? "" : ("missing: " + missingCollection2.Aggregate((c, n) => c + ", " + n) + Environment.NewLine)) +
+					(!missingCollection.Any() ? "" : ("extra: " + missingCollection.Aggregate((c, n) => c + ", " + n)));
 			}
 			Assert.AreEqual(systemIoDirectoryMembers.Length, directoryMembers.Length, missing);
 		}
@@ -137,8 +134,8 @@ namespace Tests
 				IEnumerable<string> FileInfoMemberNames = FileInfoMembersOrdered.Select(e => MemberToMethodString(e));
 				IEnumerable<string> missingCollection = FileInfoMemberNames.Except(systemIoFileInfoMemberNames);
 				IEnumerable<string> missingCollection2 = systemIoFileInfoMemberNames.Except(FileInfoMemberNames);
-				missing = (missingCollection2.Count() == 0 ? "" : ("missing: " + missingCollection2.Aggregate((c, n) => c + ", " + n) + Environment.NewLine)) +
-					(missingCollection.Count() == 0 ? "" : ("extra: " + missingCollection.Aggregate((c, n) => c + ", " + n)));
+				missing = (!missingCollection2.Any() ? "" : ("missing: " + missingCollection2.Aggregate((c, n) => c + ", " + n) + Environment.NewLine)) +
+					(!missingCollection.Any() ? "" : ("extra: " + missingCollection.Aggregate((c, n) => c + ", " + n)));
 			}
 			Assert.AreEqual(systemIoFileInfoMembers.Length, FileInfoMembers.Length, missing);
 		}
@@ -157,8 +154,8 @@ namespace Tests
 				IEnumerable<string> DirectoryInfoMemberNames = DirectoryInfoMembersOrdered.Select(e => MemberToMethodString(e));
 				IEnumerable<string> missingCollection = DirectoryInfoMemberNames.Except(systemIoDirectoryInfoMemberNames);
 				IEnumerable<string> missingCollection2 = systemIoDirectoryInfoMemberNames.Except(DirectoryInfoMemberNames);
-				missing = (missingCollection2.Count() == 0 ? "" : ("missing: " + missingCollection2.Aggregate((c, n) => c + ", " + n) + Environment.NewLine)) +
-					(missingCollection.Count() == 0 ? "" : ("extra: " + missingCollection.Aggregate((c, n) => c + ", " + n)));
+				missing = (!missingCollection2.Any() ? "" : ("missing: " + missingCollection2.Aggregate((c, n) => c + ", " + n) + Environment.NewLine)) +
+					(!missingCollection.Any() ? "" : ("extra: " + missingCollection.Aggregate((c, n) => c + ", " + n)));
 			}
 			Assert.AreEqual(systemIoDirectoryInfoMembers.Length, DirectoryInfoMembers.Length, missing);
 		}
@@ -177,8 +174,8 @@ namespace Tests
 				IEnumerable<string> PathMemberNames = PathMembersOrdered.Select(e => MemberToMethodString(e));
 				IEnumerable<string> missingCollection = PathMemberNames.Except(systemIoPathMemberNames);
 				IEnumerable<string> missingCollection2 = systemIoPathMemberNames.Except(PathMemberNames);
-				missing = (missingCollection2.Count() == 0 ? "" : ("missing: " + missingCollection2.Aggregate((c, n) => c + ", " + n) + Environment.NewLine)) +
-					(missingCollection.Count() == 0 ? "" : ("extra: " + missingCollection.Aggregate((c, n) => c + ", " + n)));
+				missing = (!missingCollection2.Any() ? "" : ("missing: " + missingCollection2.Aggregate((c, n) => c + ", " + n) + Environment.NewLine)) +
+					(!missingCollection.Any() ? "" : ("extra: " + missingCollection.Aggregate((c, n) => c + ", " + n)));
 			}
 			Assert.AreEqual(systemIoPathMembers.Length, PathMembers.Length, missing);
 		}
@@ -197,8 +194,8 @@ namespace Tests
 				IEnumerable<string> FileSystemInfoMemberNames = FileSystemInfoMembersOrdered.Select(e => MemberToMethodString(e));
 				IEnumerable<string> missingCollection = FileSystemInfoMemberNames.Except(systemIoFileSystemInfoMemberNames);
 				IEnumerable<string> missingCollection2 = systemIoFileSystemInfoMemberNames.Except(FileSystemInfoMemberNames);
-				missing = (missingCollection2.Count() == 0 ? "" : ("missing: " + missingCollection2.Aggregate((c, n) => c + ", " + n) + Environment.NewLine)) +
-					(missingCollection.Count() == 0 ? "" : ("extra: " + missingCollection.Aggregate((c, n) => c + ", " + n)));
+				missing = (!missingCollection2.Any() ? "" : ("missing: " + missingCollection2.Aggregate((c, n) => c + ", " + n) + Environment.NewLine)) +
+					(!missingCollection.Any() ? "" : ("extra: " + missingCollection.Aggregate((c, n) => c + ", " + n)));
 			}
 			Assert.AreEqual(systemIoFileSystemInfoMembers.Length, FileSystemInfoMembers.Length, missing);
 		}

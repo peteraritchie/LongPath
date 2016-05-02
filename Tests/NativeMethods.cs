@@ -73,7 +73,7 @@ namespace Tests
 		}
 		
 		[DllImport("Kernel32.dll", CharSet = CharSet.Auto, SetLastError = true)]
-		public extern static bool GetVolumeInformation(
+		public static extern bool GetVolumeInformation(
 		  string RootPathName,
 		  StringBuilder VolumeNameBuffer,
 		  int VolumeNameSize,

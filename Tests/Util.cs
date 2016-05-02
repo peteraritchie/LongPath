@@ -13,7 +13,7 @@ using Path = Pri.LongPath.Path;
 
 namespace Tests
 {
-	static internal class Util
+	internal static class Util
 	{
 		public static string MakeLongPath(string path)
 		{

@@ -18,7 +18,7 @@ namespace Pri.LongPath
 		public static readonly char AltDirectorySeparatorChar = System.IO.Path.AltDirectorySeparatorChar;
 		public static readonly char VolumeSeparatorChar = ':';
 
-		public readonly static char PathSeparator = System.IO.Path.PathSeparator;
+		public static readonly char PathSeparator = System.IO.Path.PathSeparator;
 
 		internal static string NormalizeLongPath(string path)
 		{

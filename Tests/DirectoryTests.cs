@@ -107,7 +107,7 @@ namespace Tests
 		}
 
 		/// <remarks>
-		/// Tests <see cref="Directory.EnumerateDirectories(string)"/>, depends on <see cref="Directory.CreateDirectory"/>
+		/// Tests <see cref="Directory.EnumerateDirectories(string)"/>, depends on <see cref="Pri.LongPath.Directory.CreateDirectory"/>
 		/// </remarks>
 		[Test]
 		public void TestEnumerateDirectories()
@@ -241,7 +241,7 @@ namespace Tests
 		}
 
 		/// <remarks>
-		/// Tests <see cref="Directory.EnumerateDirectories(string)"/>, depends on <see cref="Directory.CreateDirectory"/>
+		/// Tests <see cref="Directory.EnumerateDirectories(string)"/>, depends on <see cref="Pri.LongPath.Directory.CreateDirectory"/>
 		/// </remarks>
 		[Test]
 		public void TestEnumerateFiles()
@@ -481,8 +481,6 @@ namespace Tests
 		[Test]
 		public void TestDeleteDirectory_JunctionPoint()
 		{
-			#region Prepare
-
 			string targetFolder = Path.Combine(rootTestDir, "ADirectory");
 			string junctionPoint = Path.Combine(rootTestDir, "SymLink");
 
@@ -495,17 +493,11 @@ namespace Tests
 				File.Create(targetFile).Close();
 				try
 				{
-					JunctionPoint.Create(junctionPoint, targetFolder, false /*don't overwrite*/);
+					JunctionPoint.Create(junctionPoint, targetFolder, overwrite: false);
 					Assert.IsTrue(File.Exists(Path.Combine(targetFolder, "AFile")), "File should be accessible.");
 					Assert.IsTrue(File.Exists(Path.Combine(junctionPoint, "AFile")), "File should be accessible via the junction point.");
 
-					#endregion
-
-					// Test
-
 					Directory.Delete(junctionPoint, false);
-
-					// Verify
 
 					Assert.IsTrue(File.Exists(Path.Combine(targetFolder, "AFile")), "File should be accessible.");
 					Assert.IsFalse(JunctionPoint.Exists(junctionPoint), "Junction point should not exist now.");

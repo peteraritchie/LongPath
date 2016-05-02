@@ -173,10 +173,10 @@ namespace Tests
             Assert.IsTrue(Directory.Exists(uncDirectory));
         }
 
-        /// <remarks>
-        /// Tests <see cref="Directory.EnumerateDirectories(string)"/>, depends on <see cref="Directory.CreateDirectory"/>
-        /// </remarks>
-        [Test]
+		/// <remarks>
+		/// Tests <see cref="Directory.EnumerateDirectories(string)"/>, depends on <see cref="Pri.LongPath.Directory.CreateDirectory"/>
+		/// </remarks>
+		[Test]
         public void TestEnumerateDirectories()
         {
             var randomFileName = Path.GetRandomFileName();
@@ -307,10 +307,10 @@ namespace Tests
             }
         }
 
-        /// <remarks>
-        /// Tests <see cref="Directory.EnumerateDirectories(string)"/>, depends on <see cref="Directory.CreateDirectory"/>
-        /// </remarks>
-        [Test]
+		/// <remarks>
+		/// Tests <see cref="Directory.EnumerateDirectories(string)"/>, depends on <see cref="Pri.LongPath.Directory.CreateDirectory"/>
+		/// </remarks>
+		[Test]
         public void TestEnumerateFiles()
         {
             var files = Directory.EnumerateFiles(uncDirectory).ToArray();

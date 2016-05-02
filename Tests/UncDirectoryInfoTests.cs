@@ -734,8 +734,7 @@ namespace Tests
 			try
 			{
 				DateTime dateTime = DateTime.Now.AddDays(1);
-				var di = new DirectoryInfo(filename);
-				di.CreationTime = dateTime;
+				var di = new DirectoryInfo(filename) {CreationTime = dateTime};
 				Assert.AreEqual(dateTime, File.GetCreationTime(filename));
 			}
 			finally
@@ -751,8 +750,7 @@ namespace Tests
 			try
 			{
 				DateTime dateTime = DateTime.UtcNow.AddDays(1);
-				var di = new DirectoryInfo(filename);
-				di.CreationTimeUtc = dateTime;
+				var di = new DirectoryInfo(filename) {CreationTimeUtc = dateTime};
 				Assert.AreEqual(dateTime, File.GetCreationTimeUtc(filename));
 			}
 			finally
@@ -768,8 +766,7 @@ namespace Tests
 			try
 			{
 				DateTime dateTime = DateTime.Now.AddDays(1);
-				var di = new DirectoryInfo(filename);
-				di.LastWriteTime = dateTime;
+				var di = new DirectoryInfo(filename) {LastWriteTime = dateTime};
 				Assert.AreEqual(dateTime, File.GetLastWriteTime(filename));
 			}
 			finally
@@ -785,8 +782,7 @@ namespace Tests
 			try
 			{
 				DateTime dateTime = DateTime.UtcNow.AddDays(1);
-				var di = new DirectoryInfo(filename);
-				di.LastWriteTimeUtc = dateTime;
+				var di = new DirectoryInfo(filename) {LastWriteTimeUtc = dateTime};
 				Assert.AreEqual(dateTime, File.GetLastWriteTimeUtc(filename));
 			}
 			finally
@@ -802,8 +798,7 @@ namespace Tests
 			try
 			{
 				DateTime dateTime = DateTime.Now.AddDays(1);
-				var di = new DirectoryInfo(filename);
-				di.LastAccessTime = dateTime;
+				var di = new DirectoryInfo(filename) {LastAccessTime = dateTime};
 				Assert.AreEqual(dateTime, File.GetLastAccessTime(filename));
 			}
 			finally
@@ -819,8 +814,7 @@ namespace Tests
 			try
 			{
 				DateTime dateTime = DateTime.UtcNow.AddDays(1);
-				var di = new DirectoryInfo(filename);
-				di.LastAccessTimeUtc = dateTime;
+				var di = new DirectoryInfo(filename) {LastAccessTimeUtc = dateTime};
 				Assert.AreEqual(dateTime, File.GetLastAccessTimeUtc(filename));
 			}
 			finally

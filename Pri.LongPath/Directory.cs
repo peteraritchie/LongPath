@@ -47,9 +47,6 @@ namespace Pri.LongPath
 
 		public static void Delete(string path, bool recursive)
 		{
-
-			#region FIX: support for directory reparse point
-
 			/* MSDN: https://msdn.microsoft.com/en-us/library/fxeahc5f.aspx
 			   The behavior of this method differs slightly when deleting a directory that contains a reparse point, 
 			   such as a symbolic link or a mount point. 
@@ -73,17 +70,11 @@ namespace Pri.LongPath
 				// ignore: not there when we try to delete, it doesn't matter
 			}
 
-			#endregion
-
-			#region FIX: recursive=false
-
 			if (recursive == false) 
 			{
 				Delete(path);
 				return;
 			}
-
-			#endregion
 
 			try
 			{

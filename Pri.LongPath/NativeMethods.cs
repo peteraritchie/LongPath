@@ -234,14 +234,15 @@ namespace Pri.LongPath
 			internal uint ftTimeHigh;
 		}
 		[DllImport("kernel32.dll", SetLastError = true)]
-		internal unsafe static extern bool SetFileTime(SafeFileHandle hFile, FILE_TIME* creationTime,
+		internal static extern unsafe bool SetFileTime(SafeFileHandle hFile, FILE_TIME* creationTime,
 					FILE_TIME* lastAccessTime, FILE_TIME* lastWriteTime);
 
 		[DllImport("kernel32.dll", BestFitMapping = false, CharSet = CharSet.Auto, ExactSpelling = false, SetLastError = true)]
 		internal static extern bool GetFileAttributesEx(string name, int fileInfoLevel, ref WIN32_FILE_ATTRIBUTE_DATA lpFileInformation);
 
 		[DllImport("kernel32.dll", CharSet = CharSet.None, EntryPoint = "SetErrorMode", ExactSpelling = true)]
-		private static extern int SetErrorMode_VistaAndOlder(int newMode); private readonly static Version ThreadErrorModeMinOsVersion = new Version(6, 1, 7600);
+		private static extern int SetErrorMode_VistaAndOlder(int newMode);
+		private static readonly Version ThreadErrorModeMinOsVersion = new Version(6, 1, 7600);
 		[DllImport("kernel32.dll", CharSet = CharSet.None, EntryPoint = "SetThreadErrorMode", ExactSpelling = false, SetLastError = true)]
 		private static extern bool SetErrorMode_Win7AndNewer(int newMode, out int oldMode);
 

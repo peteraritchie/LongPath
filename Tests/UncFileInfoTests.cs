@@ -578,7 +578,7 @@ namespace Tests
 			try
 			{
 				var fi2 = fi.Replace(tempLongPathFilename2, null);
-				Assert.IsNotNull(fi2); ;
+				Assert.IsNotNull(fi2);
 				Assert.AreEqual(tempLongPathFilename2, fi2.FullName);
 				using (var fileStream = File.OpenRead(tempLongPathFilename2))
 				{
@@ -743,8 +743,7 @@ namespace Tests
 			try
 			{
 				DateTime dateTime = DateTime.Now.AddDays(1);
-				var fi = new FileInfo(filename);
-				fi.CreationTime = dateTime;
+				var fi = new FileInfo(filename) {CreationTime = dateTime};
 				Assert.AreEqual(dateTime, File.GetCreationTime(filename));
 			}
 			finally
@@ -760,8 +759,7 @@ namespace Tests
 			try
 			{
 				DateTime dateTime = DateTime.UtcNow.AddDays(1);
-				var fi = new FileInfo(filename);
-				fi.CreationTimeUtc = dateTime;
+				var fi = new FileInfo(filename) {CreationTimeUtc = dateTime};
 				Assert.AreEqual(dateTime, File.GetCreationTimeUtc(filename));
 			}
 			finally
@@ -777,8 +775,7 @@ namespace Tests
 			try
 			{
 				DateTime dateTime = DateTime.Now.AddDays(1);
-				var fi = new FileInfo(filename);
-				fi.LastWriteTime = dateTime;
+				var fi = new FileInfo(filename) {LastWriteTime = dateTime};
 				Assert.AreEqual(dateTime, File.GetLastWriteTime(filename));
 			}
 			finally
@@ -794,8 +791,7 @@ namespace Tests
 			try
 			{
 				DateTime dateTime = DateTime.UtcNow.AddDays(1);
-				var fi = new FileInfo(filename);
-				fi.LastWriteTimeUtc = dateTime;
+				var fi = new FileInfo(filename) {LastWriteTimeUtc = dateTime};
 				Assert.AreEqual(dateTime, File.GetLastWriteTimeUtc(filename));
 			}
 			finally
@@ -811,8 +807,7 @@ namespace Tests
 			try
 			{
 				DateTime dateTime = DateTime.Now.AddDays(1);
-				var fi = new FileInfo(filename);
-				fi.LastAccessTime = dateTime;
+				var fi = new FileInfo(filename) {LastAccessTime = dateTime};
 				Assert.AreEqual(dateTime, File.GetLastAccessTime(filename));
 			}
 			finally
@@ -828,8 +823,7 @@ namespace Tests
 			try
 			{
 				DateTime dateTime = DateTime.UtcNow.AddDays(1);
-				var fi = new FileInfo(filename);
-				fi.LastAccessTimeUtc = dateTime;
+				var fi = new FileInfo(filename) {LastAccessTimeUtc = dateTime};
 				Assert.AreEqual(dateTime, File.GetLastAccessTimeUtc(filename));
 			}
 			finally
