@@ -72,9 +72,6 @@ namespace Tests
 		[Test]
 		public void TestExistsOnExistantDirectory()
 		{
-			File.GetAccessControl(@"\\mi\dfs\shared");
-			var f = new FileInfo(@"I:\Patent\Client\3582347 - (WH 7583) TestSubject\384572US03_2098\DRAFT\MyDraft v1.docx");
-			var b2 = f.Exists;
 			Assert.IsTrue(new DirectoryInfo(uncDirectory).Exists);
 		}
 
