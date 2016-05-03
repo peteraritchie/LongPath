@@ -14,6 +14,8 @@ namespace Pri.LongPath
 
 	public class DirectoryInfo : FileSystemInfo
 	{
+		private readonly string _name;
+
 		public override bool Exists
 		{
 			get
@@ -27,7 +29,10 @@ namespace Pri.LongPath
 			}
 		}
 
-		public override string Name { get; }
+		public override string Name
+		{
+			get { return _name; }
+		}
 
 		public DirectoryInfo Parent
 		{
@@ -58,7 +63,7 @@ namespace Pri.LongPath
 			if (path == null) throw new ArgumentNullException("path");
 			OriginalPath = path;
 			FullPath = Path.GetFullPath(path);
-			Name = (OriginalPath.Length != 2 || OriginalPath[1] != ':' ? GetDirName(FullPath) : ".");
+			_name = (OriginalPath.Length != 2 || OriginalPath[1] != ':' ? GetDirName(FullPath) : ".");
 		}
 
 		public void Create()
