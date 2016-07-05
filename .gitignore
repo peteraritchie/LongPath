@@ -30,6 +30,7 @@
 *.vssscc
 .builds
 Ankh.NoLoad
+.vs
 
 # Visual Studio profiler
 *.psess

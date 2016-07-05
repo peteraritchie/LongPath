@@ -309,8 +309,16 @@ namespace Pri.LongPath
 		internal static void SetAccessControlExtracted(FileSystemSecurity security, string name)
 		{
 			//security.WriteLock();
-			AccessControlSections includeSections = AccessControlSections.Audit | AccessControlSections.Owner | AccessControlSections.Group;
-
+			AccessControlSections includeSections = AccessControlSections.Owner | AccessControlSections.Group;
+			if(security.GetAccessRules(true, false, typeof(SecurityIdentifier)).Count > 0)
+			{
+				includeSections |= AccessControlSections.Access;
+			}
+			if (security.GetAuditRules(true, false, typeof(SecurityIdentifier)).Count > 0)
+			{
+				includeSections |= AccessControlSections.Audit;
+			}
+			
 			SecurityInfos securityInfo = (SecurityInfos)0;
 			SecurityIdentifier owner = null;
 			SecurityIdentifier group = null;
