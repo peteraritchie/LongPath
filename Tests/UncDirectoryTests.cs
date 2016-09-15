@@ -1153,6 +1153,15 @@ namespace Tests
             }
         }
 
+        [Test]
+        public void TestDirectoryCreateNearMaxPathLimit()
+        {
+            var uncPathNearMaxPathLimit = Path.Combine(uncDirectory, new string('x', Pri.LongPath.NativeMethods.MAX_PATH - uncDirectory.Length - 2));
+            Directory.CreateDirectory(uncPathNearMaxPathLimit);
+            Assert.That(Directory.Exists(uncPathNearMaxPathLimit));
+            Directory.Delete(uncPathNearMaxPathLimit);
+        }
+
         [TearDown]
         public void TearDown()
         {
