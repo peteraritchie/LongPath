@@ -1174,7 +1174,7 @@ namespace Tests
             Assert.That(Directory.Exists(uncPathNearMaxPathLimit));
             Assert.That(Directory.Exists(uncPathAboveMaxPathLimit));
 
-            // there should be one subdirectory inside almostLongPath
+            // there should be one subdirectory inside uncPathNearMaxPathLimit
             var subDirs = Directory.EnumerateDirectories(uncPathNearMaxPathLimit).ToArray();
 
             Directory.Delete(uncPathAboveMaxPathLimit);
