@@ -1162,6 +1162,27 @@ namespace Tests
             Directory.Delete(uncPathNearMaxPathLimit);
         }
 
+        [Test]
+        public void TestDirectoryEnumerateDirectoriesNearMaxPathLimit()
+        {
+            var uncPathNearMaxPathLimit = Path.Combine(uncDirectory, new string('x', Pri.LongPath.NativeMethods.MAX_PATH - uncDirectory.Length - 2));
+            Directory.CreateDirectory(uncPathNearMaxPathLimit.Replace(uncDirectory, directory));
+
+            var uncPathAboveMaxPathLimit = Path.Combine(uncPathNearMaxPathLimit, "wibble");
+            Directory.CreateDirectory(uncPathAboveMaxPathLimit);
+
+            Assert.That(Directory.Exists(uncPathNearMaxPathLimit));
+            Assert.That(Directory.Exists(uncPathAboveMaxPathLimit));
+
+            // there should be one subdirectory inside almostLongPath
+            var subDirs = Directory.EnumerateDirectories(uncPathNearMaxPathLimit).ToArray();
+
+            Directory.Delete(uncPathAboveMaxPathLimit);
+            Directory.Delete(uncPathNearMaxPathLimit);
+
+            Assert.That(subDirs.Length, Is.EqualTo(1));
+        }
+
         [TearDown]
         public void TearDown()
         {
