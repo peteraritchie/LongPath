@@ -90,7 +90,19 @@ namespace Pri.LongPath
                 return path;
             }
 
-            if (path.Length >= NativeMethods.MAX_PATH)
+            var maxPathLimit = NativeMethods.MAX_PATH;
+            Uri uri;
+            if (Uri.TryCreate(path, UriKind.Absolute, out uri) && uri.IsUnc)
+            {
+                // What's going on here?  Empirical evidence shows that Windows has trouble dealing with UNC paths
+                // longer than MAX_PATH *minus* the length of the "\\hostname\" prefix.  See the following tests:
+                //  - UncDirectoryTests.TestDirectoryCreateNearMaxPathLimit
+                //  - UncDirectoryTests.TestDirectoryEnumerateDirectoriesNearMaxPathLimit
+                var rootPathLength = 3 + uri.Host.Length;
+                maxPathLimit -= rootPathLength;
+            }
+
+            if (path.Length >= maxPathLimit)
             {
                 return AddLongPathPrefix(path);
             }
