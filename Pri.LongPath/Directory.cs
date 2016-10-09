@@ -702,11 +702,10 @@ namespace Pri.LongPath
 
 				// To mimic Directory.CreateDirectory, we don't throw if the directory (not a file) already exists
 				var errorCode = Marshal.GetLastWin32Error();
-				// PR: Not sure this is even possible, we check for existance above.
-				//if (errorCode != NativeMethods.ERROR_ALREADY_EXISTS || !Exists(path))
-				//{
-				throw Common.GetExceptionFromWin32Error(errorCode);
-				//}
+				if (errorCode != NativeMethods.ERROR_ALREADY_EXISTS || !Exists(path))
+				{
+					throw Common.GetExceptionFromWin32Error(errorCode);
+				}
 			}
 			return new DirectoryInfo(path);
 		}
@@ -789,11 +788,10 @@ namespace Pri.LongPath
 
 				// To mimic Directory.CreateDirectory, we don't throw if the directory (not a file) already exists
 				var errorCode = Marshal.GetLastWin32Error();
-				// PR: Not sure this is even possible, we check for existance above.
-				//if (errorCode != NativeMethods.ERROR_ALREADY_EXISTS || !Exists(path))
-				//{
-				throw Common.GetExceptionFromWin32Error(errorCode);
-				//}
+				if (errorCode != NativeMethods.ERROR_ALREADY_EXISTS || !Exists(path))
+				{
+					throw Common.GetExceptionFromWin32Error(errorCode);
+				}
 			}
 			return new DirectoryInfo(fullPath);
 		}
