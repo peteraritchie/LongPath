@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
 #if !NET_2_0
@@ -922,8 +923,8 @@ namespace Pri.LongPath
 			if (handle.IsInvalid)
 			{
 				Exception ex = Common.GetExceptionFromLastWin32Error();
-				Console.WriteLine("error {0} with {1}\n{2}", ex.Message, normalizedPath, ex.StackTrace);
-				Console.WriteLine("{0} {1} {2} {3}", mode, access, share, options);
+				Debug.WriteLine(string.Format("error {0} with {1}{3}{2}", ex.Message, normalizedPath, ex.StackTrace, Environment.NewLine));
+				Debug.WriteLine(string.Format("{0} {1} {2} {3}", mode, access, share, options));
 				throw ex;
 			}
 
