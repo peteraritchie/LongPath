@@ -10,7 +10,7 @@
     <projectUrl>https://github.com/peteraritchie/LongPath</projectUrl>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
     <description>Drop-in library to support long paths in .NET</description>
-    <releaseNotes>Fixed DACL modifications.</releaseNotes>
+    <releaseNotes>Fixed incorrect empty path in some exceptions messaged.</releaseNotes>
     <copyright>Copyright 2016</copyright>
     <tags>long path</tags>
   </metadata>
