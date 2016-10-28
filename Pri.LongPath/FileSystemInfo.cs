@@ -332,7 +332,7 @@ namespace Pri.LongPath
 			catch (Exception)
 			{
 				if (state != State.Error)
-					Common.ThrowIOError(Marshal.GetLastWin32Error(), string.Empty);
+					Common.ThrowIOError(Marshal.GetLastWin32Error(), FullPath);
 			}
 		}
 
