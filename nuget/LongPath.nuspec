@@ -6,8 +6,9 @@
     <authors>Peter Ritchie</authors>
     <dependencies/>
     <owners>Peter Ritchie</owners>
-    <licenseUrl>https://github.com/peteraritchie/longpath/blob/master/LICENSE</licenseUrl>
+    <licenseUrl>https://raw.githubusercontent.com/peteraritchie/LongPath/master/longpath.png</licenseUrl>
     <projectUrl>https://github.com/peteraritchie/LongPath</projectUrl>
+    <iconUrl>https://raw.githubusercontent.com/peteraritchie/LongPath/dev/longpath.png</iconUrl>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
     <description>Drop-in library to support long paths in .NET</description>
     <releaseNotes>Fixed DACL modifications.</releaseNotes>
