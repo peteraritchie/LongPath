@@ -13,7 +13,12 @@ namespace Pri.LongPath
 
 	public class Common
 	{
-		private static readonly uint ProtectedDiscretionaryAcl = 0x80000000;
+	    public static bool IsRunningOnMono()
+	    {
+	       return Type.GetType("Mono.Runtime") != null;
+	    }
+
+	    private static readonly uint ProtectedDiscretionaryAcl = 0x80000000;
 		private static readonly uint ProtectedSystemAcl = 0x40000000;
 		private static readonly uint UnprotectedDiscretionaryAcl = 0x20000000;
 		private static readonly uint UnprotectedSystemAcl = 0x10000000;

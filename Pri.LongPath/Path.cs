@@ -22,7 +22,10 @@ namespace Pri.LongPath
 
 		internal static string NormalizeLongPath(string path)
 		{
-			return NormalizeLongPath(path, "path");
+		    if (Common.IsRunningOnMono())
+		        return path;
+
+            return NormalizeLongPath(path, "path");
 		}
 
 		// Normalizes path (can be longer than MAX_PATH) and adds \\?\ long path prefix
@@ -217,6 +220,8 @@ namespace Pri.LongPath
 
 		public static string GetDirectoryName(string path)
 		{
+		    if (Common.IsRunningOnMono()) return System.IO.Path.GetDirectoryName(path);
+
 			if (path == null) throw new ArgumentNullException("path");
 			Path.CheckInvalidPathChars(path);
 		    string basePath = null;

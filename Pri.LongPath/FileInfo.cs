@@ -25,7 +25,17 @@ namespace Pri.LongPath
 			}
 		}
 
-		public string DirectoryName
+	    public System.IO.FileInfo SysFileInfo
+        {
+	        get
+	        {
+	            return new System.IO.FileInfo(FullPath);
+	        }
+        }
+
+	    public override System.IO.FileSystemInfo SystemInfo { get { return SysFileInfo; } }
+
+        public string DirectoryName
 		{
 			get
 			{
@@ -37,6 +47,8 @@ namespace Pri.LongPath
 		{
 			get
 			{
+			    if (Common.IsRunningOnMono()) return SysFileInfo.Exists;
+
 				if (state == State.Uninitialized)
 				{
 					Refresh();
@@ -71,7 +83,9 @@ namespace Pri.LongPath
 
 		private long GetFileLength()
 		{
-			if (state == State.Uninitialized)
+		    if (Common.IsRunningOnMono()) return SysFileInfo.Length;
+
+            if (state == State.Uninitialized)
 			{
 				Refresh();
 			}
@@ -128,12 +142,15 @@ namespace Pri.LongPath
 
 		public FileStream Open(FileMode mode, FileAccess access, FileShare share)
 		{
-			return File.Open(FullPath, mode, access, share, 4096, FileOptions.SequentialScan);
+		    if (Common.IsRunningOnMono()) return SysFileInfo.Open(mode, access, share);
+
+            return File.Open(FullPath, mode, access, share, 4096, FileOptions.SequentialScan);
 		}
 
 		public FileStream OpenRead()
 		{
-			return File.Open(FullPath, FileMode.Open, FileAccess.Read, FileShare.Read, 4096, FileOptions.None);
+		    if (Common.IsRunningOnMono()) return SysFileInfo.OpenRead();
+            return File.Open(FullPath, FileMode.Open, FileAccess.Read, FileShare.Read, 4096, FileOptions.None);
 		}
 
 		public StreamReader OpenText()
@@ -165,11 +182,19 @@ namespace Pri.LongPath
 		{
 			get
 			{
-				return (Attributes & FileAttributes.ReadOnly) != 0;
+			    if (Common.IsRunningOnMono()) return SysFileInfo.IsReadOnly;
+
+                return (Attributes & FileAttributes.ReadOnly) != 0;
 			}
 			set
 			{
-				if (value)
+			    if (Common.IsRunningOnMono())
+			    {
+			        SysFileInfo.IsReadOnly = value;
+			        return;
+			    }
+
+                if (value)
 				{
 					Attributes |= FileAttributes.ReadOnly;
 					return;

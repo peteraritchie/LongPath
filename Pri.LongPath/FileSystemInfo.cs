@@ -17,37 +17,44 @@ namespace Pri.LongPath
 		protected readonly FileAttributeData data = new FileAttributeData();
 		protected int errorCode;
 
-		// Summary:
-		//     Gets or sets the attributes for the current file or directory.
-		//
-		// Returns:
-		//     System.IO.FileAttributes of the current System.IO.FileSystemInfo.
-		//
-		// Exceptions:
-		//   System.IO.FileNotFoundException:
-		//     The specified file does not exist.
-		//
-		//   System.IO.DirectoryNotFoundException:
-		//     The specified path is invalid; for example, it is on an unmapped drive.
-		//
-		//   System.Security.SecurityException:
-		//     The caller does not have the required permission.
-		//
-		//   System.ArgumentException:
-		//     The caller attempts to set an invalid file attribute. -or-The user attempts
-		//     to set an attribute value but does not have write permission.
-		//
-		//   System.IO.IOException:
-		//     System.IO.FileSystemInfo.Refresh() cannot initialize the data.
-		public FileAttributes Attributes
+	    public abstract System.IO.FileSystemInfo SystemInfo { get; }
+
+        // Summary:
+        //     Gets or sets the attributes for the current file or directory.
+        //
+        // Returns:
+        //     System.IO.FileAttributes of the current System.IO.FileSystemInfo.
+        //
+        // Exceptions:
+        //   System.IO.FileNotFoundException:
+        //     The specified file does not exist.
+        //
+        //   System.IO.DirectoryNotFoundException:
+        //     The specified path is invalid; for example, it is on an unmapped drive.
+        //
+        //   System.Security.SecurityException:
+        //     The caller does not have the required permission.
+        //
+        //   System.ArgumentException:
+        //     The caller attempts to set an invalid file attribute. -or-The user attempts
+        //     to set an attribute value but does not have write permission.
+        //
+        //   System.IO.IOException:
+        //     System.IO.FileSystemInfo.Refresh() cannot initialize the data.
+        public FileAttributes Attributes
 		{
 			get
 			{
+			    if (Common.IsRunningOnMono()) return SystemInfo.Attributes;
+
 				return Common.GetAttributes(FullPath);
 			}
 			set
 			{
-				Common.SetAttributes(FullPath, value);
+			    if (Common.IsRunningOnMono())
+			        SystemInfo.Attributes = value;
+			    else
+			        Common.SetAttributes(FullPath, value);
 			}
 		}
 
@@ -74,12 +81,16 @@ namespace Pri.LongPath
 		{
 			get
 			{
-				return CreationTimeUtc.ToLocalTime();
+			    if(Common.IsRunningOnMono()) return SystemInfo.CreationTime;
+                return CreationTimeUtc.ToLocalTime();
 			}
 
 			set
 			{
-				CreationTimeUtc = value.ToUniversalTime();
+			    if (Common.IsRunningOnMono())
+			        SystemInfo.CreationTime = value;
+			    else
+			        CreationTimeUtc = value.ToUniversalTime();
 			}
 		}
 
@@ -108,7 +119,9 @@ namespace Pri.LongPath
 		{
 			get
 			{
-				if (state == State.Uninitialized)
+			    if (Common.IsRunningOnMono()) return SystemInfo.CreationTimeUtc;
+
+                if (state == State.Uninitialized)
 				{
 					Refresh();
 				}
@@ -120,7 +133,13 @@ namespace Pri.LongPath
 			}
 			set
 			{
-				if (this is DirectoryInfo)
+			    if (Common.IsRunningOnMono())
+			    {
+			        SystemInfo.CreationTimeUtc = value;
+			        return;
+			    }
+
+                if (this is DirectoryInfo)
 					Directory.SetCreationTimeUtc(FullPath, value);
 				else
 					File.SetCreationTimeUtc(FullPath, value);
@@ -132,11 +151,14 @@ namespace Pri.LongPath
 		{
 			get
 			{
-				return LastWriteTimeUtc.ToLocalTime();
+			    if (Common.IsRunningOnMono()) return SystemInfo.LastWriteTime;
+
+                return LastWriteTimeUtc.ToLocalTime();
 			}
 			set
 			{
-				LastWriteTimeUtc = value.ToUniversalTime();
+			    if (Common.IsRunningOnMono()) SystemInfo.LastWriteTime = value;
+                else LastWriteTimeUtc = value.ToUniversalTime();
 			}
 		}
 
@@ -196,7 +218,10 @@ namespace Pri.LongPath
 		{
 			get
 			{
-				if (state == State.Uninitialized)
+			    if (Common.IsRunningOnMono()) return SystemInfo.LastWriteTimeUtc;
+
+
+                if (state == State.Uninitialized)
 				{
 					Refresh();
 				}
@@ -208,7 +233,14 @@ namespace Pri.LongPath
 			}
 			set
 			{
-				if (this is DirectoryInfo)
+			    if (Common.IsRunningOnMono())
+			    {
+			        SystemInfo.LastWriteTimeUtc = value;
+			        return;
+			    }
+
+
+                if (this is DirectoryInfo)
 					Directory.SetLastWriteTimeUtc(FullPath, value);
 				else
 					File.SetLastWriteTimeUtc(FullPath, value);
@@ -220,11 +252,14 @@ namespace Pri.LongPath
 		{
 			get
 			{
-				return LastAccessTimeUtc.ToLocalTime();
+			    if (Common.IsRunningOnMono()) return SystemInfo.LastAccessTime;
+
+                return LastAccessTimeUtc.ToLocalTime();
 			}
 			set
 			{
-				LastAccessTimeUtc = value.ToUniversalTime();
+			    if (Common.IsRunningOnMono()) SystemInfo.LastAccessTime = value;
+			    else LastAccessTimeUtc = value.ToUniversalTime();
 			}
 		}
 
@@ -232,7 +267,9 @@ namespace Pri.LongPath
 		{
 			get
 			{
-				if (state == State.Uninitialized)
+			    if (Common.IsRunningOnMono()) return SystemInfo.LastAccessTimeUtc;
+
+                if (state == State.Uninitialized)
 				{
 					Refresh();
 				}
@@ -244,7 +281,14 @@ namespace Pri.LongPath
 			}
 			set
 			{
-				if (this is DirectoryInfo)
+			    if (Common.IsRunningOnMono())
+			    {
+			        SystemInfo.LastAccessTimeUtc = value;
+			        return;
+			    }
+
+
+                if (this is DirectoryInfo)
 					Directory.SetLastAccessTimeUtc(FullPath, value);
 				else
 					File.SetLastAccessTimeUtc(FullPath, value);
