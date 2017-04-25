@@ -228,7 +228,8 @@ namespace Pri.LongPath
 			return new DirectoryInfo(newDir);
 		}
 
-		public IEnumerable<DirectoryInfo> EnumerateDirectories()
+#if NET_4_0 || NET_4_5
+        public IEnumerable<DirectoryInfo> EnumerateDirectories()
 		{
 		    if (Common.IsRunningOnMono())
             {
@@ -237,6 +238,7 @@ namespace Pri.LongPath
 
             return Directory.EnumerateFileSystemEntries(FullPath, "*", true, false, System.IO.SearchOption.TopDirectoryOnly).Select(directory => new DirectoryInfo(directory));
 		}
+#endif
 
 		public DirectorySecurity GetAccessControl()
 		{
@@ -275,29 +277,66 @@ namespace Pri.LongPath
 
 		public FileInfo[] GetFiles()
 		{
-		    if (Common.IsRunningOnMono()) return SysDirectoryInfo.GetFiles().Select(s => new FileInfo(s.FullName)).ToArray();
+		    if (Common.IsRunningOnMono())
+		    {
+		        var files = SysDirectoryInfo.GetFiles();
+                var ret = new FileInfo[files.Length];
+		        for (var index = 0; index < files.Length; index++)
+		            ret[index] = new FileInfo(files[index].FullName);
+
+		        return ret;
+		    }
 			return Directory.EnumerateFileSystemEntries(FullPath, "*", false, true, System.IO.SearchOption.TopDirectoryOnly).Select(path => new FileInfo(path)).ToArray();
 		}
 
 		public FileSystemInfo[] GetFileSystemInfos(string searchPattern)
 		{
-		    if (Common.IsRunningOnMono()) return SysDirectoryInfo.GetFileSystemInfos(searchPattern).Select(s => s.FullName).Select(e => Directory.Exists(e) ? (FileSystemInfo)new DirectoryInfo(e) : (FileSystemInfo)new FileInfo(e)).ToArray();
+		    if (Common.IsRunningOnMono())
+		    {
+		        var sysInfos = SysDirectoryInfo.GetFileSystemInfos(searchPattern);
+                FileSystemInfo[] fsis = new FileSystemInfo[sysInfos.Length];
+                for (var i = 0; i < sysInfos.Length; i++)
+                {
+                    var e = sysInfos[i].FullName;
+                    fsis[i] = Directory.Exists(e)
+                        ? (FileSystemInfo) new DirectoryInfo(e)
+                        : (FileSystemInfo) new FileInfo(e);
+                }
+		        return fsis;
+		    }
      
             return Directory.EnumerateFileSystemEntries(FullPath, searchPattern, true, true, System.IO.SearchOption.TopDirectoryOnly)
 					.Select(e => Directory.Exists(e) ? (FileSystemInfo)new DirectoryInfo(e) : (FileSystemInfo)new FileInfo(e)).ToArray();
 		}
 
-		public FileSystemInfo[] GetFileSystemInfos(string searchPattern, SearchOption searchOption)
+#if NET_4_0 || NET_4_0
+        public FileSystemInfo[] GetFileSystemInfos(string searchPattern, SearchOption searchOption)
 		{
 		    if (Common.IsRunningOnMono()) return SysDirectoryInfo.GetFileSystemInfos(searchPattern, searchOption).Select(s => s.FullName).Select(e => Directory.Exists(e) ? (FileSystemInfo)new DirectoryInfo(e) : (FileSystemInfo)new FileInfo(e)).ToArray();
 
             return Directory.EnumerateFileSystemEntries(FullPath, searchPattern, true, true, searchOption)
 					.Select(e => Directory.Exists(e) ? (FileSystemInfo)new DirectoryInfo(e) : (FileSystemInfo)new FileInfo(e)).ToArray();
 		}
+#endif
 
 		public FileSystemInfo[] GetFileSystemInfos()
 		{
-		    if (Common.IsRunningOnMono()) return SysDirectoryInfo.GetFileSystemInfos().Select(s => s.FullName).Select(e => Directory.Exists(e) ? (FileSystemInfo)new DirectoryInfo(e) : (FileSystemInfo)new FileInfo(e)).ToArray();
+		    if (Common.IsRunningOnMono())
+		    {
+		        if (Common.IsRunningOnMono())
+		        {
+		            var sysInfos = SysDirectoryInfo.GetFileSystemInfos();
+		            FileSystemInfo[] fsis = new FileSystemInfo[sysInfos.Length];
+		            for (var i = 0; i < sysInfos.Length; i++)
+		            {
+		                var e = sysInfos[i].FullName;
+		                fsis[i] = Directory.Exists(e)
+		                    ? (FileSystemInfo)new DirectoryInfo(e)
+		                    : (FileSystemInfo)new FileInfo(e);
+		            }
+		            return fsis;
+		        }
+            }
 
 			return Directory.EnumerateFileSystemEntries(FullPath, "*", true, true, System.IO.SearchOption.TopDirectoryOnly)
 					.Select(e => Directory.Exists(e) ? (FileSystemInfo)new DirectoryInfo(e) : (FileSystemInfo)new FileInfo(e)).ToArray();
