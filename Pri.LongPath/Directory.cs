@@ -973,13 +973,13 @@ namespace Pri.LongPath
 
 		public static string[] GetDirectories(string path)
 		{
-		    if (Common.IsRunningOnMono()) System.IO.Directory.GetDirectories(path);
+		    if (Common.IsRunningOnMono()) return System.IO.Directory.GetDirectories(path);
 			return EnumerateFileSystemEntries(path, "*", true, false, SearchOption.TopDirectoryOnly).ToArray();
 		}
 
 		public static string[] GetDirectories(string path, string searchPattern)
 		{
-		    if (Common.IsRunningOnMono()) System.IO.Directory.GetDirectories(path, searchPattern);
+		    if (Common.IsRunningOnMono()) return System.IO.Directory.GetDirectories(path, searchPattern);
             return EnumerateFileSystemEntries(path, searchPattern, true, false, SearchOption.TopDirectoryOnly).ToArray();
 		}
 
