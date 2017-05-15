@@ -309,15 +309,36 @@ namespace Pri.LongPath
 					.Select(e => Directory.Exists(e) ? (FileSystemInfo)new DirectoryInfo(e) : (FileSystemInfo)new FileInfo(e)).ToArray();
 		}
 
-#if NET_4_0 || NET_4_0
         public FileSystemInfo[] GetFileSystemInfos(string searchPattern, SearchOption searchOption)
 		{
-		    if (Common.IsRunningOnMono()) return SysDirectoryInfo.GetFileSystemInfos(searchPattern, searchOption).Select(s => s.FullName).Select(e => Directory.Exists(e) ? (FileSystemInfo)new DirectoryInfo(e) : (FileSystemInfo)new FileInfo(e)).ToArray();
+            if (Common.IsRunningOnMono())
+            {
+#if NET_4_0 || NET_4_5
+                return SysDirectoryInfo.GetFileSystemInfos(searchPattern, searchOption).Select(s => s.FullName).Select(e => Directory.Exists(e) ? (FileSystemInfo)new DirectoryInfo(e) : (FileSystemInfo)new FileInfo(e)).ToArray();
+#else 
+                //throw new NotImplementedException("This function is not supported in ");
+                var fileInfos = SysDirectoryInfo.GetFiles(searchPattern);
+                var directories = SysDirectoryInfo.GetDirectories(searchPattern);
+                List<FileSystemInfo> fileSystemInfos = new List<FileSystemInfo>();
+                foreach (System.IO.FileInfo fsi in fileInfos)
+                    fileSystemInfos.Add(new FileInfo(fsi.FullName));
+
+                foreach (System.IO.DirectoryInfo fsi in directories)
+                    fileSystemInfos.Add(new DirectoryInfo(fsi.FullName));
+
+                if (searchOption != SearchOption.AllDirectories)
+                    return fileSystemInfos.ToArray();
+
+                foreach (var di in SysDirectoryInfo.GetDirectories())
+                    fileSystemInfos.AddRange(new DirectoryInfo(di.FullName).GetFileSystemInfos(searchPattern, searchOption));
+
+                return fileSystemInfos.ToArray();
+#endif
+            }
 
             return Directory.EnumerateFileSystemEntries(FullPath, searchPattern, true, true, searchOption)
 					.Select(e => Directory.Exists(e) ? (FileSystemInfo)new DirectoryInfo(e) : (FileSystemInfo)new FileInfo(e)).ToArray();
 		}
-#endif
 
 		public FileSystemInfo[] GetFileSystemInfos()
 		{
