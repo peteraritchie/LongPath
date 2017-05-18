@@ -19,6 +19,7 @@ using IOException = System.IO.IOException;
 using SearchOption = System.IO.SearchOption;
 using System.Reflection;
 using System.Collections.Generic;
+using Pri.LongPath;
 
 namespace Tests
 {
@@ -137,7 +138,7 @@ namespace Tests
 				missing = (!missingCollection2.Any() ? "" : ("missing: " + missingCollection2.Aggregate((c, n) => c + ", " + n) + Environment.NewLine)) +
 					(!missingCollection.Any() ? "" : ("extra: " + missingCollection.Aggregate((c, n) => c + ", " + n)));
 			}
-			Assert.AreEqual(systemIoFileInfoMembers.Length, FileInfoMembers.Length, missing);
+			Assert.LessOrEqual(systemIoFileInfoMembers.Length, FileInfoMembers.Length, missing);
 		}
 
 		[Test]
@@ -197,7 +198,7 @@ namespace Tests
 				missing = (!missingCollection2.Any() ? "" : ("missing: " + missingCollection2.Aggregate((c, n) => c + ", " + n) + Environment.NewLine)) +
 					(!missingCollection.Any() ? "" : ("extra: " + missingCollection.Aggregate((c, n) => c + ", " + n)));
 			}
-			Assert.AreEqual(systemIoFileSystemInfoMembers.Length, FileSystemInfoMembers.Length, missing);
+			Assert.LessOrEqual(systemIoFileSystemInfoMembers.Length, FileSystemInfoMembers.Length, missing);
 		}
 
 		[TearDown]
@@ -206,5 +207,23 @@ namespace Tests
 			Directory.Delete(longPathRoot, true);
 			Debug.Assert(!Directory.Exists(longPathDirectory));
 		}
+	}
+
+	[TestFixture]
+	public class OtherTests
+	{
+#if !MONO
+		[Test, Order(0)]
+		public void IsRunningMonoSucceeds()
+		{
+			Assert.IsFalse(Common.IsRunningOnMono());
+		}
+#else
+		[Test, Order(0)]
+		public void IsRunningMonoSucceeds()
+		{
+			Assert.IsTrue(Common.IsRunningOnMono());
+		}
+#endif
 	}
 }
