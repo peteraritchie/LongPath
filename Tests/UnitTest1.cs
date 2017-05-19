@@ -19,6 +19,7 @@ using IOException = System.IO.IOException;
 using SearchOption = System.IO.SearchOption;
 using System.Reflection;
 using System.Collections.Generic;
+using Pri.LongPath;
 
 namespace Tests
 {
@@ -206,5 +207,23 @@ namespace Tests
 			Directory.Delete(longPathRoot, true);
 			Debug.Assert(!Directory.Exists(longPathDirectory));
 		}
+	}
+
+	[TestFixture]
+	public class OtherTests
+	{
+#if !MONO
+		[Test, Order(0)]
+		public void IsRunningMonoSucceeds()
+		{
+			Assert.IsFalse(Common.IsRunningOnMono());
+		}
+#else
+		[Test, Order(0)]
+		public void IsRunningMonoSucceeds()
+		{
+			Assert.IsTrue(Common.IsRunningOnMono());
+		}
+#endif
 	}
 }
