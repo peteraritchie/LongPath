@@ -158,7 +158,7 @@ namespace Tests
 				missing = (!missingCollection2.Any() ? "" : ("missing: " + missingCollection2.Aggregate((c, n) => c + ", " + n) + Environment.NewLine)) +
 					(!missingCollection.Any() ? "" : ("extra: " + missingCollection.Aggregate((c, n) => c + ", " + n)));
 			}
-			Assert.AreEqual(systemIoDirectoryInfoMembers.Length, DirectoryInfoMembers.Length, missing);
+			Assert.LessOrEqual(systemIoDirectoryInfoMembers.Length, DirectoryInfoMembers.Length, missing);
 		}
 
 		[Test]
