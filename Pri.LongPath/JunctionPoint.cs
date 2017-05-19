@@ -27,7 +27,6 @@ namespace Pri.LongPath {
     /// </summary>
     public static class JunctionPoint
     {
-
 		/// <summary>
         /// Creates a junction point from the specified directory to the specified target directory.
         /// </summary>
