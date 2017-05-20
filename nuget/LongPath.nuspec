@@ -12,7 +12,7 @@
 		<iconUrl>https://raw.githubusercontent.com/peteraritchie/LongPath/dev/longpath.png</iconUrl>
 		<requireLicenseAcceptance>false</requireLicenseAcceptance>
 		<description>Drop-in library to support long paths in .NET</description>
-		<releaseNotes>Added support for use within Mono, courtesy of Cazzar</releaseNotes>
+		<releaseNotes>Removed console output under certain error conditions.</releaseNotes>
 		<copyright>Copyright 2017</copyright>
 		<tags>long path</tags>
 	</metadata>
