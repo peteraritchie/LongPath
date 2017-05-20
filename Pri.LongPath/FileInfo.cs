@@ -1,4 +1,3 @@
-using System;
 using System.Text;
 using FileAccess = System.IO.FileAccess;
 using FileMode = System.IO.FileMode;
@@ -49,12 +48,12 @@ namespace Pri.LongPath
 			{
 			    if (Common.IsRunningOnMono()) return SysFileInfo.Exists;
 
-				if (state == State.Uninitialized)
+				if (InstanceState == State.Uninitialized)
 				{
 					Refresh();
 				}
-				return state == State.Initialized &&
-				       (data.fileAttributes & System.IO.FileAttributes.Directory) != System.IO.FileAttributes.Directory;
+				return InstanceState == State.Initialized &&
+				       (Data.fileAttributes & FileAttributes.Directory) != FileAttributes.Directory;
 			}
 		}
 
@@ -85,13 +84,13 @@ namespace Pri.LongPath
 		{
 		    if (Common.IsRunningOnMono()) return SysFileInfo.Length;
 
-            if (state == State.Uninitialized)
+            if (InstanceState == State.Uninitialized)
 			{
 				Refresh();
 			}
-			if(state == State.Error)
-				Common.ThrowIOError(errorCode, FullPath);
-			return ((long)data.fileSizeHigh) << 32 | (data.fileSizeLow & 0xFFFFFFFFL);
+			if(InstanceState == State.Error)
+				Common.ThrowIoError(ErrorCode, FullPath);
+			return ((long)Data.fileSizeHigh) << 32 | (Data.fileSizeLow & 0xFFFFFFFFL);
 		}
 
 		public StreamWriter AppendText()

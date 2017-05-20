@@ -11,6 +11,7 @@ namespace Pri.LongPath
 {
 	internal static class NativeMethods
 	{
+		// ReSharper disable InconsistentNaming
 		internal const int ERROR_SUCCESS = 0;
 		internal const int ERROR_FILE_NOT_FOUND = 0x2;
 		internal const int ERROR_PATH_NOT_FOUND = 0x3;
@@ -87,7 +88,7 @@ namespace Pri.LongPath
 			internal int fileSizeHigh;
 
 			internal int fileSizeLow;
-			public void PopulateFrom(NativeMethods.WIN32_FIND_DATA findData)
+			public void PopulateFrom(WIN32_FIND_DATA findData)
 			{
 				fileAttributes = findData.dwFileAttributes;
 				ftCreationTimeLow = (uint)findData.ftCreationTime.dwLowDateTime;
@@ -128,7 +129,7 @@ namespace Pri.LongPath
 		internal static extern bool CopyFile(string src, string dst, [MarshalAs(UnmanagedType.Bool)]bool failIfExists);
 
 		[DllImport("kernel32.dll", SetLastError = true, CharSet = CharSet.Auto, BestFitMapping = false)]
-		internal static extern bool ReplaceFile(String replacedFileName, String replacementFileName, String backupFileName, int dwReplaceFlags, IntPtr lpExclude, IntPtr lpReserved);
+		internal static extern bool ReplaceFile(string replacedFileName, string replacementFileName, string backupFileName, int dwReplaceFlags, IntPtr lpExclude, IntPtr lpReserved);
 
 		[DllImport("kernel32.dll", SetLastError = true, CharSet = CharSet.Unicode)]
 		internal static extern SafeFindHandle FindFirstFile(string lpFileName, out WIN32_FIND_DATA lpFindFileData);
@@ -195,10 +196,10 @@ namespace Pri.LongPath
 		internal static extern int FormatMessage(int dwFlags, IntPtr lpSource, int dwMessageId, int dwLanguageId, StringBuilder lpBuffer, int nSize, IntPtr va_list_arguments);
 
 		[DllImport("advapi32.dll", SetLastError = true, CharSet = CharSet.Auto, BestFitMapping = false)]
-		internal static extern bool DecryptFile(String path, int reservedMustBeZero);
+		internal static extern bool DecryptFile(string path, int reservedMustBeZero);
 
 		[DllImport("advapi32.dll", SetLastError = true, CharSet = CharSet.Auto, BestFitMapping = false)]
-		internal static extern bool EncryptFile(String path);
+		internal static extern bool EncryptFile(string path);
 
 		public static string GetMessage(int errorCode)
 		{
@@ -263,10 +264,10 @@ namespace Pri.LongPath
 			SetLastError = true,
 			ExactSpelling = true,
 			CharSet = CharSet.Unicode)]
-		internal static extern DWORD GetSecurityInfoByName(
+		internal static extern uint GetSecurityInfoByName(
 			string name,
-			DWORD objectType,
-			DWORD securityInformation,
+			uint objectType,
+			uint securityInformation,
 			out IntPtr sidOwner,
 			out IntPtr sidGroup,
 			out IntPtr dacl,
@@ -280,10 +281,10 @@ namespace Pri.LongPath
 			 SetLastError = true,
 			 ExactSpelling = true,
 			 CharSet = CharSet.Unicode)]
-		internal static extern DWORD SetSecurityInfoByName(
+		internal static extern uint SetSecurityInfoByName(
 			string name,
-			DWORD objectType,
-			DWORD securityInformation,
+			uint objectType,
+			uint securityInformation,
 			byte[] owner,
 			byte[] group,
 			byte[] dacl,
@@ -296,10 +297,10 @@ namespace Pri.LongPath
 			 SetLastError = true,
 			 ExactSpelling = true,
 			 CharSet = CharSet.Unicode)]
-		internal static extern DWORD SetSecurityInfoByHandle(
+		internal static extern uint SetSecurityInfoByHandle(
 			SafeHandle handle,
-			DWORD objectType,
-			DWORD securityInformation,
+			uint objectType,
+			uint securityInformation,
 			byte[] owner,
 			byte[] group,
 			byte[] dacl,
@@ -311,7 +312,7 @@ namespace Pri.LongPath
 			 SetLastError = true,
 			 ExactSpelling = true,
 			 CharSet = CharSet.Unicode)]
-		internal static extern DWORD GetSecurityDescriptorLength(
+		internal static extern uint GetSecurityDescriptorLength(
 			IntPtr byteArray);
 
 		[DllImport("kernel32.dll", SetLastError = true)]
@@ -462,5 +463,6 @@ namespace Pri.LongPath
 			[In]    IntPtr Thread,
 			[In]    SafeTokenHandle Token);
 		#endregion
+		// ReSharper restore InconsistentNaming
 	}
 }

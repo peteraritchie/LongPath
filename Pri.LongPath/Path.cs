@@ -9,10 +9,14 @@ namespace Pri.LongPath
 {
 	public static class Path
 	{
+#pragma warning disable S2386 // reproducing System.IO.Path behavior
+#pragma warning disable S3887 // reproducing System.IO.Path behavior
 		public static readonly char[] InvalidPathChars = System.IO.Path.GetInvalidPathChars();
-		private static readonly char[] invalidFileNameChars = System.IO.Path.GetInvalidFileNameChars();
+#pragma warning restore S3887 // Mutable, non-private fields should not be "readonly"
+#pragma warning restore S2386 // Mutable fields should not be "public static"
+		private static readonly char[] InvalidFileNameChars = System.IO.Path.GetInvalidFileNameChars();
 		internal const string LongPathPrefix = @"\\?\";
-        internal const string UNCLongPathPrefix = @"\\?\UNC\";
+        internal const string UncLongPathPrefix = @"\\?\UNC\";
 
 		public static readonly char DirectorySeparatorChar = System.IO.Path.DirectorySeparatorChar;
 		public static readonly char AltDirectorySeparatorChar = System.IO.Path.AltDirectorySeparatorChar;
@@ -35,7 +39,7 @@ namespace Pri.LongPath
 				throw new ArgumentNullException(parameterName);
 
 			if (path.Length == 0)
-				throw new ArgumentException(String.Format(CultureInfo.CurrentCulture, "'{0}' cannot be an empty string.", parameterName), parameterName);
+				throw new ArgumentException(string.Format(CultureInfo.CurrentCulture, "'{0}' cannot be an empty string.", parameterName), parameterName);
 
 			if (Common.IsPathUnc(path)) return CheckAddLongPathPrefix(path);
 			StringBuilder buffer = new StringBuilder(path.Length + 1); // Add 1 for NULL
@@ -121,9 +125,9 @@ namespace Pri.LongPath
                 return normalizedPath;
             }
 
-            if (normalizedPath.StartsWith(UNCLongPathPrefix, StringComparison.InvariantCultureIgnoreCase))
+            if (normalizedPath.StartsWith(UncLongPathPrefix, StringComparison.InvariantCultureIgnoreCase))
             {
-                return string.Format(@"\\{0}", normalizedPath.Substring(UNCLongPathPrefix.Length));
+                return string.Format(@"\\{0}", normalizedPath.Substring(UncLongPathPrefix.Length));
             }
 
             return normalizedPath.Substring(LongPathPrefix.Length);
@@ -140,7 +144,7 @@ namespace Pri.LongPath
             if (path.StartsWith(@"\\"))
             {
                 // UNC.
-                return UNCLongPathPrefix + path.Substring(2);
+                return UncLongPathPrefix + path.Substring(2);
             }
 
 			return LongPathPrefix + path;
@@ -210,12 +214,12 @@ namespace Pri.LongPath
 		public static string GetFileName(string path)
 		{
 			if (path == null) return null;
-			return System.IO.Path.GetFileName(Path.NormalizeLongPath(path));
+			return System.IO.Path.GetFileName(NormalizeLongPath(path));
 		}
 
 		public static string GetFullPath(string path)
 		{
-			return Common.IsPathUnc(path) ? path : Path.RemoveLongPathPrefix(Path.NormalizeLongPath(path));
+			return Common.IsPathUnc(path) ? path : RemoveLongPathPrefix(NormalizeLongPath(path));
 		}
 
 		public static string GetDirectoryName(string path)
@@ -223,12 +227,12 @@ namespace Pri.LongPath
 		    if (Common.IsRunningOnMono()) return System.IO.Path.GetDirectoryName(path);
 
 			if (path == null) throw new ArgumentNullException("path");
-			Path.CheckInvalidPathChars(path);
+			CheckInvalidPathChars(path);
 		    string basePath = null;
             if (!IsPathRooted(path))
                 basePath = System.IO.Directory.GetCurrentDirectory();
 
-		    path = Path.RemoveLongPathPrefix(Path.NormalizeLongPath(path));
+		    path = RemoveLongPathPrefix(NormalizeLongPath(path));
 		    int rootLength = GetRootLength(path);
 		    
             if (path.Length <= rootLength) return null;
@@ -257,8 +261,8 @@ namespace Pri.LongPath
 		internal static int GetRootLength(string path)
 		{
 			if (Common.IsPathUnc(path)) return GetUncRootLength(path);
-			path = Path	.GetFullPath(path);
-			Path.CheckInvalidPathChars(path);
+			path = GetFullPath(path);
+			CheckInvalidPathChars(path);
 			int rootLength = 0;
 			int length = path.Length;
 			if (length >= 1 && IsDirectorySeparator(path[0]))
@@ -295,7 +299,7 @@ namespace Pri.LongPath
 
 		public static char[] GetInvalidFileNameChars()
 		{
-			return invalidFileNameChars;
+			return InvalidFileNameChars;
 		}
 
 		public static string GetRandomFileName()
@@ -306,10 +310,10 @@ namespace Pri.LongPath
 		public static string GetPathRoot(string path)
 		{
 			if (path == null) return null;
-		    if (Path.IsPathRooted(path))
+		    if (IsPathRooted(path))
 		    {
 				if(!Common.IsPathUnc(path))
-					path = Path.RemoveLongPathPrefix(Path.NormalizeLongPath(path));
+					path = RemoveLongPathPrefix(NormalizeLongPath(path));
 		        return path.Substring(0, GetRootLength(path));
 		    }
 		    return string.Empty;
@@ -353,7 +357,7 @@ namespace Pri.LongPath
 			var path = paths[0];
 			for (int i = 1; i < paths.Length; ++i)
 			{
-				path = Path.Combine(path, paths[i]);
+				path = Combine(path, paths[i]);
 			}
 			return path;
 		}

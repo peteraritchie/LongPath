@@ -4,8 +4,8 @@ using System.Runtime.Serialization;
 
 namespace Pri.LongPath
 {
-	using System.Security.Permissions;
 	using FileAttributes = System.IO.FileAttributes;
+	// ReSharper disable once IdentifierTypo
 	using FILETIME = System.Runtime.InteropServices.ComTypes.FILETIME;
 	using DirectoryNotFoundException = System.IO.DirectoryNotFoundException;
 
@@ -13,9 +13,9 @@ namespace Pri.LongPath
 	{
 		protected string OriginalPath;
 		protected string FullPath;
-		protected FileInfo.State state;
-		protected readonly FileAttributeData data = new FileAttributeData();
-		protected int errorCode;
+		protected State InstanceState;
+		protected readonly FileAttributeData Data = new FileAttributeData();
+		protected int ErrorCode;
 
 	    public abstract System.IO.FileSystemInfo SystemInfo { get; }
 
@@ -121,14 +121,14 @@ namespace Pri.LongPath
 			{
 			    if (Common.IsRunningOnMono()) return SystemInfo.CreationTimeUtc;
 
-                if (state == State.Uninitialized)
+                if (InstanceState == State.Uninitialized)
 				{
 					Refresh();
 				}
-				if (state == State.Error)
-					Common.ThrowIOError(errorCode, FullPath);
+				if (InstanceState == State.Error)
+					Common.ThrowIoError(ErrorCode, FullPath);
 
-				long fileTime = ((long)data.ftCreationTime.dwHighDateTime << 32) | (data.ftCreationTime.dwLowDateTime & 0xffffffff);
+				long fileTime = ((long)Data.ftCreationTime.dwHighDateTime << 32) | (Data.ftCreationTime.dwLowDateTime & 0xffffffff);
 				return DateTime.FromFileTimeUtc(fileTime);
 			}
 			set
@@ -143,7 +143,7 @@ namespace Pri.LongPath
 					Directory.SetCreationTimeUtc(FullPath, value);
 				else
 					File.SetCreationTimeUtc(FullPath, value);
-				state = State.Uninitialized;
+				InstanceState = State.Uninitialized;
 			}
 		}
 
@@ -162,17 +162,15 @@ namespace Pri.LongPath
 			}
 		}
 
-		private static void ThrowLastWriteTimeUtcIOError(int errorCode, String maybeFullPath)
+		private static void ThrowLastWriteTimeUtcIoError(int errorCode, string maybeFullPath)
 		{
-			// This doesn't have to be perfect, but is a perf optimization.
+			// This doesn't have to be perfect, but is a performance optimization.
 			bool isInvalidPath = errorCode == NativeMethods.ERROR_INVALID_NAME || errorCode == NativeMethods.ERROR_BAD_PATHNAME;
-			String str = isInvalidPath ? Path.GetFileName(maybeFullPath) : maybeFullPath;
+			string str = isInvalidPath ? Path.GetFileName(maybeFullPath) : maybeFullPath;
 
 			switch (errorCode)
 			{
 				case NativeMethods.ERROR_FILE_NOT_FOUND:
-					break;
-
 				case NativeMethods.ERROR_PATH_NOT_FOUND:
 					break;
 
@@ -180,36 +178,35 @@ namespace Pri.LongPath
 					if (str.Length == 0)
 						throw new UnauthorizedAccessException("Empty path");
 					else
-						throw new UnauthorizedAccessException(String.Format("Access denied accessing {0}", str));
+						throw new UnauthorizedAccessException(string.Format("Access denied accessing {0}", str));
 
 				case NativeMethods.ERROR_ALREADY_EXISTS:
 					if (str.Length == 0)
 						goto default;
-					throw new System.IO.IOException(String.Format("File {0}", str), NativeMethods.MakeHRFromErrorCode(errorCode));
+					throw new System.IO.IOException(string.Format("File {0}", str), NativeMethods.MakeHRFromErrorCode(errorCode));
 
 				case NativeMethods.ERROR_FILENAME_EXCED_RANGE:
 					throw new System.IO.PathTooLongException("Path too long");
 
 				case NativeMethods.ERROR_INVALID_DRIVE:
-					throw new System.IO.DriveNotFoundException(String.Format("Drive {0} not found", str));
-
-				case NativeMethods.ERROR_INVALID_PARAMETER:
-					throw new System.IO.IOException(NativeMethods.GetMessage(errorCode), NativeMethods.MakeHRFromErrorCode(errorCode));
+					throw new System.IO.DriveNotFoundException(string.Format("Drive {0} not found", str));
 
 				case NativeMethods.ERROR_SHARING_VIOLATION:
 					if (str.Length == 0)
 						throw new System.IO.IOException("Sharing violation with empty filename", NativeMethods.MakeHRFromErrorCode(errorCode));
 					else
-						throw new System.IO.IOException(String.Format("Sharing violation: {0}", str), NativeMethods.MakeHRFromErrorCode(errorCode));
+						throw new System.IO.IOException(string.Format("Sharing violation: {0}", str), NativeMethods.MakeHRFromErrorCode(errorCode));
 
 				case NativeMethods.ERROR_FILE_EXISTS:
 					if (str.Length == 0)
 						goto default;
-					throw new System.IO.IOException(String.Format("File exists {0}", str), NativeMethods.MakeHRFromErrorCode(errorCode));
+					throw new System.IO.IOException(string.Format("File exists {0}", str), NativeMethods.MakeHRFromErrorCode(errorCode));
 
 				case NativeMethods.ERROR_OPERATION_ABORTED:
 					throw new OperationCanceledException();
 
+				// ReSharper disable once RedundantCaseLabel
+				case NativeMethods.ERROR_INVALID_PARAMETER:
 				default:
 					throw new System.IO.IOException(NativeMethods.GetMessage(errorCode), NativeMethods.MakeHRFromErrorCode(errorCode));
 			}
@@ -221,14 +218,14 @@ namespace Pri.LongPath
 			    if (Common.IsRunningOnMono()) return SystemInfo.LastWriteTimeUtc;
 
 
-                if (state == State.Uninitialized)
+                if (InstanceState == State.Uninitialized)
 				{
 					Refresh();
 				}
-				if (state == State.Error)
-					ThrowLastWriteTimeUtcIOError(errorCode, FullPath);
+				if (InstanceState == State.Error)
+					ThrowLastWriteTimeUtcIoError(ErrorCode, FullPath);
 
-				long fileTime = ((long)data.ftLastWriteTime.dwHighDateTime << 32) | (data.ftLastWriteTime.dwLowDateTime & 0xffffffff);
+				long fileTime = ((long)Data.ftLastWriteTime.dwHighDateTime << 32) | (Data.ftLastWriteTime.dwLowDateTime & 0xffffffff);
 				return DateTime.FromFileTimeUtc(fileTime);
 			}
 			set
@@ -244,7 +241,7 @@ namespace Pri.LongPath
 					Directory.SetLastWriteTimeUtc(FullPath, value);
 				else
 					File.SetLastWriteTimeUtc(FullPath, value);
-				state = State.Uninitialized;
+				InstanceState = State.Uninitialized;
 			}
 		}
 
@@ -269,14 +266,14 @@ namespace Pri.LongPath
 			{
 			    if (Common.IsRunningOnMono()) return SystemInfo.LastAccessTimeUtc;
 
-                if (state == State.Uninitialized)
+                if (InstanceState == State.Uninitialized)
 				{
 					Refresh();
 				}
-				if (state == State.Error)
-					Common.ThrowIOError(errorCode, FullPath);
+				if (InstanceState == State.Error)
+					Common.ThrowIoError(ErrorCode, FullPath);
 
-				long fileTime = ((long)data.ftLastAccessTime.dwHighDateTime << 32) | (data.ftLastAccessTime.dwLowDateTime & 0xffffffff);
+				long fileTime = ((long)Data.ftLastAccessTime.dwHighDateTime << 32) | (Data.ftLastAccessTime.dwLowDateTime & 0xffffffff);
 				return DateTime.FromFileTimeUtc(fileTime);
 			}
 			set
@@ -292,7 +289,7 @@ namespace Pri.LongPath
 					Directory.SetLastAccessTimeUtc(FullPath, value);
 				else
 					File.SetLastAccessTimeUtc(FullPath, value);
-				state = State.Uninitialized;
+				InstanceState = State.Uninitialized;
 			}
 		}
 
@@ -320,12 +317,14 @@ namespace Pri.LongPath
 
 		protected class FileAttributeData
 		{
-			public System.IO.FileAttributes fileAttributes;
+			// ReSharper disable InconsistentNaming
+			public FileAttributes fileAttributes;
 			public FILETIME ftCreationTime;
 			public FILETIME ftLastAccessTime;
 			public FILETIME ftLastWriteTime;
 			public int fileSizeHigh;
 			public int fileSizeLow;
+			// ReSharper restore InconsistentNaming
 
 			internal void From(NativeMethods.WIN32_FIND_DATA findData)
 			{
@@ -340,9 +339,8 @@ namespace Pri.LongPath
 
 		public virtual void GetObjectData(SerializationInfo info, StreamingContext context)
 		{
-			//(new FileIOPermission(FileIOPermissionAccess.PathDiscovery, this.FullPath)).Demand();
-			info.AddValue("OriginalPath", this.OriginalPath, typeof(string));
-			info.AddValue("FullPath", this.FullPath, typeof(string));
+			info.AddValue("OriginalPath", OriginalPath, typeof(string));
+			info.AddValue("FullPath", FullPath, typeof(string));
 		}
 
 		public void Refresh()
@@ -356,27 +354,28 @@ namespace Pri.LongPath
 
 				using (var handle = Directory.BeginFind(normalizedPathWithSearchPattern, out findData))
 				{
+					var lastWin32Error = Marshal.GetLastWin32Error();
 					if (handle == null)
 					{
-						state = State.Error;
-						errorCode = Marshal.GetLastWin32Error();
+						InstanceState = State.Error;
+						ErrorCode = lastWin32Error;
 					}
 					else
 					{
-						data.From(findData);
-						state = State.Initialized;
+						Data.From(findData);
+						InstanceState = State.Initialized;
 					}
 				}
 			}
 			catch (DirectoryNotFoundException)
 			{
-				state = State.Error;
-				errorCode = NativeMethods.ERROR_PATH_NOT_FOUND;
+				InstanceState = State.Error;
+				ErrorCode = NativeMethods.ERROR_PATH_NOT_FOUND;
 			}
 			catch (Exception)
 			{
-				if (state != State.Error)
-					Common.ThrowIOError(Marshal.GetLastWin32Error(), FullPath);
+				if (InstanceState != State.Error)
+					Common.ThrowIoError(Marshal.GetLastWin32Error(), FullPath);
 			}
 		}
 

@@ -13,18 +13,18 @@ using System.Threading;
 using Microsoft.Win32.SafeHandles;
 using System.Runtime.CompilerServices;
 
-[assembly: System.Runtime.CompilerServices.InternalsVisibleTo("Tests")]
+[assembly: InternalsVisibleTo("Tests")]
 namespace Pri.LongPath
 {
-	using PathTooLongException = System.IO.PathTooLongException;
-	using FileNotFoundException = System.IO.FileNotFoundException;
-	using DirectoryNotFoundException = System.IO.DirectoryNotFoundException;
-	using IOException = System.IO.IOException;
-	using FileAccess = System.IO.FileAccess;
-	using FileMode = System.IO.FileMode;
-	using FileStream = System.IO.FileStream;
-	using StreamWriter = System.IO.StreamWriter;
-	using StreamReader = System.IO.StreamReader;
+	using PathTooLongException = PathTooLongException;
+	using FileNotFoundException = FileNotFoundException;
+	using DirectoryNotFoundException = DirectoryNotFoundException;
+	using IOException = IOException;
+	using FileAccess = FileAccess;
+	using FileMode = FileMode;
+	using FileStream = FileStream;
+	using StreamWriter = StreamWriter;
+	using StreamReader = StreamReader;
     using SysFile = System.IO.File;
 
 	public static class File
@@ -45,15 +45,15 @@ namespace Pri.LongPath
 			return new StreamReader(stream, encoding, true, 1024);
 		}
 
-		public static StreamWriter CreateText(String path)
+		public static StreamWriter CreateText(string path)
 		{
 		    if (Common.IsRunningOnMono()) return SysFile.CreateText(path);
 
             var fileStream = Open(path, FileMode.Create, FileAccess.Write, FileShare.Read, DefaultBufferSize, FileOptions.SequentialScan);
-			return new StreamWriter(fileStream, UTF8NoBOM, DefaultBufferSize);
+			return new StreamWriter(fileStream, Utf8NoBom, DefaultBufferSize);
 		}
 
-		public static StreamWriter AppendText(String path)
+		public static StreamWriter AppendText(string path)
 		{
 			return CreateStreamWriter(path, true);
 		}
@@ -241,37 +241,37 @@ namespace Pri.LongPath
 		        return;
 		    }
 
-            String fullPath = Path.GetFullPath(path);
+            string fullPath = Path.GetFullPath(path);
 			string normalizedPath = Path.NormalizeLongPath(fullPath);
 			if (NativeMethods.DecryptFile(normalizedPath, 0)) return;
 			int errorCode = Marshal.GetLastWin32Error();
 			if (errorCode == NativeMethods.ERROR_ACCESS_DENIED)
 			{
 				var di = new DriveInfo(Path.GetPathRoot(normalizedPath));
-				if (!String.Equals("NTFS", di.DriveFormat))
+				if (!string.Equals("NTFS", di.DriveFormat))
 					throw new NotSupportedException("NTFS drive required for file encryption");
 			}
-			Common.ThrowIOError(errorCode, fullPath);
+			Common.ThrowIoError(errorCode, fullPath);
 		}
 
-		public static void Encrypt(String path)
+		public static void Encrypt(string path)
 		{
 		    if (Common.IsRunningOnMono())
 		    {
 		        SysFile.Encrypt(path);
 		        return;
 		    }
-            String fullPath = Path.GetFullPath(path);
+            string fullPath = Path.GetFullPath(path);
 			string normalizedPath = Path.NormalizeLongPath(fullPath);
 			if (NativeMethods.EncryptFile(normalizedPath)) return;
 			int errorCode = Marshal.GetLastWin32Error();
 			if (errorCode == NativeMethods.ERROR_ACCESS_DENIED)
 			{
 				var di = new DriveInfo(Path.GetPathRoot(normalizedPath));
-				if (!String.Equals("NTFS", di.DriveFormat))
+				if (!string.Equals("NTFS", di.DriveFormat))
 					throw new NotSupportedException("NTFS drive required for file encryption");
 			}
-			Common.ThrowIOError(errorCode, fullPath);
+			Common.ThrowIoError(errorCode, fullPath);
 		}
 
 		/// <summary>
@@ -310,7 +310,7 @@ namespace Pri.LongPath
 		    if (Common.IsRunningOnMono())
 		        return SysFile.Open(path, mode);
 
-            return File.Open(path, mode, (mode == FileMode.Append ? FileAccess.Write : FileAccess.ReadWrite), FileShare.None);
+            return Open(path, mode, mode == FileMode.Append ? FileAccess.Write : FileAccess.ReadWrite, FileShare.None);
 		}
 
 		/// <summary>
@@ -543,12 +543,12 @@ namespace Pri.LongPath
 			return new FileStream(handle, access, bufferSize, (options & FileOptions.Asynchronous) == FileOptions.Asynchronous);
 		}
 
-		public static void SetCreationTime(String path, DateTime creationTime)
+		public static void SetCreationTime(string path, DateTime creationTime)
 		{
             SetCreationTimeUtc(path, creationTime.ToUniversalTime());
 		}
 
-		public static unsafe void SetCreationTimeUtc(String path, DateTime creationTimeUtc)
+		public static unsafe void SetCreationTimeUtc(string path, DateTime creationTimeUtc)
 		{
 		    if (Common.IsRunningOnMono())
 		    {
@@ -565,28 +565,28 @@ namespace Pri.LongPath
 				if (!r)
 				{
 					int errorCode = Marshal.GetLastWin32Error();
-					Common.ThrowIOError(errorCode, path);
+					Common.ThrowIoError(errorCode, path);
 				}
 			}
 		}
 
-		public static DateTime GetCreationTime(String path)
+		public static DateTime GetCreationTime(string path)
 		{
 			return GetCreationTimeUtc(path).ToLocalTime();
 		}
 
-		public static DateTime GetCreationTimeUtc(String path)
+		public static DateTime GetCreationTimeUtc(string path)
 		{
 			var fi = new FileInfo(path);
 			return fi.CreationTimeUtc;
 		}
 
-		public static void SetLastWriteTime(String path, DateTime lastWriteTime)
+		public static void SetLastWriteTime(string path, DateTime lastWriteTime)
 		{
 			SetLastWriteTimeUtc(path, lastWriteTime.ToUniversalTime());
 		}
 
-		public static unsafe void SetLastWriteTimeUtc(String path, DateTime lastWriteTimeUtc)
+		public static unsafe void SetLastWriteTimeUtc(string path, DateTime lastWriteTimeUtc)
 		{
 		    if (Common.IsRunningOnMono())
 		    {
@@ -603,28 +603,28 @@ namespace Pri.LongPath
 				if (!r)
 				{
 					int errorCode = Marshal.GetLastWin32Error();
-					Common.ThrowIOError(errorCode, path);
+					Common.ThrowIoError(errorCode, path);
 				}
 			}
 		}
 
-		public static DateTime GetLastWriteTime(String path)
+		public static DateTime GetLastWriteTime(string path)
 		{
 			return GetLastWriteTimeUtc(path).ToLocalTime();
 		}
 
-		public static DateTime GetLastWriteTimeUtc(String path)
+		public static DateTime GetLastWriteTimeUtc(string path)
 		{
 			var fi = new FileInfo(path);
 			return fi.LastWriteTimeUtc;
 		}
 
-		public static void SetLastAccessTime(String path, DateTime lastAccessTime)
+		public static void SetLastAccessTime(string path, DateTime lastAccessTime)
 		{
 			SetLastAccessTimeUtc(path, lastAccessTime.ToUniversalTime());
 		}
 
-		public static unsafe void SetLastAccessTimeUtc(String path, DateTime lastAccessTimeUtc)
+		public static unsafe void SetLastAccessTimeUtc(string path, DateTime lastAccessTimeUtc)
 		{
 		    if (Common.IsRunningOnMono())
 		    {
@@ -640,17 +640,17 @@ namespace Pri.LongPath
 				if (!r)
 				{
 					int errorCode = Marshal.GetLastWin32Error();
-					Common.ThrowIOError(errorCode, path);
+					Common.ThrowIoError(errorCode, path);
 				}
 			}
 		}
 
-		public static DateTime GetLastAccessTime(String path)
+		public static DateTime GetLastAccessTime(string path)
 		{
 			return GetLastAccessTimeUtc(path).ToLocalTime();
 		}
 
-		public static DateTime GetLastAccessTimeUtc(String path)
+		public static DateTime GetLastAccessTimeUtc(string path)
 		{
 			var fi = new FileInfo(path);
 			return fi.LastAccessTimeUtc;
@@ -668,13 +668,13 @@ namespace Pri.LongPath
 			Common.SetAttributes(path, fileAttributes);
 		}
 
-		public static FileStream OpenRead(String path)
+		public static FileStream OpenRead(string path)
 		{
 		    if (Common.IsRunningOnMono()) SysFile.OpenRead(path);
             return Open(path, FileMode.Open, FileAccess.Read, FileShare.Read);
 		}
 
-		public static FileStream OpenWrite(String path)
+		public static FileStream OpenWrite(string path)
 		{
 		    if (Common.IsRunningOnMono()) SysFile.OpenWrite(path);
 
@@ -695,12 +695,12 @@ namespace Pri.LongPath
 			}
 		}
 
-		public static void WriteAllText(String path, String contents)
+		public static void WriteAllText(string path, string contents)
 		{
-			WriteAllText(path, contents, UTF8NoBOM);
+			WriteAllText(path, contents, Utf8NoBom);
 		}
 
-		public static void WriteAllText(String path, String contents, Encoding encoding)
+		public static void WriteAllText(string path, string contents, Encoding encoding)
 		{
 			const bool doNotAppend = false;
 			using (var sw = CreateStreamWriter(path, doNotAppend, encoding))
@@ -709,12 +709,12 @@ namespace Pri.LongPath
 			}
 		}
 
-		public static byte[] ReadAllBytes(String path)
+		public static byte[] ReadAllBytes(string path)
 		{
 			using (var fileStream = Open(path, FileMode.Open, FileAccess.Read, FileShare.Read))
 			{
 				long length = fileStream.Length;
-				if (length > Int32.MaxValue) throw new IOException("File length greater than 2GB.");
+				if (length > int.MaxValue) throw new IOException("File length greater than 2GB.");
 				var bytes = new byte[length];
 				int offset = 0;
 				while (length > 0)
@@ -731,7 +731,7 @@ namespace Pri.LongPath
 			}
 		}
 
-		public static void WriteAllBytes(String path, byte[] bytes)
+		public static void WriteAllBytes(string path, byte[] bytes)
 		{
 			using (var fileStream = Open(path, FileMode.Create, FileAccess.Write, FileShare.Read))
 			{
@@ -739,22 +739,22 @@ namespace Pri.LongPath
 			}
 		}
 
-		public static string[] ReadAllLines(String path)
+		public static string[] ReadAllLines(string path)
 		{
 			return ReadLines(path).ToArray();
 		}
 
-		public static string[] ReadAllLines(String path, Encoding encoding)
+		public static string[] ReadAllLines(string path, Encoding encoding)
 		{
 			return ReadLines(path, encoding).ToArray();
 		}
 
-		public static IEnumerable<string> ReadLines(String path)
+		public static IEnumerable<string> ReadLines(string path)
 		{
 			return ReadAllLines(path, Encoding.UTF8);
 		}
 
-		public static IEnumerable<string> ReadLines(String path, Encoding encoding)
+		public static IEnumerable<string> ReadLines(string path, Encoding encoding)
 		{
 			var stream = Open(path, FileMode.Open, FileAccess.Read, FileShare.Read, DefaultBufferSize, FileOptions.SequentialScan);
 			using (var sr = new StreamReader(stream, encoding, true, 1024))
@@ -766,12 +766,12 @@ namespace Pri.LongPath
 			}
 		}
 
-		public static void WriteAllLines(String path, String[] contents)
+		public static void WriteAllLines(string path, string[] contents)
 		{
 			WriteAllLines(path, contents, Encoding.UTF8);
 		}
 
-		public static void WriteAllLines(String path, String[] contents, Encoding encoding)
+		public static void WriteAllLines(string path, string[] contents, Encoding encoding)
 		{
 			using (var writer = CreateStreamWriter(path, false, encoding))
 			{
@@ -782,12 +782,12 @@ namespace Pri.LongPath
 			}
 		}
 
-		public static void WriteAllLines(String path, IEnumerable<string> contents)
+		public static void WriteAllLines(string path, IEnumerable<string> contents)
 		{
 			WriteAllLines(path, contents, Encoding.UTF8);
 		}
 
-		public static void WriteAllLines(String path, IEnumerable<string> contents, Encoding encoding)
+		public static void WriteAllLines(string path, IEnumerable<string> contents, Encoding encoding)
 		{
 			const bool doNotAppend = false;
 			using (var writer = CreateStreamWriter(path, doNotAppend, encoding))
@@ -799,12 +799,12 @@ namespace Pri.LongPath
 			}
 		}
 
-		public static void AppendAllText(String path, String contents)
+		public static void AppendAllText(string path, string contents)
 		{
 			AppendAllText(path, contents, Encoding.UTF8);
 		}
 
-		public static void AppendAllText(String path, String contents, Encoding encoding)
+		public static void AppendAllText(string path, string contents, Encoding encoding)
 		{
 			const bool append = true;
 			using (var writer = CreateStreamWriter(path, append, encoding))
@@ -813,12 +813,12 @@ namespace Pri.LongPath
 			}
 		}
 
-		public static void AppendAllLines(String path, IEnumerable<string> contents)
+		public static void AppendAllLines(string path, IEnumerable<string> contents)
 		{
 			AppendAllLines(path, contents, Encoding.UTF8);
 		}
 
-		public static void AppendAllLines(String path, IEnumerable<string> contents, Encoding encoding)
+		public static void AppendAllLines(string path, IEnumerable<string> contents, Encoding encoding)
 		{
 			const bool append = true;
 			using (var writer = CreateStreamWriter(path, append, encoding))
@@ -901,7 +901,7 @@ namespace Pri.LongPath
 				throw Common.GetExceptionFromLastWin32Error();
 		}
 
-		public static void Replace(String sourceFileName, String destinationFileName, String destinationBackupFileName)
+		public static void Replace(string sourceFileName, string destinationFileName, string destinationBackupFileName)
 		{
 			if (sourceFileName == null) throw new ArgumentNullException("sourceFileName");
 			if (destinationFileName == null) throw new ArgumentNullException("destinationFileName");
@@ -909,7 +909,7 @@ namespace Pri.LongPath
 			Replace(sourceFileName, destinationFileName, destinationBackupFileName, false);
 		}
 
-		public static void Replace(String sourceFileName, String destinationFileName, String destinationBackupFileName,
+		public static void Replace(string sourceFileName, string destinationFileName, string destinationBackupFileName,
 			bool ignoreMetadataErrors)
 		{
 		    if (Common.IsRunningOnMono())
@@ -921,9 +921,9 @@ namespace Pri.LongPath
             if (sourceFileName == null) throw new ArgumentNullException("sourceFileName");
 			if (destinationFileName == null) throw new ArgumentNullException("destinationFileName");
 
-			String fullSrcPath = Path.NormalizeLongPath(Path.GetFullPath(sourceFileName));
-			String fullDestPath = Path.NormalizeLongPath(Path.GetFullPath(destinationFileName));
-			String fullBackupPath = null;
+			string fullSrcPath = Path.NormalizeLongPath(Path.GetFullPath(sourceFileName));
+			string fullDestPath = Path.NormalizeLongPath(Path.GetFullPath(destinationFileName));
+			string fullBackupPath = null;
 			if (destinationBackupFileName != null)
 				fullBackupPath = Path.NormalizeLongPath(Path.GetFullPath(destinationBackupFileName));
 
@@ -934,7 +934,7 @@ namespace Pri.LongPath
 			bool r = NativeMethods.ReplaceFile(fullDestPath, fullSrcPath, fullBackupPath, flags, IntPtr.Zero, IntPtr.Zero);
 
 			if (!r)
-				Common.ThrowIOError(Marshal.GetLastWin32Error(), String.Empty);
+				Common.ThrowIoError(Marshal.GetLastWin32Error(), string.Empty);
 		}
 
 		public static void SetAccessControl(string path, FileSecurity fileSecurity)
@@ -965,30 +965,30 @@ namespace Pri.LongPath
 
             var normalizedPath = Path.NormalizeLongPath(Path.GetFullPath(path));
 
-			IntPtr SidOwner, SidGroup, Dacl, Sacl, ByteArray;
-			SecurityInfos SecurityInfos =
+			IntPtr sidOwner, sidGroup, dacl, sacl, byteArray;
+			SecurityInfos securityInfos =
 				Common.ToSecurityInfos(includeSections);
 
 			int errorCode = (int)NativeMethods.GetSecurityInfoByName(normalizedPath,
 				(uint)ResourceType.FileObject,
-				(uint)SecurityInfos,
-				out SidOwner,
-				out SidGroup,
-				out Dacl,
-				out Sacl,
-				out ByteArray);
+				(uint)securityInfos,
+				out sidOwner,
+				out sidGroup,
+				out dacl,
+				out sacl,
+				out byteArray);
 
-			Common.ThrowIfError(errorCode, ByteArray);
+			Common.ThrowIfError(errorCode, byteArray);
 
-			uint Length = NativeMethods.GetSecurityDescriptorLength(ByteArray);
+			uint length = NativeMethods.GetSecurityDescriptorLength(byteArray);
 
-			byte[] BinaryForm = new byte[Length];
+			byte[] binaryForm = new byte[length];
 
-			Marshal.Copy(ByteArray, BinaryForm, 0, (int)Length);
+			Marshal.Copy(byteArray, binaryForm, 0, (int)length);
 
-			NativeMethods.LocalFree(ByteArray);
+			NativeMethods.LocalFree(byteArray);
 			var fs = new FileSecurity();
-			fs.SetSecurityDescriptorBinaryForm(BinaryForm);
+			fs.SetSecurityDescriptorBinaryForm(binaryForm);
 			return fs;
 		}
 
@@ -1006,8 +1006,13 @@ namespace Pri.LongPath
 			if (handle.IsInvalid)
 			{
 				Exception ex = Common.GetExceptionFromLastWin32Error();
+#if !NET_2_0
+				Debug.WriteLine("error {0} with {1}{3}{2}", ex.Message, normalizedPath, ex.StackTrace, Environment.NewLine);
+				Debug.WriteLine("{0} {1} {2} {3}", mode, access, share, options);
+#else
 				Debug.WriteLine(string.Format("error {0} with {1}{3}{2}", ex.Message, normalizedPath, ex.StackTrace, Environment.NewLine));
 				Debug.WriteLine(string.Format("{0} {1} {2} {3}", mode, access, share, options));
+#endif
 				throw ex;
 			}
 
@@ -1038,21 +1043,21 @@ namespace Pri.LongPath
 
 		internal const int DefaultBufferSize = 4096;
 
-		private static volatile Encoding _UTF8NoBOM;
+		private static volatile Encoding utf8NoBom;
 
-		internal static Encoding UTF8NoBOM
+		internal static Encoding Utf8NoBom
 		{
 			get
 			{
-				if (_UTF8NoBOM == null)
+				if (utf8NoBom == null)
 				{
 					// No need for double lock - we just want to avoid extra
 					// allocations in the common case.
-					UTF8Encoding noBOM = new UTF8Encoding(false, true);
+					UTF8Encoding noBom = new UTF8Encoding(false, true);
 					Thread.MemoryBarrier();
-					_UTF8NoBOM = noBOM;
+					utf8NoBom = noBom;
 				}
-				return _UTF8NoBOM;
+				return utf8NoBom;
 			}
 		}
 
@@ -1063,7 +1068,7 @@ namespace Pri.LongPath
 		{
 			var fileMode = (append ? FileMode.Append : FileMode.Create);
 			var fileStream = Open(path, fileMode, FileAccess.Write, FileShare.Read, 4096, FileOptions.SequentialScan);
-			return new StreamWriter(fileStream, UTF8NoBOM, 1024);
+			return new StreamWriter(fileStream, Utf8NoBom, 1024);
 		}
 
 		internal static StreamWriter CreateStreamWriter(string path, bool append, Encoding encoding)
@@ -1075,7 +1080,7 @@ namespace Pri.LongPath
 
 		internal static StreamWriter CreateText(string path, Encoding encoding)
 		{
-			return File.CreateStreamWriter(path, false, encoding);
+			return CreateStreamWriter(path, false, encoding);
 		}
 
 		/// <remarks>

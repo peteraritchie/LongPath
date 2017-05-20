@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Runtime.InteropServices;
-using System.Runtime.InteropServices.ComTypes;
 using System.Security.AccessControl;
 #if !NET_2_0
 using System.Linq;
@@ -9,12 +8,14 @@ using System.Linq;
 
 namespace Pri.LongPath
 {
+	// ReSharper disable RedundantUsingDirective
 	using SafeFileHandle = Microsoft.Win32.SafeHandles.SafeFileHandle;
 	using FileAccess = System.IO.FileAccess;
 	using FileMode = System.IO.FileMode;
 	using FileOptions = System.IO.FileOptions;
 	using FileShare = System.IO.FileShare;
 	using SearchOption = System.IO.SearchOption;
+	// ReSharper restore RedundantUsingDirective
 
 	public static class Directory
 	{
@@ -310,10 +311,10 @@ namespace Pri.LongPath
 		{
 		    if (Common.IsRunningOnMono()) return System.IO.Directory.EnumerateDirectories(path, searchPattern);
 
-            return EnumerateFileSystemEntries(path, searchPattern, true, false, System.IO.SearchOption.TopDirectoryOnly);
+            return EnumerateFileSystemEntries(path, searchPattern, true, false, SearchOption.TopDirectoryOnly);
 		}
 
-		public static IEnumerable<string> EnumerateDirectories(string path, string searchPattern, System.IO.SearchOption options)
+		public static IEnumerable<string> EnumerateDirectories(string path, string searchPattern, SearchOption options)
 		{
 		    if (Common.IsRunningOnMono()) return System.IO.Directory.EnumerateDirectories(path, searchPattern, options);
 
@@ -866,7 +867,7 @@ namespace Pri.LongPath
 				var r = NativeMethods.SetFileTime(handle, &fileTime, null, null);
 				if (r) return;
 				var errorCode = Marshal.GetLastWin32Error();
-				Common.ThrowIOError(errorCode, path);
+				Common.ThrowIoError(errorCode, path);
 			}
 		}
 
@@ -885,7 +886,7 @@ namespace Pri.LongPath
 				var r = NativeMethods.SetFileTime(handle, null, null, &fileTime);
 				if (r) return;
 				var errorCode = Marshal.GetLastWin32Error();
-				Common.ThrowIOError(errorCode, path);
+				Common.ThrowIoError(errorCode, path);
 			}
 		}
 
@@ -905,7 +906,7 @@ namespace Pri.LongPath
 				var r = NativeMethods.SetFileTime(handle, null, &fileTime, null);
 				if (r) return;
 				var errorCode = Marshal.GetLastWin32Error();
-				Common.ThrowIOError(errorCode, path);
+				Common.ThrowIoError(errorCode, path);
 			}
 		}
 
@@ -1092,7 +1093,7 @@ namespace Pri.LongPath
 					var r = NativeMethods.SetFileTime(handle, null, null, &fileTime);
 					if (r) return;
 					var errorCode = Marshal.GetLastWin32Error();
-					Common.ThrowIOError(errorCode, path);
+					Common.ThrowIoError(errorCode, path);
 				}
 			}
 		}

@@ -8,8 +8,6 @@ namespace Pri.LongPath
 {
 	internal class SafeTokenHandle : SafeHandleZeroOrMinusOneIsInvalid
 	{
-		private SafeTokenHandle() : base(true) { }
-
 		// 0 is an Invalid Handle
 		internal SafeTokenHandle(IntPtr handle)
 			: base(true)

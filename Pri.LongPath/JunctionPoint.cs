@@ -13,12 +13,14 @@ using System.IO;
 using System.Runtime.InteropServices;
 using Microsoft.Win32.SafeHandles;
 
+// ReSharper disable RedundantUsingDirective
 using Path           = Pri.LongPath.Path;
 using Directory      = Pri.LongPath.Directory;
 using File           = Pri.LongPath.File;
 using DirectoryInfo  = Pri.LongPath.DirectoryInfo;
 using FileInfo       = Pri.LongPath.FileInfo;
 using FileSystemInfo = Pri.LongPath.FileSystemInfo;
+// ReSharper restore RedundantUsingDirective
 
 namespace Pri.LongPath {
 
@@ -233,6 +235,8 @@ namespace Pri.LongPath {
 
 		#region private implementation
 
+		// ReSharper disable InconsistentNaming
+        // ReSharper disable UnusedMember.Local
 		/// <summary>
 		/// The file or directory is not a reparse point.
 		/// </summary>
@@ -349,11 +353,13 @@ namespace Pri.LongPath {
             /// </summary>
             public uint ReparseTag;
 
+            /// ReSharper disable CommentTypo
             /// <summary>
             /// Size, in bytes, of the data after the Reserved member. This can be calculated by:
             /// (4 * sizeof(ushort)) + SubstituteNameLength + PrintNameLength + 
             /// (namesAreNullTerminated ? 2 * sizeof(char) : 0);
             /// </summary>
+            /// ReSharper restore CommentTypo
             public ushort ReparseDataLength;
 
             /// <summary>
@@ -395,8 +401,8 @@ namespace Pri.LongPath {
 
         [DllImport("kernel32.dll", CharSet = CharSet.Auto, SetLastError = true)]
         private static extern bool DeviceIoControl(IntPtr hDevice, uint dwIoControlCode,
-            IntPtr InBuffer, int nInBufferSize,
-            IntPtr OutBuffer, int nOutBufferSize,
+            IntPtr inBuffer, int nInBufferSize,
+            IntPtr outBuffer, int nOutBufferSize,
             out int pBytesReturned, IntPtr lpOverlapped);
 
         [DllImport("kernel32.dll", SetLastError = true)]
@@ -428,6 +434,8 @@ namespace Pri.LongPath {
         {
             throw new IOException(message, Marshal.GetExceptionForHR(Marshal.GetHRForLastWin32Error()));
         }
+	    // ReSharper restore UnusedMember.Local
+	    // ReSharper restore InconsistentNaming
 
 		#endregion
 	}

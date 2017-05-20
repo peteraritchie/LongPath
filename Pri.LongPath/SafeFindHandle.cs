@@ -11,7 +11,7 @@ namespace Pri.LongPath
 
 		protected override bool ReleaseHandle()
 		{
-			return NativeMethods.FindClose(base.handle);
+			return NativeMethods.FindClose(handle);
 		}
 	}
 }

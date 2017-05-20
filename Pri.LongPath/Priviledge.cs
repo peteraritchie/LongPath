@@ -1,5 +1,4 @@
 using System;
-using Microsoft.Win32.SafeHandles;
 using System.Collections.Specialized;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
@@ -9,7 +8,7 @@ using System.Threading;
 namespace Pri.LongPath
 {
     using Luid=NativeMethods.LUID;
-    using Win32Exception=global::System.ComponentModel.Win32Exception;
+    using Win32Exception=System.ComponentModel.Win32Exception;
     using PrivilegeNotHeldException=System.Security.AccessControl.PrivilegeNotHeldException;
 	using System.Security.Principal;
 
@@ -20,13 +19,12 @@ namespace Pri.LongPath
 	/// </summary>
     public sealed class Privilege
     {
-        private static readonly LocalDataStoreSlot tlsSlot = Thread.AllocateDataSlot();
-        private static readonly HybridDictionary privileges = new HybridDictionary();
-        private static readonly HybridDictionary luids = new HybridDictionary();
-        private static readonly ReaderWriterLock privilegeLock = new ReaderWriterLock();
+        private static readonly LocalDataStoreSlot TlsSlot = Thread.AllocateDataSlot();
+        private static readonly HybridDictionary Privileges = new HybridDictionary();
+        private static readonly HybridDictionary Luids = new HybridDictionary();
+        private static readonly ReaderWriterLock PrivilegeLock = new ReaderWriterLock();
 
-        private bool needToRevert;
-        private bool initialState;
+	    private bool initialState;
         private bool stateWasChanged;
         private readonly Luid luid;
         private readonly Thread currentThread = Thread.CurrentThread;
@@ -76,9 +74,9 @@ namespace Pri.LongPath
         [ReliabilityContract( Consistency.WillNotCorruptState, Cer.MayFail )]
         private static Luid LuidFromPrivilege( string privilege )
         {
-            Luid luid;
-            luid.LowPart = 0;
-            luid.HighPart = 0;
+            Luid newLuid;
+            newLuid.LowPart = 0;
+            newLuid.HighPart = 0;
 
             //
             // Look up the privilege LUID inside the cache
@@ -88,19 +86,19 @@ namespace Pri.LongPath
 
             try
             {
-                privilegeLock.AcquireReaderLock(Timeout.Infinite);
+                PrivilegeLock.AcquireReaderLock(Timeout.Infinite);
 
-                if ( luids.Contains( privilege ))
+                if ( Luids.Contains( privilege ))
                 {
-                    luid = ( Luid )luids[ privilege ];
+                    newLuid = ( Luid )Luids[ privilege ];
 
-                    privilegeLock.ReleaseReaderLock();
+                    PrivilegeLock.ReleaseReaderLock();
                 }
                 else
                 {
-                    privilegeLock.ReleaseReaderLock();
+                    PrivilegeLock.ReleaseReaderLock();
 
-                    if ( false == NativeMethods.LookupPrivilegeValue( null, privilege, ref luid ))
+                    if ( false == NativeMethods.LookupPrivilegeValue( null, privilege, ref newLuid ))
                     {
                         int error = Marshal.GetLastWin32Error();
 
@@ -124,51 +122,51 @@ namespace Pri.LongPath
                         }
                     }
 
-                    privilegeLock.AcquireWriterLock(Timeout.Infinite);
+                    PrivilegeLock.AcquireWriterLock(Timeout.Infinite);
                 }
             }
             finally
             {
-                if ( privilegeLock.IsReaderLockHeld )
+                if ( PrivilegeLock.IsReaderLockHeld )
                 {
-                    privilegeLock.ReleaseReaderLock();
+                    PrivilegeLock.ReleaseReaderLock();
                 }
 
-                if ( privilegeLock.IsWriterLockHeld )
+                if ( PrivilegeLock.IsWriterLockHeld )
                 {
-                    if ( !luids.Contains( privilege ))
+                    if ( !Luids.Contains( privilege ))
                     {
-                        luids[ privilege ] = luid;
-                        privileges[ luid ] = privilege;
+                        Luids[ privilege ] = newLuid;
+                        Privileges[ newLuid ] = privilege;
                     }
 
-                    privilegeLock.ReleaseWriterLock();
+                    PrivilegeLock.ReleaseWriterLock();
                 }
             }
 
-            return luid;
+            return newLuid;
         }
 
         private sealed class TlsContents : IDisposable
         {
-            private bool disposed = false;
-            private int referenceCount = 1;
-            private SafeTokenHandle threadHandle = new SafeTokenHandle( IntPtr.Zero );
-            private bool isImpersonating = false;
+            private bool disposed;
+	        private SafeTokenHandle threadHandle;
 
-            private static SafeTokenHandle processHandle = new SafeTokenHandle( IntPtr.Zero );
-            private static readonly object syncRoot = new object();
+	        private static SafeTokenHandle processHandle = new SafeTokenHandle( IntPtr.Zero );
+            private static readonly object SyncRoot = new object();
 
             #region Constructor and finalizer
             public TlsContents()
             {
-                int error = 0;
+	            ReferenceCountValue = 1;
+	            threadHandle = new SafeTokenHandle( IntPtr.Zero );
+	            int error = 0;
 				int cachingError = 0;
                 bool success = true;
 
                 if ( processHandle.IsInvalid )
                 {
-                    lock ( syncRoot )
+                    lock ( SyncRoot )
                     {
                         if ( processHandle.IsInvalid )
                         {
@@ -197,9 +195,9 @@ namespace Pri.LongPath
 						NativeMethods.GetCurrentThread(),
 						TokenAccessLevels.Query | TokenAccessLevels.AdjustPrivileges,
 						true,
-						ref this.threadHandle ))
+						ref threadHandle ))
 					{
-						if ( success == true )
+						if ( success )
 						{
 							error = Marshal.GetLastWin32Error();
 
@@ -208,7 +206,7 @@ namespace Pri.LongPath
 								success = false;
 							}
 
-							if ( success == true )
+							if ( success )
 							{
 								error = 0;
 
@@ -216,33 +214,33 @@ namespace Pri.LongPath
 									processHandle,
 									TokenAccessLevels.Impersonate | TokenAccessLevels.Query | TokenAccessLevels.AdjustPrivileges,
 									IntPtr.Zero,
-									Pri.LongPath.NativeMethods.SecurityImpersonationLevel.Impersonation,
-									Pri.LongPath.NativeMethods.TokenType.Impersonation,
-									ref this.threadHandle ))
+									NativeMethods.SecurityImpersonationLevel.Impersonation,
+									NativeMethods.TokenType.Impersonation,
+									ref threadHandle ))
 								{
 									error = Marshal.GetLastWin32Error();
 									success = false;
 								}
 							}
 
-							if ( success == true )
+							if ( success )
 							{
 								if ( false == NativeMethods.SetThreadToken(
 									IntPtr.Zero,
-									this.threadHandle ))
+									threadHandle ))
 								{
 									error = Marshal.GetLastWin32Error();
 									success = false;
 								}
 							}
 
-							if ( success == true )
+							if ( success )
 							{
 								//
 								// This thread is now impersonating; it needs to be reverted to its original state
 								//
 
-								this.isImpersonating = true;
+								IsImpersonating = true;
 							}
 						}
 						else
@@ -280,9 +278,9 @@ namespace Pri.LongPath
 
             ~TlsContents()
             {
-                if ( !this.disposed )
+                if ( !disposed )
                 {
-                    Dispose( false );
+                    Dispose();
                 }
             }
             #endregion
@@ -290,38 +288,32 @@ namespace Pri.LongPath
             #region IDisposable implementation
             public void Dispose()
             {
-                Dispose( true );
-                GC.SuppressFinalize( this );
-            }
+                if ( disposed ) return;
 
-            private void Dispose( bool disposing )
-            {
-                if ( this.disposed ) return;
-
-                if ( this.threadHandle != null )
+                if ( threadHandle != null )
                 {
-                    this.threadHandle.Dispose();
-                    this.threadHandle = null;
+                    threadHandle.Dispose();
+                    threadHandle = null;
                 }
 
-                if ( this.isImpersonating )
+                if ( IsImpersonating )
                 {
                     NativeMethods.RevertToSelf();
                 }
 
-                this.disposed = true;
+                disposed = true;
             }
             #endregion
 
             #region Reference-counting
             public void IncrementReferenceCount()
             {
-                this.referenceCount++;
+                ReferenceCountValue++;
             }
 
             public int DecrementReferenceCount()
             {
-                int result = --this.referenceCount;
+                int result = --ReferenceCountValue;
 
                 if ( result == 0 )
                 {
@@ -331,23 +323,19 @@ namespace Pri.LongPath
                 return result;
             }
 
-            public int ReferenceCountValue
-            {
-                get { return this.referenceCount; }
-            }
-            #endregion
+            public int ReferenceCountValue { get; private set; }
+
+	        #endregion
 
             #region Properties
             public SafeTokenHandle ThreadHandle
             {
-                get { return this.threadHandle; }
+                get { return threadHandle; }
             }
 
-            public bool IsImpersonating
-            {
-                get { return this.isImpersonating; }
-            }
-            #endregion
+            public bool IsImpersonating { get; }
+
+	        #endregion
         }
 
         public Privilege( string privilegeName )
@@ -357,13 +345,13 @@ namespace Pri.LongPath
                 throw new ArgumentNullException( "privilegeName" );
             }
 
-            this.luid = LuidFromPrivilege( privilegeName );
+            luid = LuidFromPrivilege( privilegeName );
         }
 
         [ReliabilityContract( Consistency.WillNotCorruptState, Cer.MayFail )]
         public void Enable()
         {
-            this.ToggleState( true );
+            ToggleState( true );
         }
 
 #if NOT_USED
@@ -383,12 +371,12 @@ namespace Pri.LongPath
             // All privilege operations must take place on the same thread
             //
 
-            if ( !this.currentThread.Equals( Thread.CurrentThread ))
+            if ( !currentThread.Equals( Thread.CurrentThread ))
             {
                 throw new InvalidOperationException( "Operation must take place on the thread that created the object" );
             }
 
-            if ( !this.NeedToRevert )
+            if ( !NeedToRevert )
             {
                 return;
             }
@@ -418,18 +406,18 @@ namespace Pri.LongPath
                     // on this Revert, since doing the latter obliterates the thread token anyway
                     //
 
-                    if ( this.stateWasChanged &&
-                        ( this.tlsContents.ReferenceCountValue > 1 ||
-                        !this.tlsContents.IsImpersonating ))
+                    if ( stateWasChanged &&
+                        ( tlsContents.ReferenceCountValue > 1 ||
+                        !tlsContents.IsImpersonating ))
                     {
 	                    var newState = new NativeMethods.TOKEN_PRIVILEGE
 	                    {
 		                    PrivilegeCount = 1,
 		                    Privilege =
 		                    {
-			                    Luid = this.luid,
+			                    Luid = luid,
 			                    Attributes =
-				                    (this.initialState ? NativeMethods.SE_PRIVILEGE_ENABLED : NativeMethods.SE_PRIVILEGE_DISABLED)
+				                    (initialState ? NativeMethods.SE_PRIVILEGE_ENABLED : NativeMethods.SE_PRIVILEGE_DISABLED)
 		                    }
 	                    };
 
@@ -437,7 +425,7 @@ namespace Pri.LongPath
                         uint previousSize = 0;
 
                         if ( false == NativeMethods.AdjustTokenPrivileges(
-                                        this.tlsContents.ThreadHandle,
+                                        tlsContents.ThreadHandle,
                                         false,
                                         ref newState,
                                         ( uint )Marshal.SizeOf( previousState ),
@@ -453,7 +441,7 @@ namespace Pri.LongPath
                 {
                     if ( success )
                     {
-                        this.Reset();
+                        Reset();
                     }
                 }
             }
@@ -472,10 +460,7 @@ namespace Pri.LongPath
             }
         }
 
-        public bool NeedToRevert
-        {
-            get { return this.needToRevert; }
-        }
+        public bool NeedToRevert { get; private set; }
 
 #if NOT_USED
         public static void RunWithPrivilege( string privilege, bool enabled, PrivilegedCallback callback, object state )
@@ -500,7 +485,7 @@ namespace Pri.LongPath
                     p.Disable();
                 }
 
-                callback(state);
+                callback(instanceState);
             }
             catch
             {
@@ -513,7 +498,8 @@ namespace Pri.LongPath
             }
         }
 #endif
-        [ReliabilityContract( Consistency.WillNotCorruptState, Cer.MayFail )]
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Interoperability", "CA1404:CallGetLastErrorImmediatelyAfterPInvoke")]
+		[ReliabilityContract( Consistency.WillNotCorruptState, Cer.MayFail )]
         private void ToggleState( bool enable )
         {
             int error = 0;
@@ -522,7 +508,7 @@ namespace Pri.LongPath
             // All privilege operations must take place on the same thread
             //
 
-            if ( !this.currentThread.Equals( Thread.CurrentThread ))
+            if ( !currentThread.Equals( Thread.CurrentThread ))
             {
                 throw new InvalidOperationException( "Operation must take place on the thread that created the object" );
             }
@@ -531,14 +517,14 @@ namespace Pri.LongPath
             // This privilege was already altered and needs to be reverted before it can be altered again
             //
 
-            if ( this.NeedToRevert )
+            if ( NeedToRevert )
             {
                 throw new InvalidOperationException( "Must revert the privilege prior to attempting this operation" );
             }
 
             //
             // Need to make this block of code non-interruptible so that it would preserve
-            // consistency of thread oken state even in the face of catastrophic exceptions
+            // consistency of thread token state even in the face of catastrophic exceptions
             //
 
             RuntimeHelpers.PrepareConstrainedRegions();
@@ -559,16 +545,16 @@ namespace Pri.LongPath
                     // Retrieve TLS state
                     //
 
-                    this.tlsContents = Thread.GetData( tlsSlot ) as TlsContents;
+                    tlsContents = Thread.GetData( TlsSlot ) as TlsContents;
 
-                    if ( this.tlsContents == null )
+                    if ( tlsContents == null )
                     {
-                        this.tlsContents = new TlsContents();
-                        Thread.SetData( tlsSlot, this.tlsContents );
+                        tlsContents = new TlsContents();
+                        Thread.SetData( TlsSlot, tlsContents );
                     }
                     else
                     {
-                        this.tlsContents.IncrementReferenceCount();
+                        tlsContents.IncrementReferenceCount();
                     }
 
 	                var newState = new NativeMethods.TOKEN_PRIVILEGE
@@ -576,7 +562,7 @@ namespace Pri.LongPath
 		                PrivilegeCount = 1,
 		                Privilege =
 		                {
-			                Luid = this.luid,
+			                Luid = luid,
 			                Attributes = enable ? NativeMethods.SE_PRIVILEGE_ENABLED : NativeMethods.SE_PRIVILEGE_DISABLED
 		                }
 	                };
@@ -589,7 +575,7 @@ namespace Pri.LongPath
                     //
 
                     if ( false == NativeMethods.AdjustTokenPrivileges(
-                                    this.tlsContents.ThreadHandle,
+                                    tlsContents.ThreadHandle,
                                     false,
                                     ref newState,
                                     ( uint )Marshal.SizeOf( previousState ),
@@ -608,33 +594,33 @@ namespace Pri.LongPath
                         // This is the initial state that revert will have to go back to
                         //
 
-                        this.initialState = (( previousState.Privilege.Attributes & NativeMethods.SE_PRIVILEGE_ENABLED ) != 0 );
+                        initialState = (( previousState.Privilege.Attributes & NativeMethods.SE_PRIVILEGE_ENABLED ) != 0 );
 
                         //
                         // Remember whether state has changed at all
                         //
 
-                        this.stateWasChanged = ( this.initialState != enable );
+                        stateWasChanged = ( initialState != enable );
 
                         //
                         // If we had to impersonate, or if the privilege state changed we'll need to revert
                         //
 
-                        this.needToRevert = this.tlsContents.IsImpersonating || this.stateWasChanged;
+                        NeedToRevert = tlsContents.IsImpersonating || stateWasChanged;
                     }
                 }
                 finally
                 {
-                    if ( !this.needToRevert )
+                    if ( !NeedToRevert )
                     {
-                        this.Reset();
+                        Reset();
                     }
                 }
             }
 
             if ( error == NativeMethods.ERROR_NOT_ALL_ASSIGNED )
             {
-                throw new PrivilegeNotHeldException( privileges[this.luid] as string );
+                throw new PrivilegeNotHeldException( Privileges[luid] as string );
             }
             if ( error == NativeMethods.ERROR_NOT_ENOUGH_MEMORY )
             {
@@ -663,18 +649,15 @@ namespace Pri.LongPath
             }
             finally
             {
-                this.stateWasChanged = false;
-                this.initialState = false;
-                this.needToRevert = false;
+                stateWasChanged = false;
+                initialState = false;
+                NeedToRevert = false;
 
-                if ( this.tlsContents != null )
-                {
-                    if ( 0 == this.tlsContents.DecrementReferenceCount())
-                    {
-                        this.tlsContents = null;
-                        Thread.SetData( tlsSlot, null );
-                    }
-                }
+	            if ( 0 == tlsContents?.DecrementReferenceCount())
+	            {
+		            tlsContents = null;
+		            Thread.SetData( TlsSlot, null );
+	            }
             }
         }
     }
