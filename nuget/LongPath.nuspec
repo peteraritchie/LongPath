@@ -6,7 +6,7 @@
     <authors>Peter Ritchie</authors>
     <dependencies/>
     <owners>Peter Ritchie</owners>
-    <licenseUrl>https://raw.githubusercontent.com/peteraritchie/LongPath/master/longpath.png</licenseUrl>
+    <licenseUrl>https://github.com/peteraritchie/longpath/blob/master/LICENSE</licenseUrl>
     <projectUrl>https://github.com/peteraritchie/LongPath</projectUrl>
     <iconUrl>https://raw.githubusercontent.com/peteraritchie/LongPath/dev/longpath.png</iconUrl>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
