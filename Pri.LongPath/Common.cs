@@ -11,12 +11,20 @@ namespace Pri.LongPath
 {
 	using FileNotFoundException = FileNotFoundException;
 
-	public class Common
+	public static class Common
 	{
+#if NET_2_0
 		public static bool IsRunningOnMono()
 		{
 			return Type.GetType("Mono.Runtime") != null;
 		}
+#else
+		private static readonly Lazy<bool> IsRunningOnMonoLazy = new Lazy<bool>(()=> Type.GetType("Mono.Runtime") != null);
+		public static bool IsRunningOnMono()
+		{
+			return IsRunningOnMonoLazy.Value;
+		}
+#endif
 
 		private static readonly uint ProtectedDiscretionaryAcl = 0x80000000;
 		private static readonly uint ProtectedSystemAcl = 0x40000000;
