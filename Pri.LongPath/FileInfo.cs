@@ -24,29 +24,26 @@ namespace Pri.LongPath
 			}
 		}
 
-	    public System.IO.FileInfo SysFileInfo
-        {
-	        get
-	        {
-	            return new System.IO.FileInfo(FullPath);
-	        }
-        }
-
-	    public override System.IO.FileSystemInfo SystemInfo { get { return SysFileInfo; } }
-
-        public string DirectoryName
+		public System.IO.FileInfo SysFileInfo
 		{
-			get
-			{
-				return Path.GetDirectoryName(FullPath);
-			}
+			get { return new System.IO.FileInfo(FullPath); }
+		}
+
+		public override System.IO.FileSystemInfo SystemInfo
+		{
+			get { return SysFileInfo; }
+		}
+
+		public string DirectoryName
+		{
+			get { return Path.GetDirectoryName(FullPath); }
 		}
 
 		public override bool Exists
 		{
 			get
 			{
-			    if (Common.IsRunningOnMono()) return SysFileInfo.Exists;
+				if (Common.IsRunningOnMono()) return SysFileInfo.Exists;
 
 				if (InstanceState == State.Uninitialized)
 				{
@@ -82,15 +79,15 @@ namespace Pri.LongPath
 
 		private long GetFileLength()
 		{
-		    if (Common.IsRunningOnMono()) return SysFileInfo.Length;
+			if (Common.IsRunningOnMono()) return SysFileInfo.Length;
 
-            if (InstanceState == State.Uninitialized)
+			if (InstanceState == State.Uninitialized)
 			{
 				Refresh();
 			}
-			if(InstanceState == State.Error)
+			if (InstanceState == State.Error)
 				Common.ThrowIoError(ErrorCode, FullPath);
-			return ((long)Data.fileSizeHigh) << 32 | (Data.fileSizeLow & 0xFFFFFFFFL);
+			return ((long) Data.fileSizeHigh) << 32 | (Data.fileSizeLow & 0xFFFFFFFFL);
 		}
 
 		public StreamWriter AppendText()
@@ -141,15 +138,15 @@ namespace Pri.LongPath
 
 		public FileStream Open(FileMode mode, FileAccess access, FileShare share)
 		{
-		    if (Common.IsRunningOnMono()) return SysFileInfo.Open(mode, access, share);
+			if (Common.IsRunningOnMono()) return SysFileInfo.Open(mode, access, share);
 
-            return File.Open(FullPath, mode, access, share, 4096, FileOptions.SequentialScan);
+			return File.Open(FullPath, mode, access, share, 4096, FileOptions.SequentialScan);
 		}
 
 		public FileStream OpenRead()
 		{
-		    if (Common.IsRunningOnMono()) return SysFileInfo.OpenRead();
-            return File.Open(FullPath, FileMode.Open, FileAccess.Read, FileShare.Read, 4096, FileOptions.None);
+			if (Common.IsRunningOnMono()) return SysFileInfo.OpenRead();
+			return File.Open(FullPath, FileMode.Open, FileAccess.Read, FileShare.Read, 4096, FileOptions.None);
 		}
 
 		public StreamReader OpenText()
@@ -181,19 +178,19 @@ namespace Pri.LongPath
 		{
 			get
 			{
-			    if (Common.IsRunningOnMono()) return SysFileInfo.IsReadOnly;
+				if (Common.IsRunningOnMono()) return SysFileInfo.IsReadOnly;
 
-                return (Attributes & FileAttributes.ReadOnly) != 0;
+				return (Attributes & FileAttributes.ReadOnly) != 0;
 			}
 			set
 			{
-			    if (Common.IsRunningOnMono())
-			    {
-			        SysFileInfo.IsReadOnly = value;
-			        return;
-			    }
+				if (Common.IsRunningOnMono())
+				{
+					SysFileInfo.IsReadOnly = value;
+					return;
+				}
 
-                if (value)
+				if (value)
 				{
 					Attributes |= FileAttributes.ReadOnly;
 					return;

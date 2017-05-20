@@ -13,12 +13,12 @@ namespace Pri.LongPath
 
 	public class Common
 	{
-	    public static bool IsRunningOnMono()
-	    {
-	       return Type.GetType("Mono.Runtime") != null;
-	    }
+		public static bool IsRunningOnMono()
+		{
+			return Type.GetType("Mono.Runtime") != null;
+		}
 
-	    private static readonly uint ProtectedDiscretionaryAcl = 0x80000000;
+		private static readonly uint ProtectedDiscretionaryAcl = 0x80000000;
 		private static readonly uint ProtectedSystemAcl = 0x40000000;
 		private static readonly uint UnprotectedDiscretionaryAcl = 0x20000000;
 		private static readonly uint UnprotectedSystemAcl = 0x10000000;
@@ -79,7 +79,7 @@ namespace Pri.LongPath
 			{
 				FileAttributes attributes;
 				int errorCode = TryGetFileAttributes(normalizedPath, out attributes);
-				if (errorCode == 0 && (int)attributes != NativeMethods.INVALID_FILE_ATTRIBUTES)
+				if (errorCode == 0 && (int) attributes != NativeMethods.INVALID_FILE_ATTRIBUTES)
 				{
 					isDirectory = Directory.IsDirectory(attributes);
 					return true;
@@ -116,7 +116,7 @@ namespace Pri.LongPath
 
 			if (!success)
 			{
-				attributes = (FileAttributes)NativeMethods.INVALID_FILE_ATTRIBUTES;
+				attributes = (FileAttributes) NativeMethods.INVALID_FILE_ATTRIBUTES;
 				return lastWin32Error;
 			}
 
@@ -170,7 +170,6 @@ namespace Pri.LongPath
 
 				default:
 					return new IOException(message, NativeMethods.MakeHRFromErrorCode(errorCode));
-
 			}
 		}
 
@@ -178,7 +177,9 @@ namespace Pri.LongPath
 		{
 			StringBuilder buffer = new StringBuilder(512);
 
-			NativeMethods.FormatMessage(NativeMethods.FORMAT_MESSAGE_IGNORE_INSERTS | NativeMethods.FORMAT_MESSAGE_FROM_SYSTEM | NativeMethods.FORMAT_MESSAGE_ARGUMENT_ARRAY, IntPtr.Zero, errorCode, 0, buffer, buffer.Capacity, IntPtr.Zero);
+			NativeMethods.FormatMessage(
+				NativeMethods.FORMAT_MESSAGE_IGNORE_INSERTS | NativeMethods.FORMAT_MESSAGE_FROM_SYSTEM |
+				NativeMethods.FORMAT_MESSAGE_ARGUMENT_ARRAY, IntPtr.Zero, errorCode, 0, buffer, buffer.Capacity, IntPtr.Zero);
 
 			return buffer.ToString();
 		}
@@ -308,7 +309,7 @@ namespace Pri.LongPath
 		internal static void SetAccessControlExtracted(FileSystemSecurity security, string name)
 		{
 			AccessControlSections includeSections = AccessControlSections.Owner | AccessControlSections.Group;
-			if(security.GetAccessRules(true, false, typeof(SecurityIdentifier)).Count > 0)
+			if (security.GetAccessRules(true, false, typeof(SecurityIdentifier)).Count > 0)
 			{
 				includeSections |= AccessControlSections.Access;
 			}
@@ -316,7 +317,7 @@ namespace Pri.LongPath
 			{
 				includeSections |= AccessControlSections.Audit;
 			}
-			
+
 			SecurityInfos securityInfo = 0;
 			SecurityIdentifier owner = null;
 			SecurityIdentifier group = null;
@@ -324,7 +325,7 @@ namespace Pri.LongPath
 			DiscretionaryAcl dacl = null;
 			if ((includeSections & AccessControlSections.Owner) != AccessControlSections.None)
 			{
-				owner = (SecurityIdentifier)security.GetOwner(typeof(SecurityIdentifier));
+				owner = (SecurityIdentifier) security.GetOwner(typeof(SecurityIdentifier));
 				if (owner != null)
 				{
 					securityInfo = securityInfo | SecurityInfos.Owner;
@@ -333,7 +334,7 @@ namespace Pri.LongPath
 
 			if ((includeSections & AccessControlSections.Group) != AccessControlSections.None)
 			{
-				group = (SecurityIdentifier)security.GetGroup(typeof(SecurityIdentifier));
+				group = (SecurityIdentifier) security.GetGroup(typeof(SecurityIdentifier));
 				if (group != null)
 				{
 					securityInfo = securityInfo | SecurityInfos.Group;
@@ -341,7 +342,8 @@ namespace Pri.LongPath
 			}
 			var securityDescriptorBinaryForm = security.GetSecurityDescriptorBinaryForm();
 			var rawSecurityDescriptor = new RawSecurityDescriptor(securityDescriptorBinaryForm, 0);
-			var isDiscretionaryAclPresent = (rawSecurityDescriptor.ControlFlags & ControlFlags.DiscretionaryAclPresent) != ControlFlags.None;
+			var isDiscretionaryAclPresent = (rawSecurityDescriptor.ControlFlags & ControlFlags.DiscretionaryAclPresent) !=
+			                                ControlFlags.None;
 
 			if ((includeSections & AccessControlSections.Audit) != AccessControlSections.None)
 			{
@@ -417,14 +419,14 @@ namespace Pri.LongPath
 		}
 
 		internal static int SetSecurityInfo(
-					ResourceType type,
-					string name,
-					SafeHandle handle,
-					SecurityInfos securityInformation,
-					SecurityIdentifier owner,
-					SecurityIdentifier group,
-					GenericAcl sacl,
-					GenericAcl dacl)
+			ResourceType type,
+			string name,
+			SafeHandle handle,
+			SecurityInfos securityInformation,
+			SecurityIdentifier owner,
+			SecurityIdentifier group,
+			GenericAcl sacl,
+			GenericAcl dacl)
 		{
 			int errorCode;
 			int length;
@@ -496,7 +498,8 @@ namespace Pri.LongPath
 
 				if (name != null)
 				{
-					errorCode = (int)NativeMethods.SetSecurityInfoByName(name, (uint)type, (uint)securityInformation, ownerBinary, groupBinary, daclBinary, saclBinary);
+					errorCode = (int) NativeMethods.SetSecurityInfoByName(name, (uint) type, (uint) securityInformation, ownerBinary,
+						groupBinary, daclBinary, saclBinary);
 				}
 				else if (handle != null)
 				{
@@ -506,7 +509,8 @@ namespace Pri.LongPath
 					}
 					else
 					{
-						errorCode = (int)NativeMethods.SetSecurityInfoByHandle(handle, (uint)type, (uint)securityInformation, ownerBinary, groupBinary, daclBinary, saclBinary);
+						errorCode = (int) NativeMethods.SetSecurityInfoByHandle(handle, (uint) type, (uint) securityInformation,
+							ownerBinary, groupBinary, daclBinary, saclBinary);
 					}
 				}
 				else
@@ -516,12 +520,12 @@ namespace Pri.LongPath
 				}
 
 				if (errorCode == NativeMethods.ERROR_NOT_ALL_ASSIGNED ||
-					errorCode == NativeMethods.ERROR_PRIVILEGE_NOT_HELD)
+				    errorCode == NativeMethods.ERROR_PRIVILEGE_NOT_HELD)
 				{
 					throw new PrivilegeNotHeldException(Privilege.Security);
 				}
 				else if (errorCode == NativeMethods.ERROR_ACCESS_DENIED ||
-					errorCode == NativeMethods.ERROR_CANT_OPEN_ANONYMOUS)
+				         errorCode == NativeMethods.ERROR_CANT_OPEN_ANONYMOUS)
 				{
 					throw new UnauthorizedAccessException();
 				}
@@ -543,7 +547,7 @@ namespace Pri.LongPath
 
 			return 0;
 
-		Error:
+			Error:
 
 			if (errorCode == NativeMethods.ERROR_NOT_ENOUGH_MEMORY)
 			{
@@ -556,7 +560,9 @@ namespace Pri.LongPath
 		public static bool IsPathUnc(string path)
 		{
 			Uri uri;
-			return (!string.IsNullOrEmpty(path) && path.StartsWith(Path.UncLongPathPrefix, StringComparison.InvariantCultureIgnoreCase)) || (Uri.TryCreate(path, UriKind.Absolute, out uri) && uri.IsUnc);
+			return (!string.IsNullOrEmpty(path) &&
+			        path.StartsWith(Path.UncLongPathPrefix, StringComparison.InvariantCultureIgnoreCase)) ||
+			       (Uri.TryCreate(path, UriKind.Absolute, out uri) && uri.IsUnc);
 		}
 
 		public static bool IsPathDots(string path)

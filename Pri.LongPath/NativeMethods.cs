@@ -3,7 +3,7 @@ using System.Runtime.InteropServices;
 using System.Text;
 using Microsoft.Win32.SafeHandles;
 using FILETIME = System.Runtime.InteropServices.ComTypes.FILETIME;
-using DWORD=System.UInt32;
+using DWORD = System.UInt32;
 using System.Runtime.ConstrainedExecution;
 using System.Security.Principal;
 
@@ -13,6 +13,7 @@ namespace Pri.LongPath
 	{
 		// ReSharper disable InconsistentNaming
 		internal const int ERROR_SUCCESS = 0;
+
 		internal const int ERROR_FILE_NOT_FOUND = 0x2;
 		internal const int ERROR_PATH_NOT_FOUND = 0x3;
 		internal const int ERROR_ACCESS_DENIED = 0x5;
@@ -29,7 +30,7 @@ namespace Pri.LongPath
 		internal const int ERROR_INVALID_NAME = 0x7B;
 		internal const int ERROR_BAD_PATHNAME = 0xA1;
 		internal const int ERROR_ALREADY_EXISTS = 0xB7;
-		internal const int ERROR_FILENAME_EXCED_RANGE = 0xCE;  // filename too long.
+		internal const int ERROR_FILENAME_EXCED_RANGE = 0xCE; // filename too long.
 		internal const int ERROR_DIRECTORY = 0x10B;
 		internal const int ERROR_OPERATION_ABORTED = 0x3e3;
 		internal const int ERROR_NO_TOKEN = 0x3f0;
@@ -50,9 +51,11 @@ namespace Pri.LongPath
 		internal const int REPLACEFILE_IGNORE_MERGE_ERRORS = 0x2;
 
 		internal const int MAX_PATH = 260;
+
 		// While Windows allows larger paths up to a maximum of 32767 characters, because this is only an approximation and
 		// can vary across systems and OS versions, we choose a limit well under so that we can give a consistent behavior.
 		internal const int MAX_LONG_PATH = 32000;
+
 		internal const int MAX_ALTERNATE = 14;
 
 		public const int FORMAT_MESSAGE_IGNORE_INSERTS = 0x00000200;
@@ -88,15 +91,16 @@ namespace Pri.LongPath
 			internal int fileSizeHigh;
 
 			internal int fileSizeLow;
+
 			public void PopulateFrom(WIN32_FIND_DATA findData)
 			{
 				fileAttributes = findData.dwFileAttributes;
-				ftCreationTimeLow = (uint)findData.ftCreationTime.dwLowDateTime;
-				ftCreationTimeHigh = (uint)findData.ftCreationTime.dwHighDateTime;
-				ftLastAccessTimeLow = (uint)findData.ftLastAccessTime.dwLowDateTime;
-				ftLastAccessTimeHigh = (uint)findData.ftLastAccessTime.dwHighDateTime;
-				ftLastWriteTimeLow = (uint)findData.ftLastWriteTime.dwLowDateTime;
-				ftLastWriteTimeHigh = (uint)findData.ftLastWriteTime.dwHighDateTime;
+				ftCreationTimeLow = (uint) findData.ftCreationTime.dwLowDateTime;
+				ftCreationTimeHigh = (uint) findData.ftCreationTime.dwHighDateTime;
+				ftLastAccessTimeLow = (uint) findData.ftLastAccessTime.dwLowDateTime;
+				ftLastAccessTimeHigh = (uint) findData.ftLastAccessTime.dwHighDateTime;
+				ftLastWriteTimeLow = (uint) findData.ftLastWriteTime.dwLowDateTime;
+				ftLastWriteTimeHigh = (uint) findData.ftLastWriteTime.dwHighDateTime;
 				fileSizeHigh = findData.nFileSizeHigh;
 				fileSizeLow = findData.nFileSizeLow;
 			}
@@ -113,23 +117,22 @@ namespace Pri.LongPath
 			internal int nFileSizeLow;
 			internal int dwReserved0;
 			internal int dwReserved1;
-			[MarshalAs(UnmanagedType.ByValTStr, SizeConst = MAX_PATH)]
-			internal string cFileName;
-			[MarshalAs(UnmanagedType.ByValTStr, SizeConst = MAX_ALTERNATE)]
-			internal string cAlternate;
+			[MarshalAs(UnmanagedType.ByValTStr, SizeConst = MAX_PATH)] internal string cFileName;
+			[MarshalAs(UnmanagedType.ByValTStr, SizeConst = MAX_ALTERNATE)] internal string cAlternate;
 		}
 
 		internal static int MakeHRFromErrorCode(int errorCode)
 		{
-			return unchecked((int)0x80070000 | errorCode);
+			return unchecked((int) 0x80070000 | errorCode);
 		}
 
 		[DllImport("kernel32.dll", SetLastError = true, CharSet = CharSet.Unicode)]
 		[return: MarshalAs(UnmanagedType.Bool)]
-		internal static extern bool CopyFile(string src, string dst, [MarshalAs(UnmanagedType.Bool)]bool failIfExists);
+		internal static extern bool CopyFile(string src, string dst, [MarshalAs(UnmanagedType.Bool)] bool failIfExists);
 
 		[DllImport("kernel32.dll", SetLastError = true, CharSet = CharSet.Auto, BestFitMapping = false)]
-		internal static extern bool ReplaceFile(string replacedFileName, string replacementFileName, string backupFileName, int dwReplaceFlags, IntPtr lpExclude, IntPtr lpReserved);
+		internal static extern bool ReplaceFile(string replacedFileName, string replacementFileName, string backupFileName,
+			int dwReplaceFlags, IntPtr lpExclude, IntPtr lpReserved);
 
 		[DllImport("kernel32.dll", SetLastError = true, CharSet = CharSet.Unicode)]
 		internal static extern SafeFindHandle FindFirstFile(string lpFileName, out WIN32_FIND_DATA lpFindFileData);
@@ -178,22 +181,24 @@ namespace Pri.LongPath
 
 		[DllImport("kernel32.dll", SetLastError = true, CharSet = CharSet.Unicode)]
 		[return: MarshalAs(UnmanagedType.Bool)]
-		internal static extern bool SetFileAttributes(string lpFileName, [MarshalAs(UnmanagedType.U4)]System.IO.FileAttributes dwFileAttributes);
+		internal static extern bool SetFileAttributes(string lpFileName,
+			[MarshalAs(UnmanagedType.U4)] System.IO.FileAttributes dwFileAttributes);
 
 		internal static long SetFilePointer(SafeFileHandle handle, long offset, System.IO.SeekOrigin origin)
 		{
-			int num1 = (int)(offset >> 32);
-			int num2 = SetFilePointerWin32(handle, (int)offset, ref num1, (int)origin);
+			int num1 = (int) (offset >> 32);
+			int num2 = SetFilePointerWin32(handle, (int) offset, ref num1, (int) origin);
 			if (num2 == -1 && Marshal.GetLastWin32Error() != 0)
 				return -1L;
-			return (long)(uint)num1 << 32 | (uint)num2;
+			return (long) (uint) num1 << 32 | (uint) num2;
 		}
 
 		[DllImport("kernel32.dll", EntryPoint = "SetFilePointer", SetLastError = true)]
 		internal static extern int SetFilePointerWin32(SafeFileHandle handle, int lo, ref int hi, int origin);
 
 		[DllImport("kernel32.dll", SetLastError = true, CharSet = CharSet.Unicode)]
-		internal static extern int FormatMessage(int dwFlags, IntPtr lpSource, int dwMessageId, int dwLanguageId, StringBuilder lpBuffer, int nSize, IntPtr va_list_arguments);
+		internal static extern int FormatMessage(int dwFlags, IntPtr lpSource, int dwMessageId, int dwLanguageId,
+			StringBuilder lpBuffer, int nSize, IntPtr va_list_arguments);
 
 		[DllImport("advapi32.dll", SetLastError = true, CharSet = CharSet.Auto, BestFitMapping = false)]
 		internal static extern bool DecryptFile(string path, int reservedMustBeZero);
@@ -205,7 +210,7 @@ namespace Pri.LongPath
 		{
 			var sb = new StringBuilder(512);
 			int result = FormatMessage(FORMAT_MESSAGE_IGNORE_INSERTS |
-									   FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_ARGUMENT_ARRAY,
+			                           FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_ARGUMENT_ARRAY,
 				IntPtr.Zero, errorCode, 0, sb, sb.Capacity, IntPtr.Zero);
 			if (result != 0)
 			{
@@ -217,34 +222,41 @@ namespace Pri.LongPath
 				return string.Format("Unknown error: {0}", errorCode);
 			}
 		}
+
 		[StructLayout(LayoutKind.Sequential)]
 		internal struct FILE_TIME
 		{
 			public FILE_TIME(long fileTime)
 			{
-				ftTimeLow = (uint)fileTime;
-				ftTimeHigh = (uint)(fileTime >> 32);
+				ftTimeLow = (uint) fileTime;
+				ftTimeHigh = (uint) (fileTime >> 32);
 			}
 
 			public long ToTicks()
 			{
-				return ((long)ftTimeHigh << 32) + ftTimeLow;
+				return ((long) ftTimeHigh << 32) + ftTimeLow;
 			}
 
 			internal uint ftTimeLow;
 			internal uint ftTimeHigh;
 		}
+
 		[DllImport("kernel32.dll", SetLastError = true)]
 		internal static extern unsafe bool SetFileTime(SafeFileHandle hFile, FILE_TIME* creationTime,
-					FILE_TIME* lastAccessTime, FILE_TIME* lastWriteTime);
+			FILE_TIME* lastAccessTime, FILE_TIME* lastWriteTime);
 
-		[DllImport("kernel32.dll", BestFitMapping = false, CharSet = CharSet.Auto, ExactSpelling = false, SetLastError = true)]
-		internal static extern bool GetFileAttributesEx(string name, int fileInfoLevel, ref WIN32_FILE_ATTRIBUTE_DATA lpFileInformation);
+		[DllImport("kernel32.dll", BestFitMapping = false, CharSet = CharSet.Auto, ExactSpelling = false,
+			SetLastError = true)]
+		internal static extern bool GetFileAttributesEx(string name, int fileInfoLevel,
+			ref WIN32_FILE_ATTRIBUTE_DATA lpFileInformation);
 
 		[DllImport("kernel32.dll", CharSet = CharSet.None, EntryPoint = "SetErrorMode", ExactSpelling = true)]
 		private static extern int SetErrorMode_VistaAndOlder(int newMode);
+
 		private static readonly Version ThreadErrorModeMinOsVersion = new Version(6, 1, 7600);
-		[DllImport("kernel32.dll", CharSet = CharSet.None, EntryPoint = "SetThreadErrorMode", ExactSpelling = false, SetLastError = true)]
+
+		[DllImport("kernel32.dll", CharSet = CharSet.None, EntryPoint = "SetThreadErrorMode", ExactSpelling = false,
+			SetLastError = true)]
 		private static extern bool SetErrorMode_Win7AndNewer(int newMode, out int oldMode);
 
 		internal static int SetErrorMode(int newMode)
@@ -275,12 +287,12 @@ namespace Pri.LongPath
 			out IntPtr securityDescriptor);
 
 		[DllImport(
-			 "advapi32.dll",
-			 EntryPoint = "SetNamedSecurityInfoW",
-			 CallingConvention = CallingConvention.Winapi,
-			 SetLastError = true,
-			 ExactSpelling = true,
-			 CharSet = CharSet.Unicode)]
+			"advapi32.dll",
+			EntryPoint = "SetNamedSecurityInfoW",
+			CallingConvention = CallingConvention.Winapi,
+			SetLastError = true,
+			ExactSpelling = true,
+			CharSet = CharSet.Unicode)]
 		internal static extern uint SetSecurityInfoByName(
 			string name,
 			uint objectType,
@@ -291,12 +303,12 @@ namespace Pri.LongPath
 			byte[] sacl);
 
 		[DllImport(
-			 "advapi32.dll",
-			 EntryPoint = "SetSecurityInfo",
-			 CallingConvention = CallingConvention.Winapi,
-			 SetLastError = true,
-			 ExactSpelling = true,
-			 CharSet = CharSet.Unicode)]
+			"advapi32.dll",
+			EntryPoint = "SetSecurityInfo",
+			CallingConvention = CallingConvention.Winapi,
+			SetLastError = true,
+			ExactSpelling = true,
+			CharSet = CharSet.Unicode)]
 		internal static extern uint SetSecurityInfoByHandle(
 			SafeHandle handle,
 			uint objectType,
@@ -305,21 +317,24 @@ namespace Pri.LongPath
 			byte[] group,
 			byte[] dacl,
 			byte[] sacl);
+
 		[DllImport(
-			 "advapi32.dll",
-			 EntryPoint = "GetSecurityDescriptorLength",
-			 CallingConvention = CallingConvention.Winapi,
-			 SetLastError = true,
-			 ExactSpelling = true,
-			 CharSet = CharSet.Unicode)]
+			"advapi32.dll",
+			EntryPoint = "GetSecurityDescriptorLength",
+			CallingConvention = CallingConvention.Winapi,
+			SetLastError = true,
+			ExactSpelling = true,
+			CharSet = CharSet.Unicode)]
 		internal static extern uint GetSecurityDescriptorLength(
 			IntPtr byteArray);
 
 		[DllImport("kernel32.dll", SetLastError = true)]
 		internal static extern IntPtr LocalFree(IntPtr handle);
 
-		[DllImport("kernel32.dll", BestFitMapping = false, CharSet = CharSet.Auto, ExactSpelling = false, SetLastError = true)]
+		[DllImport("kernel32.dll", BestFitMapping = false, CharSet = CharSet.Auto, ExactSpelling = false,
+			SetLastError = true)]
 		internal static extern bool SetCurrentDirectory(string path);
+
 		#region for Priviledge class
 
 		internal enum SecurityImpersonationLevel
@@ -362,107 +377,109 @@ namespace Pri.LongPath
 
 
 		[DllImport(
-			 "kernel32.dll",
-			 SetLastError = true)]
+			"kernel32.dll",
+			SetLastError = true)]
 		[ReliabilityContract(Consistency.WillNotCorruptState, Cer.MayFail)]
 		internal static extern bool CloseHandle(IntPtr handle);
 
 		[DllImport(
-			 "advapi32.dll",
-			 CharSet = CharSet.Unicode,
-			 SetLastError = true)]
+			"advapi32.dll",
+			CharSet = CharSet.Unicode,
+			SetLastError = true)]
 		[ReliabilityContract(Consistency.WillNotCorruptState, Cer.MayFail)]
 		internal static extern bool AdjustTokenPrivileges(
-			[In]     SafeTokenHandle TokenHandle,
-			[In]     bool DisableAllPrivileges,
-			[In]     ref TOKEN_PRIVILEGE NewState,
-			[In]     uint BufferLength,
+			[In] SafeTokenHandle TokenHandle,
+			[In] bool DisableAllPrivileges,
+			[In] ref TOKEN_PRIVILEGE NewState,
+			[In] uint BufferLength,
 			[In, Out] ref TOKEN_PRIVILEGE PreviousState,
 			[In, Out] ref uint ReturnLength);
 
 		[DllImport(
-			 "advapi32.dll",
-			 CharSet = CharSet.Auto,
-			 SetLastError = true)]
+			"advapi32.dll",
+			CharSet = CharSet.Auto,
+			SetLastError = true)]
 		[ReliabilityContract(Consistency.WillNotCorruptState, Cer.MayFail)]
 		internal static extern
-		bool RevertToSelf();
+			bool RevertToSelf();
 
 		[DllImport(
-			 "advapi32.dll",
-			 EntryPoint = "LookupPrivilegeValueW",
-			 CharSet = CharSet.Auto,
-			 SetLastError = true)]
+			"advapi32.dll",
+			EntryPoint = "LookupPrivilegeValueW",
+			CharSet = CharSet.Auto,
+			SetLastError = true)]
 		[ReliabilityContract(Consistency.WillNotCorruptState, Cer.MayFail)]
 		internal static extern
-		bool LookupPrivilegeValue(
-			[In]     string lpSystemName,
-			[In]     string lpName,
-			[In, Out] ref LUID Luid);
+			bool LookupPrivilegeValue(
+				[In] string lpSystemName,
+				[In] string lpName,
+				[In, Out] ref LUID Luid);
 
 		[DllImport(
-			 "kernel32.dll",
-			 CharSet = CharSet.Auto,
-			 SetLastError = true)]
+			"kernel32.dll",
+			CharSet = CharSet.Auto,
+			SetLastError = true)]
 		[ReliabilityContract(Consistency.WillNotCorruptState, Cer.MayFail)]
 		internal static extern
-		IntPtr GetCurrentProcess();
+			IntPtr GetCurrentProcess();
 
 		[DllImport(
-			 "kernel32.dll",
-			 CharSet = CharSet.Auto,
-			 SetLastError = true)]
+			"kernel32.dll",
+			CharSet = CharSet.Auto,
+			SetLastError = true)]
 		[ReliabilityContract(Consistency.WillNotCorruptState, Cer.MayFail)]
 		internal static extern
 			IntPtr GetCurrentThread();
 
 		[DllImport(
-			 "advapi32.dll",
-			 CharSet = CharSet.Unicode,
-			 SetLastError = true)]
+			"advapi32.dll",
+			CharSet = CharSet.Unicode,
+			SetLastError = true)]
 		[ReliabilityContract(Consistency.WillNotCorruptState, Cer.MayFail)]
 		internal static extern
-		bool OpenProcessToken(
-			[In]     IntPtr ProcessToken,
-			[In]     TokenAccessLevels DesiredAccess,
-			[In, Out] ref SafeTokenHandle TokenHandle);
-
-		[DllImport
-			 ("advapi32.dll",
-			 CharSet = CharSet.Unicode,
-			 SetLastError = true)]
-		[ReliabilityContract(Consistency.WillNotCorruptState, Cer.MayFail)]
-		internal static extern
-		bool OpenThreadToken(
-			[In]     IntPtr ThreadToken,
-			[In]     TokenAccessLevels DesiredAccess,
-			[In]     bool OpenAsSelf,
-			[In, Out] ref SafeTokenHandle TokenHandle);
+			bool OpenProcessToken(
+				[In] IntPtr ProcessToken,
+				[In] TokenAccessLevels DesiredAccess,
+				[In, Out] ref SafeTokenHandle TokenHandle);
 
 		[DllImport
 			("advapi32.dll",
-			 CharSet = CharSet.Unicode,
-			 SetLastError = true)]
+				CharSet = CharSet.Unicode,
+				SetLastError = true)]
 		[ReliabilityContract(Consistency.WillNotCorruptState, Cer.MayFail)]
 		internal static extern
-		bool DuplicateTokenEx(
-			[In]    SafeTokenHandle ExistingToken,
-			[In]    TokenAccessLevels DesiredAccess,
-			[In]    IntPtr TokenAttributes,
-			[In]    SecurityImpersonationLevel ImpersonationLevel,
-			[In]    TokenType TokenType,
-			[In, Out] ref SafeTokenHandle NewToken);
+			bool OpenThreadToken(
+				[In] IntPtr ThreadToken,
+				[In] TokenAccessLevels DesiredAccess,
+				[In] bool OpenAsSelf,
+				[In, Out] ref SafeTokenHandle TokenHandle);
 
 		[DllImport
-			 ("advapi32.dll",
-			 CharSet = CharSet.Unicode,
-			 SetLastError = true)]
+			("advapi32.dll",
+				CharSet = CharSet.Unicode,
+				SetLastError = true)]
 		[ReliabilityContract(Consistency.WillNotCorruptState, Cer.MayFail)]
 		internal static extern
-		bool SetThreadToken(
-			[In]    IntPtr Thread,
-			[In]    SafeTokenHandle Token);
+			bool DuplicateTokenEx(
+				[In] SafeTokenHandle ExistingToken,
+				[In] TokenAccessLevels DesiredAccess,
+				[In] IntPtr TokenAttributes,
+				[In] SecurityImpersonationLevel ImpersonationLevel,
+				[In] TokenType TokenType,
+				[In, Out] ref SafeTokenHandle NewToken);
+
+		[DllImport
+			("advapi32.dll",
+				CharSet = CharSet.Unicode,
+				SetLastError = true)]
+		[ReliabilityContract(Consistency.WillNotCorruptState, Cer.MayFail)]
+		internal static extern
+			bool SetThreadToken(
+				[In] IntPtr Thread,
+				[In] SafeTokenHandle Token);
+
 		#endregion
+
 		// ReSharper restore InconsistentNaming
 	}
 }

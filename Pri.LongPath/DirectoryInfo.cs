@@ -5,6 +5,7 @@ using System.Security.AccessControl;
 using System.Runtime.CompilerServices;
 #else
 using System.Linq;
+
 #endif
 
 namespace Pri.LongPath
@@ -14,14 +15,14 @@ namespace Pri.LongPath
 
 	public class DirectoryInfo : FileSystemInfo
 	{
-		public override System.IO.FileSystemInfo SystemInfo { get { return SysDirectoryInfo; } }
+		public override System.IO.FileSystemInfo SystemInfo
+		{
+			get { return SysDirectoryInfo; }
+		}
 
 		private System.IO.DirectoryInfo SysDirectoryInfo
 		{
-			get
-			{
-				return new System.IO.DirectoryInfo(FullPath);
-			}
+			get { return new System.IO.DirectoryInfo(FullPath); }
 		}
 
 		public override bool Exists
@@ -33,7 +34,7 @@ namespace Pri.LongPath
 					Refresh();
 				}
 				return InstanceState == State.Initialized &&
-					   (Data.fileAttributes & System.IO.FileAttributes.Directory) == System.IO.FileAttributes.Directory;
+				       (Data.fileAttributes & System.IO.FileAttributes.Directory) == System.IO.FileAttributes.Directory;
 			}
 		}
 
@@ -101,7 +102,8 @@ namespace Pri.LongPath
 #if NET_4_0 || NET_4_5
 		public IEnumerable<DirectoryInfo> EnumerateDirectories(string searchPattern)
 		{
-			if (Common.IsRunningOnMono()) return SysDirectoryInfo.EnumerateDirectories(searchPattern).Select(s => new DirectoryInfo(s.FullName));
+			if (Common.IsRunningOnMono())
+				return SysDirectoryInfo.EnumerateDirectories(searchPattern).Select(s => new DirectoryInfo(s.FullName));
 
 			return Directory.EnumerateFileSystemEntries(FullPath, searchPattern, true, false, SearchOption.TopDirectoryOnly)
 				.Select(directory => new DirectoryInfo(directory));
@@ -109,7 +111,9 @@ namespace Pri.LongPath
 
 		public IEnumerable<DirectoryInfo> EnumerateDirectories(string searchPattern, SearchOption searchOption)
 		{
-			if (Common.IsRunningOnMono()) return SysDirectoryInfo.EnumerateDirectories(searchPattern, searchOption).Select(s => new DirectoryInfo(s.FullName));
+			if (Common.IsRunningOnMono())
+				return SysDirectoryInfo.EnumerateDirectories(searchPattern, searchOption)
+					.Select(s => new DirectoryInfo(s.FullName));
 
 			return Directory.EnumerateFileSystemEntries(FullPath, searchPattern, true, false, searchOption)
 				.Select(directory => new DirectoryInfo(directory));
@@ -122,38 +126,45 @@ namespace Pri.LongPath
 
 		public IEnumerable<FileInfo> EnumerateFiles(string searchPattern)
 		{
-			if (Common.IsRunningOnMono()) return SysDirectoryInfo.EnumerateFiles(searchPattern).Select(s => new FileInfo(s.FullName));
+			if (Common.IsRunningOnMono())
+				return SysDirectoryInfo.EnumerateFiles(searchPattern).Select(s => new FileInfo(s.FullName));
 
-			return Directory.EnumerateFileSystemEntries(FullPath, searchPattern, false, true, SearchOption.TopDirectoryOnly).Select(e => new FileInfo(e));
+			return Directory.EnumerateFileSystemEntries(FullPath, searchPattern, false, true, SearchOption.TopDirectoryOnly)
+				.Select(e => new FileInfo(e));
 		}
 
 		public IEnumerable<FileInfo> EnumerateFiles(string searchPattern, SearchOption searchOption)
 		{
-			if (Common.IsRunningOnMono()) return SysDirectoryInfo.EnumerateFiles(searchPattern, searchOption).Select(s => new FileInfo(s.FullName));
+			if (Common.IsRunningOnMono())
+				return SysDirectoryInfo.EnumerateFiles(searchPattern, searchOption).Select(s => new FileInfo(s.FullName));
 
-			return Directory.EnumerateFileSystemEntries(FullPath, searchPattern, false, true, searchOption).Select(e => new FileInfo(e));
+			return Directory.EnumerateFileSystemEntries(FullPath, searchPattern, false, true, searchOption)
+				.Select(e => new FileInfo(e));
 		}
 
 		public IEnumerable<FileSystemInfo> EnumerateFileSystemInfos()
 		{
 			return
 				Directory.EnumerateFileSystemEntries(FullPath)
-					.Select(e => Directory.Exists(e) ? (FileSystemInfo)new DirectoryInfo(e) : (FileSystemInfo)new FileInfo(e));
+					.Select(e => Directory.Exists(e) ? (FileSystemInfo) new DirectoryInfo(e) : (FileSystemInfo) new FileInfo(e));
 		}
 
 		public IEnumerable<FileSystemInfo> EnumerateFileSystemInfos(string searchPattern)
 		{
-			if (Common.IsRunningOnMono()) return SysDirectoryInfo.EnumerateFileSystemInfos(searchPattern)
-					.Select(e => System.IO.Directory.Exists(e.FullName) ? (FileSystemInfo)new DirectoryInfo(e.FullName) : (FileSystemInfo)new FileInfo(e.FullName));
+			if (Common.IsRunningOnMono())
+				return SysDirectoryInfo.EnumerateFileSystemInfos(searchPattern)
+					.Select(e => System.IO.Directory.Exists(e.FullName)
+						? (FileSystemInfo) new DirectoryInfo(e.FullName)
+						: (FileSystemInfo) new FileInfo(e.FullName));
 
 			return Directory.EnumerateFileSystemEntries(FullPath, searchPattern, true, true, SearchOption.TopDirectoryOnly)
-					.Select(e => Directory.Exists(e) ? (FileSystemInfo)new DirectoryInfo(e) : (FileSystemInfo)new FileInfo(e));
+				.Select(e => Directory.Exists(e) ? (FileSystemInfo) new DirectoryInfo(e) : (FileSystemInfo) new FileInfo(e));
 		}
 #if NET_4_5
 		public IEnumerable<FileSystemInfo> EnumerateFileSystemInfos(string searchPattern, SearchOption searchOption)
 		{
 			return Directory.EnumerateFileSystemEntries(FullPath, searchPattern, searchOption)
-					.Select(e => Directory.Exists(e) ? (FileSystemInfo)new DirectoryInfo(e) : (FileSystemInfo)new FileInfo(e));
+				.Select(e => Directory.Exists(e) ? (FileSystemInfo) new DirectoryInfo(e) : (FileSystemInfo) new FileInfo(e));
 		}
 #endif
 #endif //NET_4_0 || NET_4_5
@@ -231,7 +242,8 @@ namespace Pri.LongPath
 				return SysDirectoryInfo.EnumerateDirectories().Select(s => new DirectoryInfo(s.FullName));
 			}
 
-			return Directory.EnumerateFileSystemEntries(FullPath, "*", true, false, SearchOption.TopDirectoryOnly).Select(directory => new DirectoryInfo(directory));
+			return Directory.EnumerateFileSystemEntries(FullPath, "*", true, false, SearchOption.TopDirectoryOnly)
+				.Select(directory => new DirectoryInfo(directory));
 		}
 #endif
 
@@ -257,7 +269,8 @@ namespace Pri.LongPath
 
 		public DirectoryInfo[] GetDirectories(string searchPattern, SearchOption searchOption)
 		{
-			return Directory.GetDirectories(FullPath, searchPattern, searchOption).Select(path => new DirectoryInfo(path)).ToArray();
+			return Directory.GetDirectories(FullPath, searchPattern, searchOption).Select(path => new DirectoryInfo(path))
+				.ToArray();
 		}
 
 		public FileInfo[] GetFiles(string searchPattern)
@@ -281,7 +294,8 @@ namespace Pri.LongPath
 
 				return ret;
 			}
-			return Directory.EnumerateFileSystemEntries(FullPath, "*", false, true, SearchOption.TopDirectoryOnly).Select(path => new FileInfo(path)).ToArray();
+			return Directory.EnumerateFileSystemEntries(FullPath, "*", false, true, SearchOption.TopDirectoryOnly)
+				.Select(path => new FileInfo(path)).ToArray();
 		}
 
 		public FileSystemInfo[] GetFileSystemInfos(string searchPattern)
@@ -299,9 +313,10 @@ namespace Pri.LongPath
 				}
 				return info;
 			}
-	 
+
 			return Directory.EnumerateFileSystemEntries(FullPath, searchPattern, true, true, SearchOption.TopDirectoryOnly)
-					.Select(e => Directory.Exists(e) ? new DirectoryInfo(e) as FileSystemInfo : (FileSystemInfo)new FileInfo(e)).ToArray();
+				.Select(e => Directory.Exists(e) ? new DirectoryInfo(e) as FileSystemInfo : (FileSystemInfo) new FileInfo(e))
+				.ToArray();
 		}
 
 		public FileSystemInfo[] GetFileSystemInfos(string searchPattern, SearchOption searchOption)
@@ -309,9 +324,10 @@ namespace Pri.LongPath
 			if (Common.IsRunningOnMono())
 			{
 #if NET_4_0 || NET_4_5
-				return SysDirectoryInfo.GetFileSystemInfos(searchPattern, searchOption).Select(s => s.FullName).Select(e => Directory.Exists(e) ? (FileSystemInfo)new DirectoryInfo(e) : (FileSystemInfo)new FileInfo(e)).ToArray();
-#else 
-				//throw new NotImplementedException("This function is not supported in ");
+				return SysDirectoryInfo.GetFileSystemInfos(searchPattern, searchOption).Select(s => s.FullName)
+					.Select(e => Directory.Exists(e) ? (FileSystemInfo) new DirectoryInfo(e) : (FileSystemInfo) new FileInfo(e))
+					.ToArray();
+#else //throw new NotImplementedException("This function is not supported in ");
 				var fileInfos = SysDirectoryInfo.GetFiles(searchPattern);
 				var directories = SysDirectoryInfo.GetDirectories(searchPattern);
 				List<FileSystemInfo> fileSystemInfos = new List<FileSystemInfo>();
@@ -332,7 +348,8 @@ namespace Pri.LongPath
 			}
 
 			return Directory.EnumerateFileSystemEntries(FullPath, searchPattern, true, true, searchOption)
-					.Select(e => Directory.Exists(e) ? (FileSystemInfo)new DirectoryInfo(e) : (FileSystemInfo)new FileInfo(e)).ToArray();
+				.Select(e => Directory.Exists(e) ? (FileSystemInfo) new DirectoryInfo(e) : (FileSystemInfo) new FileInfo(e))
+				.ToArray();
 		}
 
 		public FileSystemInfo[] GetFileSystemInfos()
@@ -352,7 +369,8 @@ namespace Pri.LongPath
 			}
 
 			return Directory.EnumerateFileSystemEntries(FullPath, "*", true, true, SearchOption.TopDirectoryOnly)
-					.Select(e => Directory.Exists(e) ? (FileSystemInfo)new DirectoryInfo(e) : (FileSystemInfo)new FileInfo(e)).ToArray();
+				.Select(e => Directory.Exists(e) ? (FileSystemInfo) new DirectoryInfo(e) : (FileSystemInfo) new FileInfo(e))
+				.ToArray();
 		}
 
 		public void SetAccessControl(DirectorySecurity directorySecurity)

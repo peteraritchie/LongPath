@@ -4,6 +4,7 @@ using System.Runtime.InteropServices;
 using System.Security.AccessControl;
 #if !NET_2_0
 using System.Linq;
+
 #endif
 
 namespace Pri.LongPath
@@ -15,6 +16,7 @@ namespace Pri.LongPath
 	using FileOptions = System.IO.FileOptions;
 	using FileShare = System.IO.FileShare;
 	using SearchOption = System.IO.SearchOption;
+
 	// ReSharper restore RedundantUsingDirective
 
 	public static class Directory
@@ -23,8 +25,8 @@ namespace Pri.LongPath
 		{
 			var handle = NativeMethods.CreateFile(normalizedPath,
 				NativeMethods.EFileAccess.GenericWrite,
-				(uint)(FileShare.Write | FileShare.Delete),
-				IntPtr.Zero, (int)FileMode.Open, NativeMethods.FILE_FLAG_BACKUP_SEMANTICS, IntPtr.Zero);
+				(uint) (FileShare.Write | FileShare.Delete),
+				IntPtr.Zero, (int) FileMode.Open, NativeMethods.FILE_FLAG_BACKUP_SEMANTICS, IntPtr.Zero);
 			if (!handle.IsInvalid) return handle;
 			var ex = Common.GetExceptionFromLastWin32Error();
 			throw ex;
@@ -48,36 +50,38 @@ namespace Pri.LongPath
 
 		public static void Delete(string path, bool recursive)
 		{
-		    if (Common.IsRunningOnMono())
-		    {
-		        System.IO.Directory.Delete(path, recursive);
-		        return;
-		    }
+			if (Common.IsRunningOnMono())
+			{
+				System.IO.Directory.Delete(path, recursive);
+				return;
+			}
 
-            /* MSDN: https://msdn.microsoft.com/en-us/library/fxeahc5f.aspx
-			   The behavior of this method differs slightly when deleting a directory that contains a reparse point, 
-			   such as a symbolic link or a mount point. 
-			   (1) If the reparse point is a directory, such as a mount point, it is unmounted and the mount point is deleted. 
-			   This method does not recurse through the reparse point. 
-			   (2) If the reparse point is a symbolic link to a file, the reparse point is deleted and not the target of 
-			   the symbolic link.
+			/* MSDN: https://msdn.microsoft.com/en-us/library/fxeahc5f.aspx
+			 The behavior of this method differs slightly when deleting a directory that contains a reparse point, 
+			 such as a symbolic link or a mount point. 
+			 (1) If the reparse point is a directory, such as a mount point, it is unmounted and the mount point is deleted. 
+			 This method does not recurse through the reparse point. 
+			 (2) If the reparse point is a symbolic link to a file, the reparse point is deleted and not the target of 
+			 the symbolic link.
 			*/
 
-            try 
+			try
 			{
 				var reparseFlags = (System.IO.FileAttributes.Directory | System.IO.FileAttributes.ReparsePoint);
 				var isDirectoryReparsePoint = (Common.GetAttributes(path) & reparseFlags) == reparseFlags;
 
-				if (isDirectoryReparsePoint) {
+				if (isDirectoryReparsePoint)
+				{
 					Delete(path);
 					return;
 				}
 			}
-			catch (System.IO.FileNotFoundException) {
+			catch (System.IO.FileNotFoundException)
+			{
 				// ignore: not there when we try to delete, it doesn't matter
 			}
 
-			if (recursive == false) 
+			if (recursive == false)
 			{
 				Delete(path);
 				return;
@@ -169,12 +173,12 @@ namespace Pri.LongPath
 		/// </exception>
 		public static void Delete(string path)
 		{
-		    if (Common.IsRunningOnMono())
-		    {
-		        System.IO.Directory.Delete(path);
-		    }
+			if (Common.IsRunningOnMono())
+			{
+				System.IO.Directory.Delete(path);
+			}
 
-		    var normalizedPath = Path.NormalizeLongPath(path);
+			var normalizedPath = Path.NormalizeLongPath(path);
 			if (!NativeMethods.RemoveDirectory(normalizedPath))
 			{
 				throw Common.GetExceptionFromLastWin32Error();
@@ -200,9 +204,9 @@ namespace Pri.LongPath
 		/// </remarks>
 		public static bool Exists(string path)
 		{
-		    if (Common.IsRunningOnMono()) return System.IO.Directory.Exists(path);
+			if (Common.IsRunningOnMono()) return System.IO.Directory.Exists(path);
 
-            bool isDirectory;
+			bool isDirectory;
 			return Common.Exists(path, out isDirectory) && isDirectory;
 		}
 
@@ -251,9 +255,9 @@ namespace Pri.LongPath
 		/// </exception>
 		public static IEnumerable<string> EnumerateDirectories(string path)
 		{
-		    if (Common.IsRunningOnMono()) return System.IO.Directory.EnumerateDirectories(path);
+			if (Common.IsRunningOnMono()) return System.IO.Directory.EnumerateDirectories(path);
 
-            return EnumerateFileSystemEntries(path, "*", true, false, SearchOption.TopDirectoryOnly);
+			return EnumerateFileSystemEntries(path, "*", true, false, SearchOption.TopDirectoryOnly);
 		}
 #endif
 
@@ -309,17 +313,17 @@ namespace Pri.LongPath
 		/// </exception>
 		public static IEnumerable<string> EnumerateDirectories(string path, string searchPattern)
 		{
-		    if (Common.IsRunningOnMono()) return System.IO.Directory.EnumerateDirectories(path, searchPattern);
+			if (Common.IsRunningOnMono()) return System.IO.Directory.EnumerateDirectories(path, searchPattern);
 
-            return EnumerateFileSystemEntries(path, searchPattern, true, false, SearchOption.TopDirectoryOnly);
+			return EnumerateFileSystemEntries(path, searchPattern, true, false, SearchOption.TopDirectoryOnly);
 		}
 
 		public static IEnumerable<string> EnumerateDirectories(string path, string searchPattern, SearchOption options)
 		{
-		    if (Common.IsRunningOnMono()) return System.IO.Directory.EnumerateDirectories(path, searchPattern, options);
+			if (Common.IsRunningOnMono()) return System.IO.Directory.EnumerateDirectories(path, searchPattern, options);
 
 
-            return EnumerateFileSystemEntries(path, searchPattern, true, false, options);
+			return EnumerateFileSystemEntries(path, searchPattern, true, false, options);
 		}
 #endif
 
@@ -368,16 +372,16 @@ namespace Pri.LongPath
 		/// </exception>
 		public static IEnumerable<string> EnumerateFiles(string path)
 		{
-		    if (Common.IsRunningOnMono()) return System.IO.Directory.EnumerateFiles(path);
+			if (Common.IsRunningOnMono()) return System.IO.Directory.EnumerateFiles(path);
 
-            return EnumerateFileSystemEntries(path, "*", false, true, SearchOption.TopDirectoryOnly);
+			return EnumerateFileSystemEntries(path, "*", false, true, SearchOption.TopDirectoryOnly);
 		}
 
 		public static IEnumerable<string> EnumerateFiles(string path, string searchPattern, SearchOption options)
 		{
-		    if (Common.IsRunningOnMono()) return System.IO.Directory.EnumerateFiles(path, searchPattern, options);
+			if (Common.IsRunningOnMono()) return System.IO.Directory.EnumerateFiles(path, searchPattern, options);
 
-            return EnumerateFileSystemEntries(path, searchPattern, false, true, options);
+			return EnumerateFileSystemEntries(path, searchPattern, false, true, options);
 		}
 
 		/// <summary>
@@ -431,9 +435,9 @@ namespace Pri.LongPath
 		/// </exception>
 		public static IEnumerable<string> EnumerateFiles(string path, string searchPattern)
 		{
-		    if (Common.IsRunningOnMono()) return System.IO.Directory.EnumerateFiles(path, searchPattern);
+			if (Common.IsRunningOnMono()) return System.IO.Directory.EnumerateFiles(path, searchPattern);
 
-            return EnumerateFileSystemEntries(path, searchPattern, false, true, SearchOption.TopDirectoryOnly);
+			return EnumerateFileSystemEntries(path, searchPattern, false, true, SearchOption.TopDirectoryOnly);
 		}
 
 		/// <summary>
@@ -481,9 +485,9 @@ namespace Pri.LongPath
 		/// </exception>
 		public static IEnumerable<string> EnumerateFileSystemEntries(string path)
 		{
-		    if (Common.IsRunningOnMono()) return System.IO.Directory.EnumerateFileSystemEntries(path);
+			if (Common.IsRunningOnMono()) return System.IO.Directory.EnumerateFileSystemEntries(path);
 
-            return EnumerateFileSystemEntries(path, null, true, true, SearchOption.TopDirectoryOnly);
+			return EnumerateFileSystemEntries(path, null, true, true, SearchOption.TopDirectoryOnly);
 		}
 
 		/// <summary>
@@ -537,25 +541,27 @@ namespace Pri.LongPath
 		/// </exception>
 		public static IEnumerable<string> EnumerateFileSystemEntries(string path, string searchPattern)
 		{
-		    if (Common.IsRunningOnMono()) return System.IO.Directory.EnumerateFileSystemEntries(path, searchPattern);
+			if (Common.IsRunningOnMono()) return System.IO.Directory.EnumerateFileSystemEntries(path, searchPattern);
 
-            return EnumerateFileSystemEntries(path, searchPattern, true, true, SearchOption.TopDirectoryOnly);
+			return EnumerateFileSystemEntries(path, searchPattern, true, true, SearchOption.TopDirectoryOnly);
 		}
 
 		public static IEnumerable<string> EnumerateFileSystemEntries(string path, string searchPattern, SearchOption options)
 		{
-		    if (Common.IsRunningOnMono()) return System.IO.Directory.EnumerateFileSystemEntries(path, searchPattern, options);
+			if (Common.IsRunningOnMono()) return System.IO.Directory.EnumerateFileSystemEntries(path, searchPattern, options);
 
-            return EnumerateFileSystemEntries(path, searchPattern, true, true, options);
+			return EnumerateFileSystemEntries(path, searchPattern, true, true, options);
 		}
 #endif // NET_4_0 || NET_4_5
 
-		internal static IEnumerable<string> EnumerateFileSystemEntries(string path, string searchPattern, bool includeDirectories, bool includeFiles, SearchOption option)
+		internal static IEnumerable<string> EnumerateFileSystemEntries(string path, string searchPattern,
+			bool includeDirectories, bool includeFiles, SearchOption option)
 		{
-            var normalizedSearchPattern = Common.NormalizeSearchPattern(searchPattern);
+			var normalizedSearchPattern = Common.NormalizeSearchPattern(searchPattern);
 			var normalizedPath = Path.NormalizeLongPath(path);
 
-			return EnumerateNormalizedFileSystemEntries(includeDirectories, includeFiles, option, normalizedPath, normalizedSearchPattern);
+			return EnumerateNormalizedFileSystemEntries(includeDirectories, includeFiles, option, normalizedPath,
+				normalizedSearchPattern);
 		}
 
 		private static IEnumerable<string> EnumerateNormalizedFileSystemEntries(bool includeDirectories, bool includeFiles,
@@ -576,7 +582,8 @@ namespace Pri.LongPath
 			return EnumerateFileSystemIterator(normalizedPath, normalizedSearchPattern, includeDirectories, includeFiles);
 		}
 
-		private static IEnumerable<string> EnumerateFileSystemIterator(string normalizedPath, string normalizedSearchPattern, bool includeDirectories, bool includeFiles)
+		private static IEnumerable<string> EnumerateFileSystemIterator(string normalizedPath, string normalizedSearchPattern,
+			bool includeDirectories, bool includeFiles)
 		{
 			// NOTE: Any exceptions thrown from this method are thrown on a call to IEnumerator<string>.MoveNext()
 
@@ -614,7 +621,8 @@ namespace Pri.LongPath
 			}
 		}
 
-		private static IEnumerable<string> EnumerateFileSystemIteratorRecursive(string normalizedPath, string normalizedSearchPattern, bool includeDirectories, bool includeFiles)
+		private static IEnumerable<string> EnumerateFileSystemIteratorRecursive(string normalizedPath,
+			string normalizedSearchPattern, bool includeDirectories, bool includeFiles)
 		{
 			// NOTE: Any exceptions thrown from this method are thrown on a call to IEnumerator<string>.MoveNext()
 			var pendingDirectories = new Queue<string>();
@@ -623,7 +631,8 @@ namespace Pri.LongPath
 			{
 				normalizedPath = pendingDirectories.Dequeue();
 				// get all subdirs to recurse in the next iteration
-				foreach (var subdir in EnumerateNormalizedFileSystemEntries(true, false, SearchOption.TopDirectoryOnly, normalizedPath, "*"))
+				foreach (var subdir in EnumerateNormalizedFileSystemEntries(true, false, SearchOption.TopDirectoryOnly,
+					normalizedPath, "*"))
 				{
 					pendingDirectories.Enqueue(Path.NormalizeLongPath(subdir));
 				}
@@ -644,7 +653,9 @@ namespace Pri.LongPath
 							if (IsCurrentOrParentDirectory(findData.cFileName)) continue;
 							var fullNormalizedPath = Path.Combine(normalizedPath, findData.cFileName);
 							System.Diagnostics.Debug.Assert(Exists(fullPath));
-							System.Diagnostics.Debug.Assert(Exists(Common.IsPathUnc(fullNormalizedPath) ? fullNormalizedPath : Path.RemoveLongPathPrefix(fullNormalizedPath)));
+							System.Diagnostics.Debug.Assert(Exists(Common.IsPathUnc(fullNormalizedPath)
+								? fullNormalizedPath
+								: Path.RemoveLongPathPrefix(fullNormalizedPath)));
 
 							if (includeDirectories)
 							{
@@ -672,8 +683,8 @@ namespace Pri.LongPath
 			if (!handle.IsInvalid) return handle;
 			var errorCode = Marshal.GetLastWin32Error();
 			if (errorCode != NativeMethods.ERROR_FILE_NOT_FOUND &&
-				errorCode != NativeMethods.ERROR_PATH_NOT_FOUND &&
-				errorCode != NativeMethods.ERROR_NOT_READY)
+			    errorCode != NativeMethods.ERROR_PATH_NOT_FOUND &&
+			    errorCode != NativeMethods.ERROR_NOT_READY)
 			{
 				throw Common.GetExceptionFromWin32Error(errorCode);
 			}
@@ -688,16 +699,17 @@ namespace Pri.LongPath
 
 		private static bool IsCurrentOrParentDirectory(string directoryName)
 		{
-			return directoryName.Equals(".", StringComparison.OrdinalIgnoreCase) || directoryName.Equals("..", StringComparison.OrdinalIgnoreCase);
+			return directoryName.Equals(".", StringComparison.OrdinalIgnoreCase) ||
+			       directoryName.Equals("..", StringComparison.OrdinalIgnoreCase);
 		}
 
 		public static void Move(string sourcePath, string destinationPath)
 		{
-		    if (Common.IsRunningOnMono())
-		    {
-                System.IO.File.Move(sourcePath, destinationPath);
-		        return;
-		    }
+			if (Common.IsRunningOnMono())
+			{
+				System.IO.File.Move(sourcePath, destinationPath);
+				return;
+			}
 
 			string normalizedSourcePath = Path.NormalizeLongPath(sourcePath, "sourcePath");
 			string normalizedDestinationPath = Path.NormalizeLongPath(destinationPath, "destinationPath");
@@ -706,7 +718,8 @@ namespace Pri.LongPath
 
 			var lastWin32Error = Marshal.GetLastWin32Error();
 			if (lastWin32Error == NativeMethods.ERROR_ACCESS_DENIED)
-				throw new System.IO.IOException(string.Format("Access to the path '{0}'is denied.", sourcePath), NativeMethods.MakeHRFromErrorCode(lastWin32Error));
+				throw new System.IO.IOException(string.Format("Access to the path '{0}'is denied.", sourcePath),
+					NativeMethods.MakeHRFromErrorCode(lastWin32Error));
 			throw Common.GetExceptionFromWin32Error(lastWin32Error, "path");
 		}
 
@@ -728,7 +741,7 @@ namespace Pri.LongPath
 					if (!Exists(subPath))
 						pathComponents.Add(subPath);
 					while (index > rootLength && path[index] != System.IO.Path.DirectorySeparatorChar &&
-						   path[index] != System.IO.Path.AltDirectorySeparatorChar)
+					       path[index] != System.IO.Path.AltDirectorySeparatorChar)
 						--index;
 				}
 			}
@@ -794,7 +807,7 @@ namespace Pri.LongPath
 		/// </remarks>
 		public static DirectoryInfo CreateDirectory(string path)
 		{
-		    if (Common.IsRunningOnMono()) return new DirectoryInfo(System.IO.Directory.CreateDirectory(path).FullName);
+			if (Common.IsRunningOnMono()) return new DirectoryInfo(System.IO.Directory.CreateDirectory(path).FullName);
 
 			if (Common.IsPathUnc(path)) return CreateDirectoryUnc(path);
 			var normalizedPath = Path.NormalizeLongPath(path);
@@ -816,7 +829,7 @@ namespace Pri.LongPath
 					if (!Exists(subPath))
 						pathComponents.Add(Path.NormalizeLongPath(subPath));
 					while (index > rootLength && fullPath[index] != System.IO.Path.DirectorySeparatorChar &&
-						   fullPath[index] != System.IO.Path.AltDirectorySeparatorChar)
+					       fullPath[index] != System.IO.Path.AltDirectorySeparatorChar)
 						--index;
 				}
 			}
@@ -839,27 +852,27 @@ namespace Pri.LongPath
 
 		public static string[] GetDirectories(string path, string searchPattern, SearchOption searchOption)
 		{
-		    if (Common.IsRunningOnMono()) return System.IO.Directory.GetDirectories(path, searchPattern, searchOption);
+			if (Common.IsRunningOnMono()) return System.IO.Directory.GetDirectories(path, searchPattern, searchOption);
 
-            return EnumerateFileSystemEntries(path, searchPattern, true, false, searchOption).ToArray();
+			return EnumerateFileSystemEntries(path, searchPattern, true, false, searchOption).ToArray();
 		}
 
 		public static string[] GetFiles(string path)
 		{
-		    if (Common.IsRunningOnMono()) return System.IO.Directory.GetFiles(path);
+			if (Common.IsRunningOnMono()) return System.IO.Directory.GetFiles(path);
 
-            return EnumerateFileSystemEntries(path, "*", false, true, SearchOption.TopDirectoryOnly).ToArray();
+			return EnumerateFileSystemEntries(path, "*", false, true, SearchOption.TopDirectoryOnly).ToArray();
 		}
 
 		public static unsafe void SetCreationTimeUtc(string path, DateTime creationTimeUtc)
 		{
-		    if (Common.IsRunningOnMono())
-		    {
-                System.IO.Directory.SetCreationTimeUtc(path, creationTimeUtc);
-		        return;
-		    }
+			if (Common.IsRunningOnMono())
+			{
+				System.IO.Directory.SetCreationTimeUtc(path, creationTimeUtc);
+				return;
+			}
 
-            var normalizedPath = Path.NormalizeLongPath(Path.GetFullPath(path));
+			var normalizedPath = Path.NormalizeLongPath(Path.GetFullPath(path));
 
 			using (var handle = GetDirectoryHandle(normalizedPath))
 			{
@@ -873,12 +886,12 @@ namespace Pri.LongPath
 
 		public static unsafe void SetLastWriteTimeUtc(string path, DateTime lastWriteTimeUtc)
 		{
-		    if (Common.IsRunningOnMono())
-		    {
-		        System.IO.Directory.SetLastWriteTimeUtc(path, lastWriteTimeUtc);
-		        return;
-		    }
-            var normalizedPath = Path.NormalizeLongPath(Path.GetFullPath(path));
+			if (Common.IsRunningOnMono())
+			{
+				System.IO.Directory.SetLastWriteTimeUtc(path, lastWriteTimeUtc);
+				return;
+			}
+			var normalizedPath = Path.NormalizeLongPath(Path.GetFullPath(path));
 
 			using (SafeFileHandle handle = GetDirectoryHandle(normalizedPath))
 			{
@@ -892,13 +905,13 @@ namespace Pri.LongPath
 
 		public static unsafe void SetLastAccessTimeUtc(string path, DateTime lastWriteTimeUtc)
 		{
-		    if (Common.IsRunningOnMono())
-		    {
-		        System.IO.Directory.SetLastAccessTimeUtc(path, lastWriteTimeUtc);
-		        return;
-		    }
+			if (Common.IsRunningOnMono())
+			{
+				System.IO.Directory.SetLastAccessTimeUtc(path, lastWriteTimeUtc);
+				return;
+			}
 
-            var normalizedPath = Path.NormalizeLongPath(Path.GetFullPath(path));
+			var normalizedPath = Path.NormalizeLongPath(Path.GetFullPath(path));
 
 			using (var handle = GetDirectoryHandle(normalizedPath))
 			{
@@ -925,21 +938,22 @@ namespace Pri.LongPath
 
 		public static DirectorySecurity GetAccessControl(string path)
 		{
-			const AccessControlSections includeSections = AccessControlSections.Access | AccessControlSections.Owner | AccessControlSections.Group;
+			const AccessControlSections includeSections =
+				AccessControlSections.Access | AccessControlSections.Owner | AccessControlSections.Group;
 			return GetAccessControl(path, includeSections);
 		}
 
 		public static DirectorySecurity GetAccessControl(string path, AccessControlSections includeSections)
 		{
-		    if (Common.IsRunningOnMono()) return System.IO.Directory.GetAccessControl(path, includeSections);
+			if (Common.IsRunningOnMono()) return System.IO.Directory.GetAccessControl(path, includeSections);
 
 			var normalizedPath = Path.NormalizeLongPath(Path.GetFullPath(path));
 			IntPtr sidOwner, sidGroup, dacl, sacl, byteArray;
 			var securityInfos = Common.ToSecurityInfos(includeSections);
 
-			var errorCode = (int)NativeMethods.GetSecurityInfoByName(normalizedPath,
-				(uint)ResourceType.FileObject,
-				(uint)securityInfos,
+			var errorCode = (int) NativeMethods.GetSecurityInfoByName(normalizedPath,
+				(uint) ResourceType.FileObject,
+				(uint) securityInfos,
 				out sidOwner,
 				out sidGroup,
 				out dacl,
@@ -952,7 +966,7 @@ namespace Pri.LongPath
 
 			var binaryForm = new byte[length];
 
-			Marshal.Copy(byteArray, binaryForm, 0, (int)length);
+			Marshal.Copy(byteArray, binaryForm, 0, (int) length);
 
 			NativeMethods.LocalFree(byteArray);
 			var ds = new DirectorySecurity();
@@ -973,14 +987,14 @@ namespace Pri.LongPath
 
 		public static string[] GetDirectories(string path)
 		{
-		    if (Common.IsRunningOnMono()) return System.IO.Directory.GetDirectories(path);
+			if (Common.IsRunningOnMono()) return System.IO.Directory.GetDirectories(path);
 			return EnumerateFileSystemEntries(path, "*", true, false, SearchOption.TopDirectoryOnly).ToArray();
 		}
 
 		public static string[] GetDirectories(string path, string searchPattern)
 		{
-		    if (Common.IsRunningOnMono()) return System.IO.Directory.GetDirectories(path, searchPattern);
-            return EnumerateFileSystemEntries(path, searchPattern, true, false, SearchOption.TopDirectoryOnly).ToArray();
+			if (Common.IsRunningOnMono()) return System.IO.Directory.GetDirectories(path, searchPattern);
+			return EnumerateFileSystemEntries(path, searchPattern, true, false, SearchOption.TopDirectoryOnly).ToArray();
 		}
 
 		public static string GetDirectoryRoot(string path)
@@ -991,32 +1005,32 @@ namespace Pri.LongPath
 
 		public static string[] GetFiles(string path, string searchPattern)
 		{
-		    if (Common.IsRunningOnMono()) return System.IO.Directory.GetFiles(path, searchPattern);
+			if (Common.IsRunningOnMono()) return System.IO.Directory.GetFiles(path, searchPattern);
 			return EnumerateFileSystemEntries(path, searchPattern, false, true, SearchOption.TopDirectoryOnly).ToArray();
 		}
 
 		public static string[] GetFiles(string path, string searchPattern, SearchOption options)
 		{
-		    if (Common.IsRunningOnMono()) return System.IO.Directory.GetFiles(path, searchPattern, options);
-            return EnumerateFileSystemEntries(path, searchPattern, false, true, options).ToArray();
+			if (Common.IsRunningOnMono()) return System.IO.Directory.GetFiles(path, searchPattern, options);
+			return EnumerateFileSystemEntries(path, searchPattern, false, true, options).ToArray();
 		}
 
 		public static string[] GetFileSystemEntries(string path)
 		{
-		    if (Common.IsRunningOnMono()) return System.IO.Directory.GetFileSystemEntries(path);
-            return EnumerateFileSystemEntries(path, null, true, true, SearchOption.TopDirectoryOnly).ToArray();
+			if (Common.IsRunningOnMono()) return System.IO.Directory.GetFileSystemEntries(path);
+			return EnumerateFileSystemEntries(path, null, true, true, SearchOption.TopDirectoryOnly).ToArray();
 		}
 
 		public static string[] GetFileSystemEntries(string path, string searchPattern)
 		{
-		    if (Common.IsRunningOnMono()) return System.IO.Directory.GetFileSystemEntries(path, searchPattern);
-            return EnumerateFileSystemEntries(path, searchPattern, true, true, SearchOption.TopDirectoryOnly).ToArray();
+			if (Common.IsRunningOnMono()) return System.IO.Directory.GetFileSystemEntries(path, searchPattern);
+			return EnumerateFileSystemEntries(path, searchPattern, true, true, SearchOption.TopDirectoryOnly).ToArray();
 		}
 
 		public static string[] GetFileSystemEntries(string path, string searchPattern, SearchOption options)
 		{
-		    if (Common.IsRunningOnMono()) return System.IO.Directory.GetFileSystemEntries(path, searchPattern);
-            return EnumerateFileSystemEntries(path, searchPattern, true, true, options).ToArray();
+			if (Common.IsRunningOnMono()) return System.IO.Directory.GetFileSystemEntries(path, searchPattern);
+			return EnumerateFileSystemEntries(path, searchPattern, true, true, options).ToArray();
 		}
 
 		public static DateTime GetLastAccessTime(string path)
@@ -1026,9 +1040,9 @@ namespace Pri.LongPath
 
 		public static DateTime GetLastAccessTimeUtc(string path)
 		{
-		    if (Common.IsRunningOnMono()) return System.IO.Directory.GetLastAccessTimeUtc(path);
+			if (Common.IsRunningOnMono()) return System.IO.Directory.GetLastAccessTimeUtc(path);
 
-            var di = new DirectoryInfo(path);
+			var di = new DirectoryInfo(path);
 			return di.LastAccessTimeUtc;
 		}
 
@@ -1039,9 +1053,9 @@ namespace Pri.LongPath
 
 		public static DateTime GetLastWriteTimeUtc(string path)
 		{
-		    if (Common.IsRunningOnMono()) return System.IO.Directory.GetLastWriteTimeUtc(path);
+			if (Common.IsRunningOnMono()) return System.IO.Directory.GetLastWriteTimeUtc(path);
 
-            var di = new DirectoryInfo(path);
+			var di = new DirectoryInfo(path);
 			return di.LastWriteTimeUtc;
 		}
 
@@ -1052,13 +1066,13 @@ namespace Pri.LongPath
 
 		public static void SetAccessControl(string path, DirectorySecurity directorySecurity)
 		{
-		    if (Common.IsRunningOnMono())
-		    {
-		        System.IO.Directory.SetAccessControl(path, directorySecurity);
-		        return;
-		    }
+			if (Common.IsRunningOnMono())
+			{
+				System.IO.Directory.SetAccessControl(path, directorySecurity);
+				return;
+			}
 
-            if (path == null) throw new ArgumentNullException("path");
+			if (path == null) throw new ArgumentNullException("path");
 			if (directorySecurity == null) throw new ArgumentNullException("directorySecurity");
 			var name = Path.NormalizeLongPath(Path.GetFullPath(path));
 
@@ -1077,13 +1091,13 @@ namespace Pri.LongPath
 
 		public static void SetLastWriteTime(string path, DateTime lastWriteTimeUtc)
 		{
-		    if (Common.IsRunningOnMono())
-		    {
-		        System.IO.Directory.SetLastWriteTime(path, lastWriteTimeUtc);
-		        return;
-		    }
+			if (Common.IsRunningOnMono())
+			{
+				System.IO.Directory.SetLastWriteTime(path, lastWriteTimeUtc);
+				return;
+			}
 
-            unsafe
+			unsafe
 			{
 				var normalizedPath = Path.NormalizeLongPath(Path.GetFullPath(path));
 
@@ -1100,13 +1114,13 @@ namespace Pri.LongPath
 
 		public static void SetCurrentDirectory(string path)
 		{
-		    if (Common.IsRunningOnMono())
-		    {
-		        System.IO.Directory.SetCurrentDirectory(path);
-		        return;
-		    }
+			if (Common.IsRunningOnMono())
+			{
+				System.IO.Directory.SetCurrentDirectory(path);
+				return;
+			}
 #if true
-            throw new NotSupportedException("Windows does not support setting the current directory to a long path");
+			throw new NotSupportedException("Windows does not support setting the current directory to a long path");
 #else
 			string normalizedPath = Path.NormalizeLongPath(Path.GetFullPath(path));
 			if (!NativeMethods.SetCurrentDirectory(normalizedPath))

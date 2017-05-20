@@ -17,44 +17,44 @@ namespace Pri.LongPath
 		protected readonly FileAttributeData Data = new FileAttributeData();
 		protected int ErrorCode;
 
-	    public abstract System.IO.FileSystemInfo SystemInfo { get; }
+		public abstract System.IO.FileSystemInfo SystemInfo { get; }
 
-        // Summary:
-        //     Gets or sets the attributes for the current file or directory.
-        //
-        // Returns:
-        //     System.IO.FileAttributes of the current System.IO.FileSystemInfo.
-        //
-        // Exceptions:
-        //   System.IO.FileNotFoundException:
-        //     The specified file does not exist.
-        //
-        //   System.IO.DirectoryNotFoundException:
-        //     The specified path is invalid; for example, it is on an unmapped drive.
-        //
-        //   System.Security.SecurityException:
-        //     The caller does not have the required permission.
-        //
-        //   System.ArgumentException:
-        //     The caller attempts to set an invalid file attribute. -or-The user attempts
-        //     to set an attribute value but does not have write permission.
-        //
-        //   System.IO.IOException:
-        //     System.IO.FileSystemInfo.Refresh() cannot initialize the data.
-        public FileAttributes Attributes
+		// Summary:
+		//     Gets or sets the attributes for the current file or directory.
+		//
+		// Returns:
+		//     System.IO.FileAttributes of the current System.IO.FileSystemInfo.
+		//
+		// Exceptions:
+		//   System.IO.FileNotFoundException:
+		//     The specified file does not exist.
+		//
+		//   System.IO.DirectoryNotFoundException:
+		//     The specified path is invalid; for example, it is on an unmapped drive.
+		//
+		//   System.Security.SecurityException:
+		//     The caller does not have the required permission.
+		//
+		//   System.ArgumentException:
+		//     The caller attempts to set an invalid file attribute. -or-The user attempts
+		//     to set an attribute value but does not have write permission.
+		//
+		//   System.IO.IOException:
+		//     System.IO.FileSystemInfo.Refresh() cannot initialize the data.
+		public FileAttributes Attributes
 		{
 			get
 			{
-			    if (Common.IsRunningOnMono()) return SystemInfo.Attributes;
+				if (Common.IsRunningOnMono()) return SystemInfo.Attributes;
 
 				return Common.GetAttributes(FullPath);
 			}
 			set
 			{
-			    if (Common.IsRunningOnMono())
-			        SystemInfo.Attributes = value;
-			    else
-			        Common.SetAttributes(FullPath, value);
+				if (Common.IsRunningOnMono())
+					SystemInfo.Attributes = value;
+				else
+					Common.SetAttributes(FullPath, value);
 			}
 		}
 
@@ -81,16 +81,16 @@ namespace Pri.LongPath
 		{
 			get
 			{
-			    if(Common.IsRunningOnMono()) return SystemInfo.CreationTime;
-                return CreationTimeUtc.ToLocalTime();
+				if (Common.IsRunningOnMono()) return SystemInfo.CreationTime;
+				return CreationTimeUtc.ToLocalTime();
 			}
 
 			set
 			{
-			    if (Common.IsRunningOnMono())
-			        SystemInfo.CreationTime = value;
-			    else
-			        CreationTimeUtc = value.ToUniversalTime();
+				if (Common.IsRunningOnMono())
+					SystemInfo.CreationTime = value;
+				else
+					CreationTimeUtc = value.ToUniversalTime();
 			}
 		}
 
@@ -119,27 +119,28 @@ namespace Pri.LongPath
 		{
 			get
 			{
-			    if (Common.IsRunningOnMono()) return SystemInfo.CreationTimeUtc;
+				if (Common.IsRunningOnMono()) return SystemInfo.CreationTimeUtc;
 
-                if (InstanceState == State.Uninitialized)
+				if (InstanceState == State.Uninitialized)
 				{
 					Refresh();
 				}
 				if (InstanceState == State.Error)
 					Common.ThrowIoError(ErrorCode, FullPath);
 
-				long fileTime = ((long)Data.ftCreationTime.dwHighDateTime << 32) | (Data.ftCreationTime.dwLowDateTime & 0xffffffff);
+				long fileTime = ((long) Data.ftCreationTime.dwHighDateTime << 32) |
+				                (Data.ftCreationTime.dwLowDateTime & 0xffffffff);
 				return DateTime.FromFileTimeUtc(fileTime);
 			}
 			set
 			{
-			    if (Common.IsRunningOnMono())
-			    {
-			        SystemInfo.CreationTimeUtc = value;
-			        return;
-			    }
+				if (Common.IsRunningOnMono())
+				{
+					SystemInfo.CreationTimeUtc = value;
+					return;
+				}
 
-                if (this is DirectoryInfo)
+				if (this is DirectoryInfo)
 					Directory.SetCreationTimeUtc(FullPath, value);
 				else
 					File.SetCreationTimeUtc(FullPath, value);
@@ -151,14 +152,14 @@ namespace Pri.LongPath
 		{
 			get
 			{
-			    if (Common.IsRunningOnMono()) return SystemInfo.LastWriteTime;
+				if (Common.IsRunningOnMono()) return SystemInfo.LastWriteTime;
 
-                return LastWriteTimeUtc.ToLocalTime();
+				return LastWriteTimeUtc.ToLocalTime();
 			}
 			set
 			{
-			    if (Common.IsRunningOnMono()) SystemInfo.LastWriteTime = value;
-                else LastWriteTimeUtc = value.ToUniversalTime();
+				if (Common.IsRunningOnMono()) SystemInfo.LastWriteTime = value;
+				else LastWriteTimeUtc = value.ToUniversalTime();
 			}
 		}
 
@@ -193,14 +194,17 @@ namespace Pri.LongPath
 
 				case NativeMethods.ERROR_SHARING_VIOLATION:
 					if (str.Length == 0)
-						throw new System.IO.IOException("Sharing violation with empty filename", NativeMethods.MakeHRFromErrorCode(errorCode));
+						throw new System.IO.IOException("Sharing violation with empty filename",
+							NativeMethods.MakeHRFromErrorCode(errorCode));
 					else
-						throw new System.IO.IOException(string.Format("Sharing violation: {0}", str), NativeMethods.MakeHRFromErrorCode(errorCode));
+						throw new System.IO.IOException(string.Format("Sharing violation: {0}", str),
+							NativeMethods.MakeHRFromErrorCode(errorCode));
 
 				case NativeMethods.ERROR_FILE_EXISTS:
 					if (str.Length == 0)
 						goto default;
-					throw new System.IO.IOException(string.Format("File exists {0}", str), NativeMethods.MakeHRFromErrorCode(errorCode));
+					throw new System.IO.IOException(string.Format("File exists {0}", str),
+						NativeMethods.MakeHRFromErrorCode(errorCode));
 
 				case NativeMethods.ERROR_OPERATION_ABORTED:
 					throw new OperationCanceledException();
@@ -211,33 +215,35 @@ namespace Pri.LongPath
 					throw new System.IO.IOException(NativeMethods.GetMessage(errorCode), NativeMethods.MakeHRFromErrorCode(errorCode));
 			}
 		}
+
 		public DateTime LastWriteTimeUtc
 		{
 			get
 			{
-			    if (Common.IsRunningOnMono()) return SystemInfo.LastWriteTimeUtc;
+				if (Common.IsRunningOnMono()) return SystemInfo.LastWriteTimeUtc;
 
 
-                if (InstanceState == State.Uninitialized)
+				if (InstanceState == State.Uninitialized)
 				{
 					Refresh();
 				}
 				if (InstanceState == State.Error)
 					ThrowLastWriteTimeUtcIoError(ErrorCode, FullPath);
 
-				long fileTime = ((long)Data.ftLastWriteTime.dwHighDateTime << 32) | (Data.ftLastWriteTime.dwLowDateTime & 0xffffffff);
+				long fileTime = ((long) Data.ftLastWriteTime.dwHighDateTime << 32) |
+				                (Data.ftLastWriteTime.dwLowDateTime & 0xffffffff);
 				return DateTime.FromFileTimeUtc(fileTime);
 			}
 			set
 			{
-			    if (Common.IsRunningOnMono())
-			    {
-			        SystemInfo.LastWriteTimeUtc = value;
-			        return;
-			    }
+				if (Common.IsRunningOnMono())
+				{
+					SystemInfo.LastWriteTimeUtc = value;
+					return;
+				}
 
 
-                if (this is DirectoryInfo)
+				if (this is DirectoryInfo)
 					Directory.SetLastWriteTimeUtc(FullPath, value);
 				else
 					File.SetLastWriteTimeUtc(FullPath, value);
@@ -249,14 +255,14 @@ namespace Pri.LongPath
 		{
 			get
 			{
-			    if (Common.IsRunningOnMono()) return SystemInfo.LastAccessTime;
+				if (Common.IsRunningOnMono()) return SystemInfo.LastAccessTime;
 
-                return LastAccessTimeUtc.ToLocalTime();
+				return LastAccessTimeUtc.ToLocalTime();
 			}
 			set
 			{
-			    if (Common.IsRunningOnMono()) SystemInfo.LastAccessTime = value;
-			    else LastAccessTimeUtc = value.ToUniversalTime();
+				if (Common.IsRunningOnMono()) SystemInfo.LastAccessTime = value;
+				else LastAccessTimeUtc = value.ToUniversalTime();
 			}
 		}
 
@@ -264,28 +270,29 @@ namespace Pri.LongPath
 		{
 			get
 			{
-			    if (Common.IsRunningOnMono()) return SystemInfo.LastAccessTimeUtc;
+				if (Common.IsRunningOnMono()) return SystemInfo.LastAccessTimeUtc;
 
-                if (InstanceState == State.Uninitialized)
+				if (InstanceState == State.Uninitialized)
 				{
 					Refresh();
 				}
 				if (InstanceState == State.Error)
 					Common.ThrowIoError(ErrorCode, FullPath);
 
-				long fileTime = ((long)Data.ftLastAccessTime.dwHighDateTime << 32) | (Data.ftLastAccessTime.dwLowDateTime & 0xffffffff);
+				long fileTime = ((long) Data.ftLastAccessTime.dwHighDateTime << 32) |
+				                (Data.ftLastAccessTime.dwLowDateTime & 0xffffffff);
 				return DateTime.FromFileTimeUtc(fileTime);
 			}
 			set
 			{
-			    if (Common.IsRunningOnMono())
-			    {
-			        SystemInfo.LastAccessTimeUtc = value;
-			        return;
-			    }
+				if (Common.IsRunningOnMono())
+				{
+					SystemInfo.LastAccessTimeUtc = value;
+					return;
+				}
 
 
-                if (this is DirectoryInfo)
+				if (this is DirectoryInfo)
 					Directory.SetLastAccessTimeUtc(FullPath, value);
 				else
 					File.SetLastAccessTimeUtc(FullPath, value);
@@ -300,10 +307,7 @@ namespace Pri.LongPath
 
 		public string Extension
 		{
-			get
-			{
-				return Path.GetExtension(FullPath);
-			}
+			get { return Path.GetExtension(FullPath); }
 		}
 
 		public abstract string Name { get; }
@@ -312,17 +316,21 @@ namespace Pri.LongPath
 
 		protected enum State
 		{
-			Uninitialized, Initialized, Error
+			Uninitialized,
+			Initialized,
+			Error
 		}
 
 		protected class FileAttributeData
 		{
 			// ReSharper disable InconsistentNaming
 			public FileAttributes fileAttributes;
+
 			public FILETIME ftCreationTime;
 			public FILETIME ftLastAccessTime;
 			public FILETIME ftLastWriteTime;
 			public int fileSizeHigh;
+
 			public int fileSizeLow;
 			// ReSharper restore InconsistentNaming
 
@@ -350,7 +358,9 @@ namespace Pri.LongPath
 				NativeMethods.WIN32_FIND_DATA findData;
 				// TODO: BeginFind fails on "\\?\c:\"
 
-				string normalizedPathWithSearchPattern = Path.NormalizeLongPath(new DirectoryInfo(FullPath).Parent == null ? Path.Combine(FullPath, "*") : FullPath);
+				string normalizedPathWithSearchPattern = Path.NormalizeLongPath(new DirectoryInfo(FullPath).Parent == null
+					? Path.Combine(FullPath, "*")
+					: FullPath);
 
 				using (var handle = Directory.BeginFind(normalizedPathWithSearchPattern, out findData))
 				{

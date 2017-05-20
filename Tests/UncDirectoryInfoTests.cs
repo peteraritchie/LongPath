@@ -61,6 +61,7 @@ namespace Tests
 			var di = new DirectoryInfo("gibberish");
 			Assert.IsFalse(di.Exists);
 		}
+
 		[Test]
 		public void TestExistsNonexistentParentDirectory()
 		{
@@ -335,7 +336,6 @@ namespace Tests
 				try
 				{
 					Assert.AreEqual(0, newDi.EnumerateFiles("gibberish").Count());
-
 				}
 				finally
 				{
@@ -878,7 +878,10 @@ namespace Tests
 		public void TestCreateInvalidSubdirectory()
 		{
 			var di = new DirectoryInfo(uncDirectory);
-			Assert.Throws<ArgumentException>(() => { var newDi = di.CreateSubdirectory(@"\"); });
+			Assert.Throws<ArgumentException>(() =>
+			{
+				var newDi = di.CreateSubdirectory(@"\");
+			});
 		}
 
 		/// <remarks>
@@ -1020,8 +1023,10 @@ namespace Tests
 				Assert.IsFalse(security.AreAccessRulesProtected);
 				Assert.IsFalse(security.AreAuditRulesProtected);
 				AuthorizationRuleCollection perm = security.GetAccessRules(true, true, typeof(System.Security.Principal.NTAccount));
-				var ntAccount = new System.Security.Principal.NTAccount(System.Security.Principal.WindowsIdentity.GetCurrent().Name);
-				FileSystemAccessRule rule = perm.Cast<FileSystemAccessRule>().SingleOrDefault(e => ntAccount == e.IdentityReference);
+				var ntAccount =
+					new System.Security.Principal.NTAccount(System.Security.Principal.WindowsIdentity.GetCurrent().Name);
+				FileSystemAccessRule rule = perm.Cast<FileSystemAccessRule>()
+					.SingleOrDefault(e => ntAccount == e.IdentityReference);
 				Assert.IsNotNull(rule);
 				Assert.IsTrue((rule.FileSystemRights & FileSystemRights.FullControl) != 0);
 			}
@@ -1048,11 +1053,14 @@ namespace Tests
 				Assert.IsTrue(security.AreAuditRulesCanonical);
 				Assert.IsFalse(security.AreAccessRulesProtected);
 				Assert.IsFalse(security.AreAuditRulesProtected);
-				var securityGetAccessRules = security.GetAuditRules(true, true, typeof(System.Security.Principal.NTAccount)).Cast<FileSystemAccessRule>();
+				var securityGetAccessRules = security.GetAuditRules(true, true, typeof(System.Security.Principal.NTAccount))
+					.Cast<FileSystemAccessRule>();
 				Assert.AreEqual(0, securityGetAccessRules.Count());
 				AuthorizationRuleCollection perm = security.GetAccessRules(true, true, typeof(System.Security.Principal.NTAccount));
-				var ntAccount = new System.Security.Principal.NTAccount(System.Security.Principal.WindowsIdentity.GetCurrent().Name);
-				FileSystemAccessRule rule = perm.Cast<FileSystemAccessRule>().SingleOrDefault(e => ntAccount == e.IdentityReference);
+				var ntAccount =
+					new System.Security.Principal.NTAccount(System.Security.Principal.WindowsIdentity.GetCurrent().Name);
+				FileSystemAccessRule rule = perm.Cast<FileSystemAccessRule>()
+					.SingleOrDefault(e => ntAccount == e.IdentityReference);
 				Assert.IsNotNull(rule);
 				Assert.IsTrue((rule.FileSystemRights & FileSystemRights.FullControl) != 0);
 			}
@@ -1205,7 +1213,6 @@ namespace Tests
 					Assert.AreEqual(2, files.Length);
 					Assert.IsTrue(files.Any(f => f.Name == Filename));
 					Assert.IsTrue(files.Any(f => f.Name == randomFileName));
-
 				}
 				finally
 				{
@@ -1236,9 +1243,12 @@ namespace Tests
 					var di = new DirectoryInfo(uncDirectory);
 					var files = di.GetFiles("A*", SearchOption.AllDirectories).ToArray();
 					Assert.AreEqual(1, files.Length);
-					Assert.IsTrue(files.Any(f => f.Name == Path.GetFileName(newEmptyFile1) && f.DirectoryName == Path.GetDirectoryName(newEmptyFile1)));
-					Assert.IsFalse(files.Any(f => f.Name == Path.GetFileName(newEmptyFile2) && f.DirectoryName == Path.GetDirectoryName(newEmptyFile2)));
-					Assert.IsFalse(files.Any(f => f.Name == Path.GetFileName(Filename) && f.DirectoryName == Path.GetDirectoryName(Filename)));
+					Assert.IsTrue(files.Any(f => f.Name == Path.GetFileName(newEmptyFile1) &&
+					                             f.DirectoryName == Path.GetDirectoryName(newEmptyFile1)));
+					Assert.IsFalse(files.Any(f => f.Name == Path.GetFileName(newEmptyFile2) &&
+					                              f.DirectoryName == Path.GetDirectoryName(newEmptyFile2)));
+					Assert.IsFalse(files.Any(f => f.Name == Path.GetFileName(Filename) &&
+					                              f.DirectoryName == Path.GetDirectoryName(Filename)));
 				}
 				finally
 				{

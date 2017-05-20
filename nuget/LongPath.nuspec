@@ -1,18 +1,19 @@
 <?xml version="1.0"?>
-<package >
-  <metadata>
-    <id>Pri.LongPath</id>
-    <version>$version$</version>
-    <authors>Peter Ritchie</authors>
-    <dependencies/>
-    <owners>Peter Ritchie</owners>
-    <licenseUrl>https://github.com/peteraritchie/longpath/blob/master/LICENSE</licenseUrl>
-    <projectUrl>https://github.com/peteraritchie/LongPath</projectUrl>
-    <iconUrl>https://raw.githubusercontent.com/peteraritchie/LongPath/dev/longpath.png</iconUrl>
-    <requireLicenseAcceptance>false</requireLicenseAcceptance>
-    <description>Drop-in library to support long paths in .NET</description>
-    <releaseNotes>Added support for use within Mono, courtesy of Cazzar</releaseNotes>
-    <copyright>Copyright 2017</copyright>
-    <tags>long path</tags>
-  </metadata>
+
+<package>
+	<metadata>
+		<id>Pri.LongPath</id>
+		<version>$version$</version>
+		<authors>Peter Ritchie</authors>
+		<dependencies />
+		<owners>Peter Ritchie</owners>
+		<licenseUrl>https://github.com/peteraritchie/longpath/blob/master/LICENSE</licenseUrl>
+		<projectUrl>https://github.com/peteraritchie/LongPath</projectUrl>
+		<iconUrl>https://raw.githubusercontent.com/peteraritchie/LongPath/dev/longpath.png</iconUrl>
+		<requireLicenseAcceptance>false</requireLicenseAcceptance>
+		<description>Drop-in library to support long paths in .NET</description>
+		<releaseNotes>Added support for use within Mono, courtesy of Cazzar</releaseNotes>
+		<copyright>Copyright 2017</copyright>
+		<tags>long path</tags>
+	</metadata>
 </package>
