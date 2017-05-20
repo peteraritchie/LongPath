@@ -26,7 +26,6 @@ namespace Pri.LongPath
 				IntPtr.Zero, (int)FileMode.Open, NativeMethods.FILE_FLAG_BACKUP_SEMANTICS, IntPtr.Zero);
 			if (!handle.IsInvalid) return handle;
 			var ex = Common.GetExceptionFromLastWin32Error();
-			Console.WriteLine("error {0} with {1}\n{2}", ex.Message, normalizedPath, ex.StackTrace);
 			throw ex;
 		}
 #if EXTRAS
