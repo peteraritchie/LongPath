@@ -345,16 +345,29 @@ namespace Pri.LongPath
 			info.AddValue("FullPath", this.FullPath, typeof(string));
 		}
 
-		public void Refresh()
+        internal virtual string GetNormalizedPathWithSearchPattern()
+        {
+            // https://docs.microsoft.com/en-us/windows/desktop/api/fileapi/nf-fileapi-findfirstfilew
+            // "If the string ends with a wildcard, period (.), or directory name, the user must have access permissions to the root and all subdirectories on the path"
+            // This is a problem if the executing principal has no access to the parent folder;
+            // appending "\*" fixes this while still allowing retrieval of attributes
+            //if ((Attributes & FileAttributes.Directory) != 0)
+            //if (new DirectoryInfo(FullPath).Parent == null)
+            if (this is DirectoryInfo)
+            {
+                return Path.NormalizeLongPath(Path.Combine(FullPath, "*"));
+            }
+
+            return Path.NormalizeLongPath(FullPath);
+        }
+
+
+        public void Refresh()
 		{
 			try
 			{
-				NativeMethods.WIN32_FIND_DATA findData;
-				// TODO: BeginFind fails on "\\?\c:\"
-
-				string normalizedPathWithSearchPattern = Path.NormalizeLongPath(new DirectoryInfo(FullPath).Parent == null ? Path.Combine(FullPath, "*") : FullPath);
-
-				using (var handle = Directory.BeginFind(normalizedPathWithSearchPattern, out findData))
+                // TODO: BeginFind fails on "\\?\c:\"
+				using (var handle = Directory.BeginFind(GetNormalizedPathWithSearchPattern(), out var findData))
 				{
 					if (handle == null)
 					{
