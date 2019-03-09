@@ -140,7 +140,11 @@ namespace Pri.LongPath
 		/// </exception>
 		public static void Copy(string sourcePath, string destinationPath, bool overwrite)
 		{
-			if (Common.IsRunningOnMono()) SysFile.Copy(sourcePath, destinationPath, overwrite);
+			if (Common.IsRunningOnMono())
+			{
+				SysFile.Copy(sourcePath, destinationPath, overwrite);
+				return;
+			}
 
 			string normalizedSourcePath = Path.NormalizeLongPath(sourcePath, "sourcePath");
 			string normalizedDestinationPath = Path.NormalizeLongPath(destinationPath, "destinationPath");
@@ -668,19 +672,31 @@ namespace Pri.LongPath
 
 		public static void SetAttributes(string path, FileAttributes fileAttributes)
 		{
-			if (Common.IsRunningOnMono()) SysFile.SetAttributes(path, fileAttributes);
+			if (Common.IsRunningOnMono())
+			{
+				SysFile.SetAttributes(path, fileAttributes);
+				return;
+			}
+
 			Common.SetAttributes(path, fileAttributes);
 		}
 
 		public static FileStream OpenRead(string path)
 		{
-			if (Common.IsRunningOnMono()) SysFile.OpenRead(path);
+			if (Common.IsRunningOnMono())
+			{
+				return SysFile.OpenRead(path);
+			}
+
 			return Open(path, FileMode.Open, FileAccess.Read, FileShare.Read);
 		}
 
 		public static FileStream OpenWrite(string path)
 		{
-			if (Common.IsRunningOnMono()) SysFile.OpenWrite(path);
+			if (Common.IsRunningOnMono())
+			{
+				return SysFile.OpenWrite(path);
+			};
 
 			return Open(path, FileMode.OpenOrCreate, FileAccess.Write, FileShare.None);
 		}
