@@ -351,8 +351,6 @@ namespace Pri.LongPath
             // "If the string ends with a wildcard, period (.), or directory name, the user must have access permissions to the root and all subdirectories on the path"
             // This is a problem if the executing principal has no access to the parent folder;
             // appending "\*" fixes this while still allowing retrieval of attributes
-            //if ((Attributes & FileAttributes.Directory) != 0)
-            //if (new DirectoryInfo(FullPath).Parent == null)
             if (this is DirectoryInfo)
             {
                 return Path.NormalizeLongPath(Path.Combine(FullPath, "*"));
