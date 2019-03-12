@@ -51,6 +51,20 @@ namespace Tests
 			Assert.AreEqual(".ext", fi.Extension);
 		}
 
+		[Test]
+		public void NormalizedPathWithSearchPatternIncludesWildcardForFolders()
+		{
+			var di = new DirectoryInfo(longPathDirectory);
+			Assert.IsTrue(di.GetNormalizedPathWithSearchPattern().EndsWith(@"\*"));
+		}
+
+		[Test]
+		public void NormalizedPathWithSearchPatternExcludesWildcardForFiles()
+		{
+			var fi = new FileInfo(longPathFilename);
+			Assert.IsFalse(fi.GetNormalizedPathWithSearchPattern().EndsWith(@"\*"));
+		}
+
 		[TearDown]
 		public void TearDown()
 		{
