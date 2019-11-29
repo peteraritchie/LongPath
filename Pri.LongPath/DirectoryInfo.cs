@@ -30,12 +30,19 @@ namespace Pri.LongPath
 		{
 			get
 			{
-				if (state == State.Uninitialized)
+				try
 				{
-					Refresh();
+					if (state == State.Uninitialized)
+					{
+						Refresh();
+					}
+					return state == State.Initialized &&
+						   (data.fileAttributes & System.IO.FileAttributes.Directory) == System.IO.FileAttributes.Directory;
 				}
-				return state == State.Initialized &&
-					   (data.fileAttributes & System.IO.FileAttributes.Directory) == System.IO.FileAttributes.Directory;
+				catch
+				{
+					return false;
+				}
 			}
 		}
 

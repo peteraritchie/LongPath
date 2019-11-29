@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Security.AccessControl;
 using NUnit.Framework;
+using System.IO;
 
 namespace Tests
 {
@@ -28,6 +29,7 @@ namespace Tests
 		private static string rootTestDir;
 		private static string longPathDirectory;
 		private static string longPathFilename;
+		private string shortPathFilename;
 		private static string longPathRoot;
 		private const string Filename = "filename.ext";
 
@@ -40,11 +42,23 @@ namespace Tests
 			Directory.CreateDirectory(longPathDirectory);
 			Debug.Assert(Directory.Exists(longPathDirectory));
 			longPathFilename = new StringBuilder(longPathDirectory).Append(@"\").Append(Filename).ToString();
+			shortPathFilename = @".\" + Filename;
+			using (var writer = File.CreateText(shortPathFilename))
+			{
+				writer.WriteLine("test");
+			}
 			using (var writer = File.CreateText(longPathFilename))
 			{
 				writer.WriteLine("test");
 			}
 			Debug.Assert(File.Exists(longPathFilename));
+		}
+
+		[Test]
+		public void TextExistenceOfFileWithDirectoryInfo()
+		{
+			var di = new DirectoryInfo(longPathFilename);
+			Assert.IsFalse(di.Exists);
 		}
 
 		[Test]
