@@ -55,6 +55,12 @@ namespace Tests
 		}
 
 		[Test]
+		public void TestGetPathRoot()
+		{
+			var path = Path.GetPathRoot("\\\\root\\base");
+		}
+
+		[Test]
 		public void TextExistenceOfFileWithDirectoryInfo()
 		{
 			var di = new DirectoryInfo(longPathFilename);

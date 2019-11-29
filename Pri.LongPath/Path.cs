@@ -310,7 +310,7 @@ namespace Pri.LongPath
 		    {
 				if(!Common.IsPathUnc(path))
 					path = Path.RemoveLongPathPrefix(Path.NormalizeLongPath(path));
-		        return path.Substring(0, GetRootLength(path));
+		        return path.Substring(0, Math.Min(path.Length, GetRootLength(path)));
 		    }
 		    return string.Empty;
 		}
