@@ -7,17 +7,22 @@ using System.Linq;
 
 namespace Pri.LongPath
 {
+	/// <include path='doc/members/member[@name="T:System.IO.Path"]/*' file='..\ref\mscorlib.xml' />
 	public static class Path
 	{
-		public static readonly char[] InvalidPathChars = System.IO.Path.GetInvalidPathChars();
+		private static readonly char[] InvalidPathChars = System.IO.Path.GetInvalidPathChars();
 		private static readonly char[] invalidFileNameChars = System.IO.Path.GetInvalidFileNameChars();
 		internal const string LongPathPrefix = @"\\?\";
         internal const string UNCLongPathPrefix = @"\\?\UNC\";
 
+		/// <include path='doc/members/member[@name="F:System.IO.Path.DirectorySeparatorChar"]/*' file='..\ref\mscorlib.xml' />
 		public static readonly char DirectorySeparatorChar = System.IO.Path.DirectorySeparatorChar;
+		/// <include path='doc/members/member[@name="F:System.IO.Path.AltDirectorySeparatorChar"]/*' file='..\ref\mscorlib.xml' />
 		public static readonly char AltDirectorySeparatorChar = System.IO.Path.AltDirectorySeparatorChar;
+		/// <include path='doc/members/member[@name="F:System.IO.Path.VolumeSeparatorChar"]/*' file='..\ref\mscorlib.xml' />
 		public static readonly char VolumeSeparatorChar = ':';
 
+		/// <include path='doc/members/member[@name="F:System.IO.Path.PathSeparator"]/*' file='..\ref\mscorlib.xml' />
 		public static readonly char PathSeparator = System.IO.Path.PathSeparator;
 
 		internal static string NormalizeLongPath(string path)
@@ -146,6 +151,7 @@ namespace Pri.LongPath
 			return LongPathPrefix + path;
 		}
 
+		/// <include path='doc/members/member[@name="M:System.IO.Path.Combine(System.String,System.String)"]/*' file='..\ref\mscorlib.xml' />
 		public static string Combine(string path1, string path2)
 		{
 			if (path1 == null || path2 == null)
@@ -164,11 +170,13 @@ namespace Pri.LongPath
 			return path1 + path2;
 		}
 
+		/// <include path='doc/members/member[@name="M:System.IO.Path.IsPathRooted(System.String)"]/*' file='..\ref\mscorlib.xml' />
 		public static bool IsPathRooted(string path)
 		{
 			return System.IO.Path.IsPathRooted(path);
 		}
 
+		/// <include path='doc/members/member[@name="M:System.IO.Path.Combine(System.String,System.String,System.String)"]/*' file='..\ref\mscorlib.xml' />
 		public static string Combine(string path1, string path2, string path3)
 		{
 			if (path1 == null || path2 == null || path3 == null)
@@ -177,6 +185,7 @@ namespace Pri.LongPath
 			return Combine(Combine(path1, path2), path3);
 		}
 
+		/// <include path='doc/members/member[@name="M:System.IO.Path.Combine(System.String,System.String,System.String,System.String)"]/*' file='..\ref\mscorlib.xml' />
 		public static string Combine(string path1, string path2, string path3, string path4)
 		{
 			if (path1 == null || path2 == null || path3 == null || path4 == null)
@@ -207,17 +216,20 @@ namespace Pri.LongPath
 #endif
 		}
 
+		/// <include path='doc/members/member[@name="M:System.IO.Path.GetFileName(System.String)"]/*' file='..\ref\mscorlib.xml' />
 		public static string GetFileName(string path)
 		{
 			if (path == null) return null;
 			return System.IO.Path.GetFileName(Path.NormalizeLongPath(path));
 		}
 
+		/// <include path='doc/members/member[@name="M:System.IO.Path.GetFullPath(System.String)"]/*' file='..\ref\mscorlib.xml' />
 		public static string GetFullPath(string path)
 		{
 			return Common.IsPathUnc(path) ? path : Path.RemoveLongPathPrefix(Path.NormalizeLongPath(path));
 		}
 
+		/// <include path='doc/members/member[@name="M:System.IO.Path.GetDirectoryName(System.String)"]/*' file='..\ref\mscorlib.xml' />
 		public static string GetDirectoryName(string path)
 		{
 		    if (Common.IsRunningOnMono()) return System.IO.Path.GetDirectoryName(path);
@@ -288,21 +300,25 @@ namespace Pri.LongPath
 			return c == DirectorySeparatorChar || c == AltDirectorySeparatorChar;
 		}
 
+		/// <include path='doc/members/member[@name="M:System.IO.Path.GetInvalidPathChars"]/*' file='..\ref\mscorlib.xml' />
 		public static char[] GetInvalidPathChars()
 		{
 			return InvalidPathChars;
 		}
 
+		/// <include path='doc/members/member[@name="M:System.IO.Path.GetInvalidFileNameChars"]/*' file='..\ref\mscorlib.xml' />
 		public static char[] GetInvalidFileNameChars()
 		{
 			return invalidFileNameChars;
 		}
 
+		/// <include path='doc/members/member[@name="M:System.IO.Path.GetRandomFileName"]/*' file='..\ref\mscorlib.xml' />
 		public static string GetRandomFileName()
 		{
 			return System.IO.Path.GetRandomFileName();
 		}
 
+		/// <include path='doc/members/member[@name="M:System.IO.Path.GetPathRoot(System.String)"]/*' file='..\ref\mscorlib.xml' />
 		public static string GetPathRoot(string path)
 		{
 			if (path == null) return null;
@@ -315,36 +331,43 @@ namespace Pri.LongPath
 		    return string.Empty;
 		}
 
+		/// <include path='doc/members/member[@name="M:System.IO.Path.GetExtension(System.String)"]/*' file='..\ref\mscorlib.xml' />
 		public static string GetExtension(string path)
 		{
 			return System.IO.Path.GetExtension(path);
 		}
 
+		/// <include path='doc/members/member[@name="M:System.IO.Path.HasExtension(System.String)"]/*' file='..\ref\mscorlib.xml' />
 		public static bool HasExtension(string path)
 		{
 			return System.IO.Path.HasExtension(path);
 		}
 
+		/// <include path='doc/members/member[@name="M:System.IO.Path.GetTempPath"]/*' file='..\ref\mscorlib.xml' />
 		public static string GetTempPath()
 		{
 			return System.IO.Path.GetTempPath();
 		}
 
+		/// <include path='doc/members/member[@name="M:System.IO.Path.GetTempFileName"]/*' file='..\ref\mscorlib.xml' />
 		public static string GetTempFileName()
 		{
 			return System.IO.Path.GetTempFileName();
 		}
 
+		/// <include path='doc/members/member[@name="M:System.IO.Path.GetFileNameWithoutExtension(System.String)"]/*' file='..\ref\mscorlib.xml' />
 		public static string GetFileNameWithoutExtension(string path)
 		{
 			return System.IO.Path.GetFileNameWithoutExtension(path);
 		}
 
+		/// <include path='doc/members/member[@name="M:System.IO.Path.ChangeExtension(System.String,System.String)"]/*' file='..\ref\mscorlib.xml' />
 		public static string ChangeExtension(string filename, string extension)
 		{
 			return System.IO.Path.ChangeExtension(filename, extension);
 		}
 
+		/// <include path='doc/members/member[@name="M:System.IO.Path.Combine(System.String[])"]/*' file='..\ref\mscorlib.xml' />
 		public static string Combine(string[] paths)
 		{
 			if(paths == null) throw new ArgumentNullException("paths");

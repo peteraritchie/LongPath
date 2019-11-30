@@ -12,11 +12,13 @@ namespace Pri.LongPath
 	using SearchOption = System.IO.SearchOption;
 	using IOException = System.IO.IOException;
 
+	/// <include path='doc/members/member[@name="T:System.IO.DirectoryInfo"]/*' file='..\ref\mscorlib.xml' />
 	public class DirectoryInfo : FileSystemInfo
 	{
 		private readonly string _name;
 
-	    public override System.IO.FileSystemInfo SystemInfo { get { return SysDirectoryInfo; } }
+		/// <include path='doc/members/member[@name="P:System.IO.FileSystemInfo.SystemInfo"]/*' file='..\ref\mscorlib.xml' />
+		public override System.IO.FileSystemInfo SystemInfo { get { return SysDirectoryInfo; } }
 
         private System.IO.DirectoryInfo SysDirectoryInfo
 	    {
@@ -26,6 +28,7 @@ namespace Pri.LongPath
 	        }
 	    }
 
+		/// <include path='doc/members/member[@name="P:System.IO.DirectoryInfo.Exists"]/*' file='..\ref\mscorlib.xml' />
 		public override bool Exists
 		{
 			get
@@ -46,11 +49,13 @@ namespace Pri.LongPath
 			}
 		}
 
+		/// <include path='doc/members/member[@name="P:System.IO.DirectoryInfo.Name"]/*' file='..\ref\mscorlib.xml' />
 		public override string Name
 		{
 			get { return _name; }
 		}
 
+		/// <include path='doc/members/member[@name="P:System.IO.DirectoryInfo.Parent"]/*' file='..\ref\mscorlib.xml' />
 		public DirectoryInfo Parent
 		{
 			get
@@ -65,6 +70,7 @@ namespace Pri.LongPath
 			}
 		}
 
+		/// <include path='doc/members/member[@name="P:System.IO.DirectoryInfo.Root"]/*' file='..\ref\mscorlib.xml' />
 		public DirectoryInfo Root
 		{
 			get
@@ -75,6 +81,7 @@ namespace Pri.LongPath
 			}
 		}
 
+		/// <include path='doc/members/member[@name="M:System.IO.DirectoryInfo.#ctor(System.String)"]/*' file='..\ref\mscorlib.xml' />
 		public DirectoryInfo(string path)
 		{
 			if (path == null) throw new ArgumentNullException("path");
@@ -83,11 +90,13 @@ namespace Pri.LongPath
 			_name = (OriginalPath.Length != 2 || OriginalPath[1] != ':' ? GetDirName(FullPath) : ".");
 		}
 
+		/// <include path='doc/members/member[@name="M:System.IO.DirectoryInfo.Create"]/*' file='..\ref\mscorlib.xml' />
 		public void Create()
 		{
 			Directory.CreateDirectory(FullPath);
 		}
 
+		/// <include path='doc/members/member[@name="M:System.IO.DirectoryInfo.CreateSubdirectory(System.String)"]/*' file='..\ref\mscorlib.xml' />
 		public DirectoryInfo CreateSubdirectory(string path)
 		{
 			var newDir = Path.Combine(FullPath, path);
@@ -100,17 +109,20 @@ namespace Pri.LongPath
 			return new DirectoryInfo(newDir);
 		}
 
+		/// <include path='doc/members/member[@name="M:System.IO.DirectoryInfo.Delete"]/*' file='..\ref\mscorlib.xml' />
 		public override void Delete()
 		{
 			Directory.Delete(this.FullPath);
 		}
 
+		/// <include path='doc/members/member[@name="M:System.IO.DirectoryInfo.Delete(System.Boolean)"]/*' file='..\ref\mscorlib.xml' />
 		public void Delete(bool recursive)
 		{
 			Directory.Delete(FullPath, recursive);
 		}
 
 #if NET_4_0 || NET_4_5
+		/// <include path='doc/members/member[@name="M:System.IO.DirectoryInfo.EnumerateDirectories(System.String)"]/*' file='..\ref\mscorlib.xml' />
 		public IEnumerable<DirectoryInfo> EnumerateDirectories(string searchPattern)
 		{
 		    if (Common.IsRunningOnMono()) return SysDirectoryInfo.EnumerateDirectories(searchPattern).Select(s => new DirectoryInfo(s.FullName));
@@ -119,6 +131,7 @@ namespace Pri.LongPath
 				.Select(directory => new DirectoryInfo(directory));
 		}
 
+		/// <include path='doc/members/member[@name="M:System.IO.DirectoryInfo.EnumerateDirectories(System.String,System.IO.SearchOption)"]/*' file='..\ref\mscorlib.xml' />
 		public IEnumerable<DirectoryInfo> EnumerateDirectories(string searchPattern, SearchOption searchOption)
 		{
 		    if (Common.IsRunningOnMono()) return SysDirectoryInfo.EnumerateDirectories(searchPattern, searchOption).Select(s => new DirectoryInfo(s.FullName));
@@ -127,11 +140,13 @@ namespace Pri.LongPath
 				.Select(directory => new DirectoryInfo(directory));
 		}
 
+		/// <include path='doc/members/member[@name="M:System.IO.DirectoryInfo.EnumerateFiles"]/*' file='..\ref\mscorlib.xml' />
 		public IEnumerable<FileInfo> EnumerateFiles()
 		{
 			return Directory.EnumerateFiles(FullPath).Select(e => new FileInfo(e));
 		}
 
+		/// <include path='doc/members/member[@name="M:System.IO.DirectoryInfo.EnumerateFiles(System.String)"]/*' file='..\ref\mscorlib.xml' />
 		public IEnumerable<FileInfo> EnumerateFiles(string searchPattern)
 		{
 		    if (Common.IsRunningOnMono()) return SysDirectoryInfo.EnumerateFiles(searchPattern).Select(s => new FileInfo(s.FullName));
@@ -139,6 +154,7 @@ namespace Pri.LongPath
             return Directory.EnumerateFileSystemEntries(FullPath, searchPattern, false, true, System.IO.SearchOption.TopDirectoryOnly).Select(e => new FileInfo(e));
 		}
 
+		/// <include path='doc/members/member[@name="M:System.IO.DirectoryInfo.EnumerateFiles(System.String,System.IO.SearchOption)"]/*' file='..\ref\mscorlib.xml' />
 		public IEnumerable<FileInfo> EnumerateFiles(string searchPattern, SearchOption searchOption)
 		{
 		    if (Common.IsRunningOnMono()) return SysDirectoryInfo.EnumerateFiles(searchPattern, searchOption).Select(s => new FileInfo(s.FullName));
@@ -146,6 +162,7 @@ namespace Pri.LongPath
             return Directory.EnumerateFileSystemEntries(FullPath, searchPattern, false, true, searchOption).Select(e => new FileInfo(e));
 		}
 
+		/// <include path='doc/members/member[@name="M:System.IO.DirectoryInfo.EnumerateFileSystemInfos"]/*' file='..\ref\mscorlib.xml' />
 		public IEnumerable<FileSystemInfo> EnumerateFileSystemInfos()
 		{
             return
@@ -153,6 +170,7 @@ namespace Pri.LongPath
 					.Select(e => Directory.Exists(e) ? (FileSystemInfo)new DirectoryInfo(e) : (FileSystemInfo)new FileInfo(e));
 		}
 
+		/// <include path='doc/members/member[@name="M:System.IO.DirectoryInfo.EnumerateFileSystemInfos(System.String)"]/*' file='..\ref\mscorlib.xml' />
 		public IEnumerable<FileSystemInfo> EnumerateFileSystemInfos(string searchPattern)
 		{
 		    if (Common.IsRunningOnMono()) return SysDirectoryInfo.EnumerateFileSystemInfos(searchPattern)
@@ -162,6 +180,7 @@ namespace Pri.LongPath
 					.Select(e => Directory.Exists(e) ? (FileSystemInfo)new DirectoryInfo(e) : (FileSystemInfo)new FileInfo(e));
 		}
 #if NET_4_5
+		/// <include path='doc/members/member[@name="M:System.IO.DirectoryInfo.EnumerateFileSystemInfos(System.String,System.IO.SearchOption)"]/*' file='..\ref\mscorlib.xml' />
 		public IEnumerable<FileSystemInfo> EnumerateFileSystemInfos(string searchPattern, SearchOption searchOption)
 		{
 			return Directory.EnumerateFileSystemEntries(FullPath, searchPattern, searchOption)
@@ -181,6 +200,7 @@ namespace Pri.LongPath
 			return Path.GetFileName(s);
 		}
 
+		/// <include path='doc/members/member[@name="M:System.IO.DirectoryInfo.MoveTo(System.String)"]/*' file='..\ref\mscorlib.xml' />
 		public void MoveTo(string destDirName)
 		{
 		    if (Common.IsRunningOnMono())
@@ -218,11 +238,13 @@ namespace Pri.LongPath
 			File.Move(fullSourcePath, fullDestDirName);
 		}
 
+		/// <include path='doc/members/member[@name="M:System.IO.DirectoryInfo.Create(System.Security.AccessControl.DirectorySecurity)"]/*' file='..\ref\mscorlib.xml' />
 		public void Create(DirectorySecurity directorySecurity)
 		{
 			Directory.CreateDirectory(FullPath, directorySecurity);
 		}
 
+		/// <include path='doc/members/member[@name="M:System.IO.DirectoryInfo.CreateSubdirectory(System.String,System.Security.AccessControl.DirectorySecurity)"]/*' file='..\ref\mscorlib.xml' />
 		public DirectoryInfo CreateSubdirectory(string path, DirectorySecurity directorySecurity)
 		{
 			var newDir = Path.Combine(FullPath, path);
@@ -236,7 +258,8 @@ namespace Pri.LongPath
 		}
 
 #if NET_4_0 || NET_4_5
-        public IEnumerable<DirectoryInfo> EnumerateDirectories()
+		/// <include path='doc/members/member[@name="M:System.IO.DirectoryInfo.EnumerateDirectories"]/*' file='..\ref\mscorlib.xml' />
+		public IEnumerable<DirectoryInfo> EnumerateDirectories()
 		{
 		    if (Common.IsRunningOnMono())
             {
@@ -247,41 +270,49 @@ namespace Pri.LongPath
 		}
 #endif
 
+		/// <include path='doc/members/member[@name="M:System.IO.DirectoryInfo.GetAccessControl"]/*' file='..\ref\mscorlib.xml' />
 		public DirectorySecurity GetAccessControl()
 		{
 			return Directory.GetAccessControl(FullPath);
 		}
 
+		/// <include path='doc/members/member[@name="M:System.IO.DirectoryInfo.GetAccessControl(System.Security.AccessControl.AccessControlSections)"]/*' file='..\ref\mscorlib.xml' />
 		public DirectorySecurity GetAccessControl(AccessControlSections includeSections)
 		{
 			return Directory.GetAccessControl(FullPath, includeSections);
 		}
 
+		/// <include path='doc/members/member[@name="M:System.IO.DirectoryInfo.GetDirectories"]/*' file='..\ref\mscorlib.xml' />
 		public DirectoryInfo[] GetDirectories()
 		{
 			return Directory.GetDirectories(FullPath).Select(path => new DirectoryInfo(path)).ToArray();
 		}
 
+		/// <include path='doc/members/member[@name="M:System.IO.DirectoryInfo.GetDirectories(System.String)"]/*' file='..\ref\mscorlib.xml' />
 		public DirectoryInfo[] GetDirectories(string searchPattern)
 		{
 			return Directory.GetDirectories(FullPath, searchPattern).Select(path => new DirectoryInfo(path)).ToArray();
 		}
 
+		/// <include path='doc/members/member[@name="M:System.IO.DirectoryInfo.GetDirectories(System.String,System.IO.SearchOption)"]/*' file='..\ref\mscorlib.xml' />
 		public DirectoryInfo[] GetDirectories(string searchPattern, SearchOption searchOption)
 		{
 			return Directory.GetDirectories(FullPath, searchPattern, searchOption).Select(path => new DirectoryInfo(path)).ToArray();
 		}
 
+		/// <include path='doc/members/member[@name="M:System.IO.DirectoryInfo.GetFiles(System.String)"]/*' file='..\ref\mscorlib.xml' />
 		public FileInfo[] GetFiles(string searchPattern)
 		{
 			return Directory.GetFiles(FullPath, searchPattern).Select(path => new FileInfo(path)).ToArray();
 		}
 
+		/// <include path='doc/members/member[@name="M:System.IO.DirectoryInfo.GetFiles(System.String,System.IO.SearchOption)"]/*' file='..\ref\mscorlib.xml' />
 		public FileInfo[] GetFiles(string searchPattern, SearchOption searchOption)
 		{
 			return Directory.GetFiles(FullPath, searchPattern, searchOption).Select(path => new FileInfo(path)).ToArray();
 		}
 
+		/// <include path='doc/members/member[@name="M:System.IO.DirectoryInfo.GetFiles"]/*' file='..\ref\mscorlib.xml' />
 		public FileInfo[] GetFiles()
 		{
 		    if (Common.IsRunningOnMono())
@@ -296,6 +327,7 @@ namespace Pri.LongPath
 			return Directory.EnumerateFileSystemEntries(FullPath, "*", false, true, System.IO.SearchOption.TopDirectoryOnly).Select(path => new FileInfo(path)).ToArray();
 		}
 
+		/// <include path='doc/members/member[@name="M:System.IO.DirectoryInfo.GetFileSystemInfos(System.String)"]/*' file='..\ref\mscorlib.xml' />
 		public FileSystemInfo[] GetFileSystemInfos(string searchPattern)
 		{
 		    if (Common.IsRunningOnMono())
@@ -316,6 +348,7 @@ namespace Pri.LongPath
 					.Select(e => Directory.Exists(e) ? (FileSystemInfo)new DirectoryInfo(e) : (FileSystemInfo)new FileInfo(e)).ToArray();
 		}
 
+		/// <include path='doc/members/member[@name="M:System.IO.DirectoryInfo.GetFileSystemInfos(System.String,System.IO.SearchOption)"]/*' file='..\ref\mscorlib.xml' />
         public FileSystemInfo[] GetFileSystemInfos(string searchPattern, SearchOption searchOption)
 		{
             if (Common.IsRunningOnMono())
@@ -347,6 +380,7 @@ namespace Pri.LongPath
 					.Select(e => Directory.Exists(e) ? (FileSystemInfo)new DirectoryInfo(e) : (FileSystemInfo)new FileInfo(e)).ToArray();
 		}
 
+		/// <include path='doc/members/member[@name="M:System.IO.DirectoryInfo.GetFileSystemInfos"]/*' file='..\ref\mscorlib.xml' />
 		public FileSystemInfo[] GetFileSystemInfos()
 		{
 		    if (Common.IsRunningOnMono())
@@ -370,11 +404,13 @@ namespace Pri.LongPath
 					.Select(e => Directory.Exists(e) ? (FileSystemInfo)new DirectoryInfo(e) : (FileSystemInfo)new FileInfo(e)).ToArray();
 		}
 
+		/// <include path='doc/members/member[@name="M:System.IO.DirectoryInfo.SetAccessControl(System.Security.AccessControl.DirectorySecurity)"]/*' file='..\ref\mscorlib.xml' />
 		public void SetAccessControl(DirectorySecurity directorySecurity)
 		{
 			Directory.SetAccessControl(FullPath, directorySecurity);
 		}
 
+		/// <include path='doc/members/member[@name="M:System.IO.DirectoryInfo.ToString"]/*' file='..\ref\mscorlib.xml' />
 		public override string ToString()
 		{
 			return DisplayPath;

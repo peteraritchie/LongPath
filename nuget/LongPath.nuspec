@@ -12,6 +12,6 @@
     <description>Drop-in library to support long paths in .NET</description>
     <releaseNotes>Added support for use within Mono, courtesy of Cazzar</releaseNotes>
     <copyright>Copyright 2017</copyright>
-    <tags>long path</tags>
+    <tags>long path .NET Framework</tags>
   </metadata>
 </package>

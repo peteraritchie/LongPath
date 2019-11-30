@@ -16,6 +16,7 @@ namespace Pri.LongPath
 	using FileShare = System.IO.FileShare;
 	using SearchOption = System.IO.SearchOption;
 
+	/// <include path='doc/members/member[@name="T:System.IO.Directory"]/*' file='..\ref\mscorlib.xml' />
 	public static class Directory
 	{
 		internal static SafeFileHandle GetDirectoryHandle(string normalizedPath)

@@ -9,6 +9,7 @@ namespace Pri.LongPath
 	using FILETIME = System.Runtime.InteropServices.ComTypes.FILETIME;
 	using DirectoryNotFoundException = System.IO.DirectoryNotFoundException;
 
+	/// <include path='doc/members/member[@name="T:System.IO.FileSystemInfo"]/*' file='..\ref\mscorlib.xml' />
 	public abstract class FileSystemInfo
 	{
 		protected string OriginalPath;
@@ -17,7 +18,8 @@ namespace Pri.LongPath
 		protected readonly FileAttributeData data = new FileAttributeData();
 		protected int errorCode;
 
-	    public abstract System.IO.FileSystemInfo SystemInfo { get; }
+		/// <include path='doc/members/member[@name="P:System.IO.FileSystemInfo.SystemInfo"]/*' file='..\ref\mscorlib.xml' />
+		public abstract System.IO.FileSystemInfo SystemInfo { get; }
 
         // Summary:
         //     Gets or sets the attributes for the current file or directory.
@@ -41,6 +43,7 @@ namespace Pri.LongPath
         //
         //   System.IO.IOException:
         //     System.IO.FileSystemInfo.Refresh() cannot initialize the data.
+		/// <include path='doc/members/member[@name="P:System.IO.FileSystemInfo.Attributes"]/*' file='..\ref\mscorlib.xml' />
         public FileAttributes Attributes
 		{
 			get
@@ -77,6 +80,7 @@ namespace Pri.LongPath
 		//
 		//   System.ArgumentOutOfRangeException:
 		//     The caller attempts to set an invalid creation time.
+		/// <include path='doc/members/member[@name="P:System.IO.FileSystemInfo.CreationTime"]/*' file='..\ref\mscorlib.xml' />
 		public DateTime CreationTime
 		{
 			get
@@ -115,6 +119,7 @@ namespace Pri.LongPath
 		//
 		//   System.ArgumentOutOfRangeException:
 		//     The caller attempts to set an invalid access time.
+		/// <include path='doc/members/member[@name="P:System.IO.FileSystemInfo.CreationTimeUtc"]/*' file='..\ref\mscorlib.xml' />
 		public DateTime CreationTimeUtc
 		{
 			get
@@ -147,6 +152,7 @@ namespace Pri.LongPath
 			}
 		}
 
+		/// <include path='doc/members/member[@name="P:System.IO.FileSystemInfo.LastWriteTime"]/*' file='..\ref\mscorlib.xml' />
 		public DateTime LastWriteTime
 		{
 			get
@@ -248,6 +254,7 @@ namespace Pri.LongPath
 			}
 		}
 
+		/// <include path='doc/members/member[@name="P:System.IO.FileSystemInfo.LastAccessTime"]/*' file='..\ref\mscorlib.xml' />
 		public DateTime LastAccessTime
 		{
 			get
@@ -263,6 +270,7 @@ namespace Pri.LongPath
 			}
 		}
 
+		/// <include path='doc/members/member[@name="P:System.IO.FileSystemInfo.LastAccessTimeUtc"]/*' file='..\ref\mscorlib.xml' />
 		public DateTime LastAccessTimeUtc
 		{
 			get
@@ -296,11 +304,13 @@ namespace Pri.LongPath
 			}
 		}
 
+		/// <include path='doc/members/member[@name="P:System.IO.FileSystemInfo.FullName"]/*' file='..\ref\mscorlib.xml' />
 		public virtual string FullName
 		{
 			get { return FullPath; }
 		}
 
+		/// <include path='doc/members/member[@name="P:System.IO.FileSystemInfo.Extension"]/*' file='..\ref\mscorlib.xml' />
 		public string Extension
 		{
 			get
@@ -309,7 +319,9 @@ namespace Pri.LongPath
 			}
 		}
 
+		/// <include path='doc/members/member[@name="P:System.IO.FileSystemInfo.Name"]/*' file='..\ref\mscorlib.xml' />
 		public abstract string Name { get; }
+		/// <include path='doc/members/member[@name="P:System.IO.FileSystemInfo.Exists"]/*' file='..\ref\mscorlib.xml' />
 		public abstract bool Exists { get; }
 		internal string DisplayPath { get; set; }
 
@@ -338,6 +350,7 @@ namespace Pri.LongPath
 			}
 		}
 
+		/// <include path='doc/members/member[@name="M:System.IO.FileSystemInfo.GetObjectData(System.Runtime.Serialization.SerializationInfo,System.Runtime.Serialization.StreamingContext)"]/*' file='..\ref\mscorlib.xml' />
 		public virtual void GetObjectData(SerializationInfo info, StreamingContext context)
 		{
 			//(new FileIOPermission(FileIOPermissionAccess.PathDiscovery, this.FullPath)).Demand();
@@ -360,6 +373,7 @@ namespace Pri.LongPath
         }
 
 
+		/// <include path='doc/members/member[@name="M:System.IO.FileSystemInfo.Refresh"]/*' file='..\ref\mscorlib.xml' />
         public void Refresh()
 		{
 			try
@@ -393,6 +407,7 @@ namespace Pri.LongPath
 			}
 		}
 
+		/// <include path='doc/members/member[@name="M:System.IO.FileSystemInfo.Delete"]/*' file='..\ref\mscorlib.xml' />
 		public abstract void Delete();
 	}
 }
