@@ -10,7 +10,8 @@ namespace Pri.LongPath
 	/// <include path='doc/members/member[@name="T:System.IO.Path"]/*' file='..\ref\mscorlib.xml' />
 	public static class Path
 	{
-		private static readonly char[] InvalidPathChars = System.IO.Path.GetInvalidPathChars();
+		/// <include path='doc/members/member[@name="F:System.IO.Path.InvalidPathChars"]/*' file='..\ref\mscorlib.xml' />
+		public static readonly char[] InvalidPathChars = System.IO.Path.GetInvalidPathChars();
 		private static readonly char[] invalidFileNameChars = System.IO.Path.GetInvalidFileNameChars();
 		internal const string LongPathPrefix = @"\\?\";
         internal const string UNCLongPathPrefix = @"\\?\UNC\";
