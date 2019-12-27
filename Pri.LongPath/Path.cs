@@ -28,7 +28,7 @@ namespace Pri.LongPath
 
 		internal static string NormalizeLongPath(string path)
 		{
-		    if (Common.IsRunningOnMono())
+		    if (Common.IsRunningOnMono() && Common.IsPlatformUnix())
 		        return path;
 
             return NormalizeLongPath(path, "path");
@@ -233,7 +233,7 @@ namespace Pri.LongPath
 		/// <include path='doc/members/member[@name="M:System.IO.Path.GetDirectoryName(System.String)"]/*' file='..\ref\mscorlib.xml' />
 		public static string GetDirectoryName(string path)
 		{
-		    if (Common.IsRunningOnMono()) return System.IO.Path.GetDirectoryName(path);
+		    if (Common.IsRunningOnMono() && Common.IsPlatformUnix()) return System.IO.Path.GetDirectoryName(path);
 
 			if (path == null) throw new ArgumentNullException("path");
 			Path.CheckInvalidPathChars(path);

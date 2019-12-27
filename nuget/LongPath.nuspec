@@ -2,16 +2,16 @@
 <package >
   <metadata>
     <id>Pri.LongPath</id>
-    <version>$version$</version>
+    <version>$version$-alpha1</version>
     <authors>Peter Ritchie</authors>
     <dependencies/>
     <owners>Peter Ritchie</owners>
-    <licenseUrl>https://github.com/peteraritchie/longpath/blob/master/LICENSE</licenseUrl>
+    <license type="expression">LGPL-3.0-only</license>
     <projectUrl>https://github.com/peteraritchie/LongPath</projectUrl>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
     <description>Drop-in library to support long paths in .NET</description>
-    <releaseNotes>Added support for use within Mono, courtesy of Cazzar</releaseNotes>
-    <copyright>Copyright 2017</copyright>
+    <releaseNotes>Fixes for mono</releaseNotes>
+    <copyright>Copyright 2019</copyright>
     <tags>long path .NET Framework</tags>
   </metadata>
 </package>

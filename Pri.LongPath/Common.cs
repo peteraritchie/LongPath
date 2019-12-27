@@ -15,8 +15,16 @@ namespace Pri.LongPath
 	{
 	    public static bool IsRunningOnMono()
 	    {
-	       return Type.GetType("Mono.Runtime") != null;
+			// https://www.mono-project.com/docs/faq/technical/#how-can-i-detect-if-am-running-in-mono
+			return Type.GetType("Mono.Runtime") != null;
 	    }
+
+		public static bool IsPlatformUnix()
+		{
+			// https://www.mono-project.com/docs/faq/technical/#how-to-detect-the-execution-platform
+			int p = (int)Environment.OSVersion.Platform;
+			return p == 4 || p == 6 || p == 128;
+		}
 
 	    private static readonly uint ProtectedDiscretionaryAcl = 0x80000000;
 		private static readonly uint ProtectedSystemAcl = 0x40000000;

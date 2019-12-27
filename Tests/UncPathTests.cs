@@ -44,8 +44,9 @@ namespace Tests
                 }
                 Debug.Assert(File.Exists(uncFilePath));
             }
-            catch (Exception)
+            catch (Exception ex)
             {
+                Console.WriteLine("Exception " + ex.GetType().FullName + "occured\n" + ex.Message);
                 if (System.IO.Directory.Exists(directory))
                     System.IO.Directory.Delete(directory, true);
                 throw;

@@ -32,6 +32,7 @@
     <WarningLevel>4</WarningLevel>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <DocumentationFile>bin\Release\Pri.LongPath.xml</DocumentationFile>
+    <NoWarn>1591;1734;1572;1573</NoWarn>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />

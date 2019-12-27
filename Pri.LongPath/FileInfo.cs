@@ -53,7 +53,7 @@ namespace Pri.LongPath
 		{
 			get
 			{
-			    if (Common.IsRunningOnMono()) return SysFileInfo.Exists;
+			    if (Common.IsRunningOnMono() && Common.IsPlatformUnix()) return SysFileInfo.Exists;
 
 				if (state == State.Uninitialized)
 				{
@@ -93,7 +93,7 @@ namespace Pri.LongPath
 		/// <include path='doc/members/member[@name="M:System.IO.FileInfo.GetFileLength"]/*' file='..\ref\mscorlib.xml' />
 		private long GetFileLength()
 		{
-		    if (Common.IsRunningOnMono()) return SysFileInfo.Length;
+		    if (Common.IsRunningOnMono() && Common.IsPlatformUnix()) return SysFileInfo.Length;
 
             if (state == State.Uninitialized)
 			{
@@ -162,14 +162,14 @@ namespace Pri.LongPath
 		/// <include path='doc/members/member[@name="M:System.IO.FileInfo.Open(System.IO.FileMode,System.IO.FileAccess,System.IO.FileShare)"]/*' file='..\ref\mscorlib.xml' />
 		public FileStream Open(FileMode mode, FileAccess access, FileShare share)
 		{
-		    if (Common.IsRunningOnMono()) return SysFileInfo.Open(mode, access, share);
+		    if (Common.IsRunningOnMono() && Common.IsPlatformUnix()) return SysFileInfo.Open(mode, access, share);
 
             return File.Open(FullPath, mode, access, share, 4096, FileOptions.SequentialScan);
 		}
 
 		public FileStream OpenRead()
 		{
-		    if (Common.IsRunningOnMono()) return SysFileInfo.OpenRead();
+		    if (Common.IsRunningOnMono() && Common.IsPlatformUnix()) return SysFileInfo.OpenRead();
             return File.Open(FullPath, FileMode.Open, FileAccess.Read, FileShare.Read, 4096, FileOptions.None);
 		}
 
@@ -208,13 +208,13 @@ namespace Pri.LongPath
 		{
 			get
 			{
-			    if (Common.IsRunningOnMono()) return SysFileInfo.IsReadOnly;
+			    if (Common.IsRunningOnMono() && Common.IsPlatformUnix()) return SysFileInfo.IsReadOnly;
 
                 return (Attributes & FileAttributes.ReadOnly) != 0;
 			}
 			set
 			{
-			    if (Common.IsRunningOnMono())
+			    if (Common.IsRunningOnMono() && Common.IsPlatformUnix())
 			    {
 			        SysFileInfo.IsReadOnly = value;
 			        return;
