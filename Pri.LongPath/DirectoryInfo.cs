@@ -125,7 +125,7 @@ namespace Pri.LongPath
 		/// <include path='doc/members/member[@name="M:System.IO.DirectoryInfo.EnumerateDirectories(System.String)"]/*' file='..\ref\mscorlib.xml' />
 		public IEnumerable<DirectoryInfo> EnumerateDirectories(string searchPattern)
 		{
-		    if (Common.IsRunningOnMono()) return SysDirectoryInfo.EnumerateDirectories(searchPattern).Select(s => new DirectoryInfo(s.FullName));
+		    if (Common.IsRunningOnMono() && Common.IsPlatformUnix()) return SysDirectoryInfo.EnumerateDirectories(searchPattern).Select(s => new DirectoryInfo(s.FullName));
 
             return Directory.EnumerateFileSystemEntries(FullPath, searchPattern, true, false, System.IO.SearchOption.TopDirectoryOnly)
 				.Select(directory => new DirectoryInfo(directory));
@@ -134,7 +134,7 @@ namespace Pri.LongPath
 		/// <include path='doc/members/member[@name="M:System.IO.DirectoryInfo.EnumerateDirectories(System.String,System.IO.SearchOption)"]/*' file='..\ref\mscorlib.xml' />
 		public IEnumerable<DirectoryInfo> EnumerateDirectories(string searchPattern, SearchOption searchOption)
 		{
-		    if (Common.IsRunningOnMono()) return SysDirectoryInfo.EnumerateDirectories(searchPattern, searchOption).Select(s => new DirectoryInfo(s.FullName));
+		    if (Common.IsRunningOnMono() && Common.IsPlatformUnix()) return SysDirectoryInfo.EnumerateDirectories(searchPattern, searchOption).Select(s => new DirectoryInfo(s.FullName));
 
             return Directory.EnumerateFileSystemEntries(FullPath, searchPattern, true, false, searchOption)
 				.Select(directory => new DirectoryInfo(directory));
@@ -149,7 +149,7 @@ namespace Pri.LongPath
 		/// <include path='doc/members/member[@name="M:System.IO.DirectoryInfo.EnumerateFiles(System.String)"]/*' file='..\ref\mscorlib.xml' />
 		public IEnumerable<FileInfo> EnumerateFiles(string searchPattern)
 		{
-		    if (Common.IsRunningOnMono()) return SysDirectoryInfo.EnumerateFiles(searchPattern).Select(s => new FileInfo(s.FullName));
+		    if (Common.IsRunningOnMono() && Common.IsPlatformUnix()) return SysDirectoryInfo.EnumerateFiles(searchPattern).Select(s => new FileInfo(s.FullName));
 
             return Directory.EnumerateFileSystemEntries(FullPath, searchPattern, false, true, System.IO.SearchOption.TopDirectoryOnly).Select(e => new FileInfo(e));
 		}
@@ -157,7 +157,7 @@ namespace Pri.LongPath
 		/// <include path='doc/members/member[@name="M:System.IO.DirectoryInfo.EnumerateFiles(System.String,System.IO.SearchOption)"]/*' file='..\ref\mscorlib.xml' />
 		public IEnumerable<FileInfo> EnumerateFiles(string searchPattern, SearchOption searchOption)
 		{
-		    if (Common.IsRunningOnMono()) return SysDirectoryInfo.EnumerateFiles(searchPattern, searchOption).Select(s => new FileInfo(s.FullName));
+		    if (Common.IsRunningOnMono() && Common.IsPlatformUnix()) return SysDirectoryInfo.EnumerateFiles(searchPattern, searchOption).Select(s => new FileInfo(s.FullName));
 
             return Directory.EnumerateFileSystemEntries(FullPath, searchPattern, false, true, searchOption).Select(e => new FileInfo(e));
 		}
@@ -173,7 +173,7 @@ namespace Pri.LongPath
 		/// <include path='doc/members/member[@name="M:System.IO.DirectoryInfo.EnumerateFileSystemInfos(System.String)"]/*' file='..\ref\mscorlib.xml' />
 		public IEnumerable<FileSystemInfo> EnumerateFileSystemInfos(string searchPattern)
 		{
-		    if (Common.IsRunningOnMono()) return SysDirectoryInfo.EnumerateFileSystemInfos(searchPattern)
+		    if (Common.IsRunningOnMono() && Common.IsPlatformUnix()) return SysDirectoryInfo.EnumerateFileSystemInfos(searchPattern)
                     .Select(e => System.IO.Directory.Exists(e.FullName) ? (FileSystemInfo)new DirectoryInfo(e.FullName) : (FileSystemInfo)new FileInfo(e.FullName));
 
             return Directory.EnumerateFileSystemEntries(FullPath, searchPattern, true, true, System.IO.SearchOption.TopDirectoryOnly)
@@ -203,7 +203,7 @@ namespace Pri.LongPath
 		/// <include path='doc/members/member[@name="M:System.IO.DirectoryInfo.MoveTo(System.String)"]/*' file='..\ref\mscorlib.xml' />
 		public void MoveTo(string destDirName)
 		{
-		    if (Common.IsRunningOnMono())
+		    if (Common.IsRunningOnMono() && Common.IsPlatformUnix())
 		    {
                 SysDirectoryInfo.MoveTo(destDirName);
 		        return;
@@ -261,7 +261,7 @@ namespace Pri.LongPath
 		/// <include path='doc/members/member[@name="M:System.IO.DirectoryInfo.EnumerateDirectories"]/*' file='..\ref\mscorlib.xml' />
 		public IEnumerable<DirectoryInfo> EnumerateDirectories()
 		{
-		    if (Common.IsRunningOnMono())
+		    if (Common.IsRunningOnMono() && Common.IsPlatformUnix())
             {
                 return SysDirectoryInfo.EnumerateDirectories().Select(s => new DirectoryInfo(s.FullName));
             }
@@ -315,7 +315,7 @@ namespace Pri.LongPath
 		/// <include path='doc/members/member[@name="M:System.IO.DirectoryInfo.GetFiles"]/*' file='..\ref\mscorlib.xml' />
 		public FileInfo[] GetFiles()
 		{
-		    if (Common.IsRunningOnMono())
+		    if (Common.IsRunningOnMono() && Common.IsPlatformUnix())
 		    {
 		        var files = SysDirectoryInfo.GetFiles();
                 var ret = new FileInfo[files.Length];
@@ -330,7 +330,7 @@ namespace Pri.LongPath
 		/// <include path='doc/members/member[@name="M:System.IO.DirectoryInfo.GetFileSystemInfos(System.String)"]/*' file='..\ref\mscorlib.xml' />
 		public FileSystemInfo[] GetFileSystemInfos(string searchPattern)
 		{
-		    if (Common.IsRunningOnMono())
+		    if (Common.IsRunningOnMono() && Common.IsPlatformUnix())
 		    {
 		        var sysInfos = SysDirectoryInfo.GetFileSystemInfos(searchPattern);
                 FileSystemInfo[] fsis = new FileSystemInfo[sysInfos.Length];
@@ -351,7 +351,7 @@ namespace Pri.LongPath
 		/// <include path='doc/members/member[@name="M:System.IO.DirectoryInfo.GetFileSystemInfos(System.String,System.IO.SearchOption)"]/*' file='..\ref\mscorlib.xml' />
         public FileSystemInfo[] GetFileSystemInfos(string searchPattern, SearchOption searchOption)
 		{
-            if (Common.IsRunningOnMono())
+            if (Common.IsRunningOnMono() && Common.IsPlatformUnix())
             {
 #if NET_4_0 || NET_4_5
                 return SysDirectoryInfo.GetFileSystemInfos(searchPattern, searchOption).Select(s => s.FullName).Select(e => Directory.Exists(e) ? (FileSystemInfo)new DirectoryInfo(e) : (FileSystemInfo)new FileInfo(e)).ToArray();
@@ -383,9 +383,9 @@ namespace Pri.LongPath
 		/// <include path='doc/members/member[@name="M:System.IO.DirectoryInfo.GetFileSystemInfos"]/*' file='..\ref\mscorlib.xml' />
 		public FileSystemInfo[] GetFileSystemInfos()
 		{
-		    if (Common.IsRunningOnMono())
+		    if (Common.IsRunningOnMono() && Common.IsPlatformUnix())
 		    {
-		        if (Common.IsRunningOnMono())
+		        if (Common.IsRunningOnMono() && Common.IsPlatformUnix())
 		        {
 		            var sysInfos = SysDirectoryInfo.GetFileSystemInfos();
 		            FileSystemInfo[] fsis = new FileSystemInfo[sysInfos.Length];

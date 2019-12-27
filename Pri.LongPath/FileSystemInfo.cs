@@ -48,13 +48,13 @@ namespace Pri.LongPath
 		{
 			get
 			{
-			    if (Common.IsRunningOnMono()) return SystemInfo.Attributes;
+			    if (Common.IsRunningOnMono() && Common.IsPlatformUnix()) return SystemInfo.Attributes;
 
 				return Common.GetAttributes(FullPath);
 			}
 			set
 			{
-			    if (Common.IsRunningOnMono())
+			    if (Common.IsRunningOnMono() && Common.IsPlatformUnix())
 			        SystemInfo.Attributes = value;
 			    else
 			        Common.SetAttributes(FullPath, value);
@@ -85,13 +85,13 @@ namespace Pri.LongPath
 		{
 			get
 			{
-			    if(Common.IsRunningOnMono()) return SystemInfo.CreationTime;
+			    if(Common.IsRunningOnMono() && Common.IsPlatformUnix()) return SystemInfo.CreationTime;
                 return CreationTimeUtc.ToLocalTime();
 			}
 
 			set
 			{
-			    if (Common.IsRunningOnMono())
+			    if (Common.IsRunningOnMono() && Common.IsPlatformUnix())
 			        SystemInfo.CreationTime = value;
 			    else
 			        CreationTimeUtc = value.ToUniversalTime();
@@ -124,7 +124,7 @@ namespace Pri.LongPath
 		{
 			get
 			{
-			    if (Common.IsRunningOnMono()) return SystemInfo.CreationTimeUtc;
+			    if (Common.IsRunningOnMono() && Common.IsPlatformUnix()) return SystemInfo.CreationTimeUtc;
 
                 if (state == State.Uninitialized)
 				{
@@ -138,7 +138,7 @@ namespace Pri.LongPath
 			}
 			set
 			{
-			    if (Common.IsRunningOnMono())
+			    if (Common.IsRunningOnMono() && Common.IsPlatformUnix())
 			    {
 			        SystemInfo.CreationTimeUtc = value;
 			        return;
@@ -157,13 +157,13 @@ namespace Pri.LongPath
 		{
 			get
 			{
-			    if (Common.IsRunningOnMono()) return SystemInfo.LastWriteTime;
+			    if (Common.IsRunningOnMono() && Common.IsPlatformUnix()) return SystemInfo.LastWriteTime;
 
                 return LastWriteTimeUtc.ToLocalTime();
 			}
 			set
 			{
-			    if (Common.IsRunningOnMono()) SystemInfo.LastWriteTime = value;
+			    if (Common.IsRunningOnMono() && Common.IsPlatformUnix())SystemInfo.LastWriteTime = value;
                 else LastWriteTimeUtc = value.ToUniversalTime();
 			}
 		}
@@ -224,7 +224,7 @@ namespace Pri.LongPath
 		{
 			get
 			{
-			    if (Common.IsRunningOnMono()) return SystemInfo.LastWriteTimeUtc;
+			    if (Common.IsRunningOnMono() && Common.IsPlatformUnix()) return SystemInfo.LastWriteTimeUtc;
 
 
                 if (state == State.Uninitialized)
@@ -239,7 +239,7 @@ namespace Pri.LongPath
 			}
 			set
 			{
-			    if (Common.IsRunningOnMono())
+			    if (Common.IsRunningOnMono() && Common.IsPlatformUnix())
 			    {
 			        SystemInfo.LastWriteTimeUtc = value;
 			        return;
@@ -259,13 +259,13 @@ namespace Pri.LongPath
 		{
 			get
 			{
-			    if (Common.IsRunningOnMono()) return SystemInfo.LastAccessTime;
+			    if (Common.IsRunningOnMono() && Common.IsPlatformUnix()) return SystemInfo.LastAccessTime;
 
                 return LastAccessTimeUtc.ToLocalTime();
 			}
 			set
 			{
-			    if (Common.IsRunningOnMono()) SystemInfo.LastAccessTime = value;
+			    if (Common.IsRunningOnMono() && Common.IsPlatformUnix())SystemInfo.LastAccessTime = value;
 			    else LastAccessTimeUtc = value.ToUniversalTime();
 			}
 		}
@@ -275,7 +275,7 @@ namespace Pri.LongPath
 		{
 			get
 			{
-			    if (Common.IsRunningOnMono()) return SystemInfo.LastAccessTimeUtc;
+			    if (Common.IsRunningOnMono() && Common.IsPlatformUnix()) return SystemInfo.LastAccessTimeUtc;
 
                 if (state == State.Uninitialized)
 				{
@@ -289,7 +289,7 @@ namespace Pri.LongPath
 			}
 			set
 			{
-			    if (Common.IsRunningOnMono())
+			    if (Common.IsRunningOnMono() && Common.IsPlatformUnix())
 			    {
 			        SystemInfo.LastAccessTimeUtc = value;
 			        return;
