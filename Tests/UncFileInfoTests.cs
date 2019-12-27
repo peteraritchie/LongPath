@@ -111,16 +111,15 @@ namespace Tests
 		[Test]
 		public void TestLengthWithBadPath()
 		{
-			var filename = Util.CreateNewFile(uncDirectory);
+			var filename = new StringBuilder(uncDirectory).Append(Path.DirectorySeparatorChar).Append(Path.GetRandomFileName()).ToString();
+
 			Pri.LongPath.FileInfo fi;
-			try
+			long length;
+			Assert.Throws<FileNotFoundException>(() =>
 			{
-				Assert.Throws<FileNotFoundException>(() => fi = new FileInfo(filename));
-			}
-			catch
-			{
-				File.Delete(filename);
-			}
+				fi = new FileInfo(filename);
+				length = fi.Length;
+			});
 		}
 
 		[Test]

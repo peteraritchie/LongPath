@@ -31,7 +31,7 @@ namespace Pri.LongPath
 	{
 		public static StreamReader OpenText(string path)
 		{
-		    if (Common.IsRunningOnMono()) return SysFile.OpenText(path);
+		    if (Common.IsRunningOnMono() && Common.IsPlatformUnix()) return SysFile.OpenText(path);
 
 			var stream = Open(path, FileMode.Open, FileAccess.Read, FileShare.Read, DefaultBufferSize, FileOptions.SequentialScan);
 			return new StreamReader(stream, Encoding.UTF8, true, 1024);
@@ -39,7 +39,7 @@ namespace Pri.LongPath
 
 		private static StreamReader OpenText(string path, Encoding encoding)
 		{
-		    if (Common.IsRunningOnMono()) return SysFile.OpenText(path);
+		    if (Common.IsRunningOnMono() && Common.IsPlatformUnix()) return SysFile.OpenText(path);
 
             var stream = Open(path, FileMode.Open, FileAccess.Read, FileShare.Read, DefaultBufferSize, FileOptions.SequentialScan);
 			return new StreamReader(stream, encoding, true, 1024);
@@ -47,7 +47,7 @@ namespace Pri.LongPath
 
 		public static StreamWriter CreateText(String path)
 		{
-		    if (Common.IsRunningOnMono()) return SysFile.CreateText(path);
+		    if (Common.IsRunningOnMono() && Common.IsPlatformUnix()) return SysFile.CreateText(path);
 
             var fileStream = Open(path, FileMode.Create, FileAccess.Write, FileShare.Read, DefaultBufferSize, FileOptions.SequentialScan);
 			return new StreamWriter(fileStream, UTF8NoBOM, DefaultBufferSize);
@@ -136,7 +136,7 @@ namespace Pri.LongPath
 		/// </exception>
 		public static void Copy(string sourcePath, string destinationPath, bool overwrite)
 		{
-            if (Common.IsRunningOnMono()) SysFile.Copy(sourcePath, destinationPath, overwrite);
+            if (Common.IsRunningOnMono() && Common.IsPlatformUnix()) SysFile.Copy(sourcePath, destinationPath, overwrite);
 
 			string normalizedSourcePath = Path.NormalizeLongPath(sourcePath, "sourcePath");
 			string normalizedDestinationPath = Path.NormalizeLongPath(destinationPath, "destinationPath");
@@ -152,13 +152,13 @@ namespace Pri.LongPath
 
 		public static FileStream Create(string path, int bufferSize)
 		{
-		    if (Common.IsRunningOnMono()) return SysFile.Create(path, bufferSize);
+		    if (Common.IsRunningOnMono() && Common.IsPlatformUnix()) return SysFile.Create(path, bufferSize);
 			return Open(path, FileMode.Create, FileAccess.ReadWrite, FileShare.None, bufferSize, FileOptions.None);
 		}
 
 		public static FileStream Create(string path, int bufferSize, FileOptions options)
 		{
-		    if (Common.IsRunningOnMono()) return SysFile.Create(path, bufferSize, options);
+		    if (Common.IsRunningOnMono() && Common.IsPlatformUnix()) return SysFile.Create(path, bufferSize, options);
             return Open(path, FileMode.Create, FileAccess.ReadWrite, FileShare.None, bufferSize, options);
 		}
 
@@ -220,7 +220,7 @@ namespace Pri.LongPath
 		/// </exception>
 		public static void Delete(string path)
 		{
-		    if (Common.IsRunningOnMono())
+		    if (Common.IsRunningOnMono() && Common.IsPlatformUnix())
 		    {
 		        SysFile.Delete(path);
 		        return;
@@ -235,7 +235,7 @@ namespace Pri.LongPath
 
 		public static void Decrypt(string path)
 		{
-		    if (Common.IsRunningOnMono())
+		    if (Common.IsRunningOnMono() && Common.IsPlatformUnix())
 		    {
 		        SysFile.Decrypt(path);
 		        return;
@@ -256,7 +256,7 @@ namespace Pri.LongPath
 
 		public static void Encrypt(String path)
 		{
-		    if (Common.IsRunningOnMono())
+		    if (Common.IsRunningOnMono() && Common.IsPlatformUnix())
 		    {
 		        SysFile.Encrypt(path);
 		        return;
@@ -293,7 +293,7 @@ namespace Pri.LongPath
 		/// </remarks>
 		public static bool Exists(string path)
 		{
-		    if (Common.IsRunningOnMono())
+		    if (Common.IsRunningOnMono() && Common.IsPlatformUnix())
 		        return SysFile.Exists(path);
 
             bool isDirectory;
@@ -307,7 +307,7 @@ namespace Pri.LongPath
 
 		public static FileStream Open(string path, FileMode mode)
 		{
-		    if (Common.IsRunningOnMono())
+		    if (Common.IsRunningOnMono() && Common.IsPlatformUnix())
 		        return SysFile.Open(path, mode);
 
             return File.Open(path, mode, (mode == FileMode.Append ? FileAccess.Write : FileAccess.ReadWrite), FileShare.None);
@@ -375,7 +375,7 @@ namespace Pri.LongPath
 		/// </exception>
 		public static FileStream Open(string path, FileMode mode, FileAccess access)
 		{
-		    if (Common.IsRunningOnMono())
+		    if (Common.IsRunningOnMono() && Common.IsPlatformUnix())
 		        return SysFile.Open(path, mode, access);
 
             return Open(path, mode, access, FileShare.None, 0, FileOptions.None);
@@ -447,7 +447,7 @@ namespace Pri.LongPath
 		/// </exception>
 		public static FileStream Open(string path, FileMode mode, FileAccess access, FileShare share)
 		{
-		    if (Common.IsRunningOnMono())
+		    if (Common.IsRunningOnMono() && Common.IsPlatformUnix())
 		        return SysFile.Open(path, mode, access, share);
 
             return Open(path, mode, access, share, 0, FileOptions.None);
@@ -550,7 +550,7 @@ namespace Pri.LongPath
 
 		public static unsafe void SetCreationTimeUtc(String path, DateTime creationTimeUtc)
 		{
-		    if (Common.IsRunningOnMono())
+		    if (Common.IsRunningOnMono() && Common.IsPlatformUnix())
 		    {
 		        SysFile.SetCreationTimeUtc(path, creationTimeUtc);
 		        return;
@@ -588,7 +588,7 @@ namespace Pri.LongPath
 
 		public static unsafe void SetLastWriteTimeUtc(String path, DateTime lastWriteTimeUtc)
 		{
-		    if (Common.IsRunningOnMono())
+		    if (Common.IsRunningOnMono() && Common.IsPlatformUnix())
 		    {
 		        SysFile.SetLastWriteTimeUtc(path, lastWriteTimeUtc);
 		        return;
@@ -626,7 +626,7 @@ namespace Pri.LongPath
 
 		public static unsafe void SetLastAccessTimeUtc(String path, DateTime lastAccessTimeUtc)
 		{
-		    if (Common.IsRunningOnMono())
+		    if (Common.IsRunningOnMono() && Common.IsPlatformUnix())
 		    {
 		        SysFile.SetLastAccessTimeUtc(path, lastAccessTimeUtc);
 		        return;
@@ -658,25 +658,25 @@ namespace Pri.LongPath
 
 		public static FileAttributes GetAttributes(string path)
 		{
-		    if (Common.IsRunningOnMono()) return SysFile.GetAttributes(path);
+		    if (Common.IsRunningOnMono() && Common.IsPlatformUnix()) return SysFile.GetAttributes(path);
 			return Common.GetFileAttributes(path);
 		}
 
 		public static void SetAttributes(string path, FileAttributes fileAttributes)
 		{
-            if (Common.IsRunningOnMono()) SysFile.SetAttributes(path, fileAttributes);
+            if (Common.IsRunningOnMono() && Common.IsPlatformUnix()) SysFile.SetAttributes(path, fileAttributes);
 			Common.SetAttributes(path, fileAttributes);
 		}
 
 		public static FileStream OpenRead(String path)
 		{
-		    if (Common.IsRunningOnMono()) SysFile.OpenRead(path);
+		    if (Common.IsRunningOnMono() && Common.IsPlatformUnix())SysFile.OpenRead(path);
             return Open(path, FileMode.Open, FileAccess.Read, FileShare.Read);
 		}
 
 		public static FileStream OpenWrite(String path)
 		{
-		    if (Common.IsRunningOnMono()) SysFile.OpenWrite(path);
+		    if (Common.IsRunningOnMono() && Common.IsPlatformUnix())SysFile.OpenWrite(path);
 
             return Open(path, FileMode.OpenOrCreate, FileAccess.Write, FileShare.None);
 		}
@@ -888,7 +888,7 @@ namespace Pri.LongPath
 		/// </exception>
 		public static void Move(string sourcePath, string destinationPath)
 		{
-		    if (Common.IsRunningOnMono())
+		    if (Common.IsRunningOnMono() && Common.IsPlatformUnix())
 		    {
 		        SysFile.Move(sourcePath, destinationPath);
                 return;
@@ -912,7 +912,7 @@ namespace Pri.LongPath
 		public static void Replace(String sourceFileName, String destinationFileName, String destinationBackupFileName,
 			bool ignoreMetadataErrors)
 		{
-		    if (Common.IsRunningOnMono())
+		    if (Common.IsRunningOnMono() && Common.IsPlatformUnix())
 		    {
 		        SysFile.Replace(sourceFileName, destinationFileName, destinationBackupFileName, ignoreMetadataErrors);
                 return;
@@ -939,7 +939,7 @@ namespace Pri.LongPath
 
 		public static void SetAccessControl(string path, FileSecurity fileSecurity)
 		{
-		    if (Common.IsRunningOnMono())
+		    if (Common.IsRunningOnMono() && Common.IsPlatformUnix())
 		    {
 		        SysFile.SetAccessControl(path, fileSecurity);
 		        return;
@@ -960,7 +960,7 @@ namespace Pri.LongPath
 
 		public static FileSecurity GetAccessControl(string path, AccessControlSections includeSections)
 		{
-		    if (Common.IsRunningOnMono()) return SysFile.GetAccessControl(path, includeSections);
+		    if (Common.IsRunningOnMono() && Common.IsPlatformUnix()) return SysFile.GetAccessControl(path, includeSections);
 
 
             var normalizedPath = Path.NormalizeLongPath(Path.GetFullPath(path));
