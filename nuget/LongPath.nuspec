@@ -7,7 +7,6 @@
     <dependencies/>
     <owners>Peter Ritchie</owners>
     <license type="expression">LGPL-3.0-only</license>
-    <licenseUrl>https://github.com/peteraritchie/longpath/blob/master/LICENSE</licenseUrl>
     <projectUrl>https://github.com/peteraritchie/LongPath</projectUrl>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
     <description>Drop-in library to support long paths in .NET</description>
