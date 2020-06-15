@@ -220,17 +220,23 @@ namespace Pri.LongPath
 		/// </exception>
 		public static void Delete(string path)
 		{
-		    if (Common.IsRunningOnMono() && Common.IsPlatformUnix())
-		    {
-		        SysFile.Delete(path);
-		        return;
-		    }
+			const int fileNotFoundWindowsErrorCode = 2;
 
-            string normalizedPath = Path.NormalizeLongPath(path);
-			if (!NativeMethods.DeleteFile(normalizedPath))
+			if (Common.IsRunningOnMono() && Common.IsPlatformUnix())
 			{
-				throw Common.GetExceptionFromLastWin32Error();
+				SysFile.Delete(path);
+				return;
 			}
+
+			string normalizedPath = Path.NormalizeLongPath(path);
+
+			if (NativeMethods.DeleteFile(normalizedPath))
+				return;
+
+			if (fileNotFoundWindowsErrorCode == Marshal.GetLastWin32Error())
+				return;
+
+			throw Common.GetExceptionFromLastWin32Error();
 		}
 
 		public static void Decrypt(string path)
