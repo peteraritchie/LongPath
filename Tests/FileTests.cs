@@ -1343,6 +1343,12 @@ namespace Tests
 			var dt = File.GetLastWriteTime("gibberish");
 		}
 
+		[Test]
+		public void TestDeleteOnMissingFileDoesNotThrow()
+		{
+			File.Delete("missing.file");
+		}
+
 		[TearDown]
 		public void TearDown()
 		{
