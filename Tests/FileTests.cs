@@ -1318,7 +1318,7 @@ namespace Tests
 				File.Delete(filename);
 			}
 		}
-		
+
 		private static string longPathRoot;
 
 		/// <remarks>
@@ -1341,6 +1341,13 @@ namespace Tests
 		public void TestGetLastWriteTimeOnMissingFileHasNoException()
 		{
 			var dt = File.GetLastWriteTime("gibberish");
+		}
+
+		[Test]
+		public void TestDeleteOnMissingFileDoesNotThrow()
+		{
+			System.IO.File.Delete("missing.file");
+			File.Delete("missing.file");
 		}
 
 		[TearDown]

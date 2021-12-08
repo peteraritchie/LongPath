@@ -38,6 +38,15 @@ namespace Tests
 		}
 
 		[Test]
+		public void DirectoryNamesWithNull()
+		{
+			var di1 = Directory.CreateDirectory("Test");
+			const string WeirdPath = "Test\\\0\0\0\\";
+			var di = Directory.CreateDirectory(WeirdPath);
+			Directory.Delete("Test", recursive:true);
+		}
+
+		[Test]
 		public void TestProblemWithSystemIoExists()
 		{
 			Assert.Throws<PathTooLongException>(() =>
