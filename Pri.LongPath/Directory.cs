@@ -753,8 +753,16 @@ namespace Pri.LongPath
 				for (var index = length - 1; index >= rootLength; --index)
 				{
 					var subPath = path.Substring(0, index + 1);
-					if (!Exists(subPath))
+
+					if (Exists(subPath))
+					{
+						break; // If a subfolder exists then there's no need to check for parent folders for existance
+					}
+					else
+					{
 						pathComponents.Add(subPath);
+					}
+
 					while (index > rootLength && path[index] != System.IO.Path.DirectorySeparatorChar &&
 						   path[index] != System.IO.Path.AltDirectorySeparatorChar)
 						--index;
@@ -844,8 +852,16 @@ namespace Pri.LongPath
 				for (var index = length - 1; index >= rootLength; --index)
 				{
 					var subPath = fullPath.Substring(0, index + 1);
-					if (!Exists(subPath))
+					
+					if (Exists(subPath))
+					{
+						break; // If a subfolder exists then there's no need to check for parent folders for existance
+					}
+					else
+					{
 						pathComponents.Add(Path.NormalizeLongPath(subPath));
+					}
+
 					while (index > rootLength && fullPath[index] != System.IO.Path.DirectorySeparatorChar &&
 						   fullPath[index] != System.IO.Path.AltDirectorySeparatorChar)
 						--index;
