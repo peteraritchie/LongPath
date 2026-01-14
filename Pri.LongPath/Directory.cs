@@ -723,7 +723,7 @@ namespace Pri.LongPath
 		{
 		    if (Common.IsRunningOnMono() && Common.IsPlatformUnix())
 			{
-				System.IO.File.Move(sourcePath, destinationPath);
+				System.IO.Directory.Move(sourcePath, destinationPath);
 		        return;
 		    }
 
